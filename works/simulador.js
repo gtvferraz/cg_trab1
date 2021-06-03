@@ -21,12 +21,11 @@ camera.lookAt(0, 0, 0);
 camera.up.set(0, 0, 1);*/
 //variáveis para o controle do avião
 var keyboard = new KeyboardState();
-var angle = degreesToRadians(5);
-var angle2 = degreesToRadians(5) / 2;
+var angle = degreesToRadians(2.5);
 var posicao = [0, 0]; //posição original dos avião em relação aos seus eixos de rotação(x,y/z)
 var speed = 1;
-var max = degreesToRadians(45);
-var maxVet = [max, max, max]; //inclinação máxima
+var max = degreesToRadians(45 / 2);
+var maxVet = [max, max]; //inclinação máxima
 
 // Enable mouse rotation, pan, zoom etc.
 //var trackballControls = new TrackballControls(camera, renderer.domElement);
@@ -42,7 +41,7 @@ var planeMaterial = new THREE.MeshBasicMaterial({
     color: "rgba(150, 150, 150)",
     side: THREE.DoubleSide,
 });
-var plane = createGroundPlaneWired(100, 100);
+var plane = createGroundPlaneWired(500, 500);
 //var plane = new THREE.Mesh(planeGeometry, planeMaterial);
 // add the plane to the scene
 plane.rotateOnAxis(new THREE.Vector3(1, 0, 0), degreesToRadians(90));
@@ -78,39 +77,52 @@ function keyboardUpdate() {
     var x = new THREE.Vector3(1, 0, 0); // Set Z axis
     var y = new THREE.Vector3(0, 1, 0); // Set Z axis
     var z = new THREE.Vector3(0, 0, 1); // Set Z axis
+    var aux = [angle * posicao[0], angle * posicao[1]];
 
     if (keyboard.pressed("space")) virtualParent.translateY(speed);
 
-    if (keyboard.pressed("up") && posicao[0] > -maxVet[0]) {
-        cube.rotateOnAxis(x, -angle);
-        posicao[0] -= angle;
-    } else if (keyboard.pressed("down") && posicao[0] < maxVet[0]) {
-        cube.rotateOnAxis(x, angle);
-        posicao[0] += angle;
+    if (keyboard.pressed("up")) {
+        virtualParent.rotateOnAxis(x, -angle);
+        if (aux[0] > -maxVet[0]) {
+            cube.rotateOnAxis(x, -angle);
+            posicao[0] -= 1;
+        }
+    } else if (keyboard.pressed("down")) {
+        virtualParent.rotateOnAxis(x, angle);
+        if (aux[0] < maxVet[0]) {
+            cube.rotateOnAxis(x, angle);
+            posicao[0] += 1;
+        }
     } else if (posicao[0] > 0) {
+        virtualParent.rotateOnAxis(x, -angle / 2);
         cube.rotateOnAxis(x, -angle / 2);
-        posicao[0] -= 0.5 * angle;
+        posicao[0] -= 0.5;
     } else if (posicao[0] < 0) {
+        virtualParent.rotateOnAxis(x, angle / 2);
         cube.rotateOnAxis(x, angle / 2);
-        posicao[0] += 0.5 * angle;
+        posicao[0] += 0.5;
     }
 
-    if (keyboard.pressed("right") && posicao[1] > -maxVet[1]) {
-        cube.rotateOnAxis(z, -angle);
-        cube.rotateOnAxis(y, angle2);
-        posicao[1] -= angle;
-    } else if (keyboard.pressed("left") && posicao[1] < maxVet[1]) {
-        cube.rotateOnAxis(z, angle);
-        cube.rotateOnAxis(y, -angle2);
-        posicao[1] += angle;
+    if (keyboard.pressed("right")) {
+        virtualParent.rotateOnAxis(z, -angle);
+        if (aux[1] > -maxVet[1]) {
+            cube.rotateOnAxis(y, angle);
+            posicao[1] -= 1;
+        }
+    } else if (keyboard.pressed("left")) {
+        virtualParent.rotateOnAxis(z, angle);
+        if (aux[1] < maxVet[1]) {
+            cube.rotateOnAxis(y, -angle);
+            posicao[1] += 1;
+        }
     } else if (posicao[1] > 0) {
-        cube.rotateOnAxis(z, -angle / 2);
-        cube.rotateOnAxis(y, angle2 / 2);
-        posicao[1] -= 0.5 * angle;
+        virtualParent.rotateOnAxis(z, -angle / 2);
+        cube.rotateOnAxis(y, angle / 2);
+        posicao[1] -= 0.5;
     } else if (posicao[1] < 0) {
-        cube.rotateOnAxis(z, angle / 2);
-        cube.rotateOnAxis(y, -angle2 / 2);
-        posicao[1] += 0.5 * angle;
+        virtualParent.rotateOnAxis(z, angle / 2);
+        cube.rotateOnAxis(y, -angle / 2);
+        posicao[1] += 0.5;
     }
     console.log(posicao);
 }
@@ -121,7 +133,6 @@ function render() {
     stats.update(); // Update FPS
     //trackballControls.update(); // Enable mouse movements
     keyboardUpdate();
-
     requestAnimationFrame(render);
     renderer.render(scene, camera) // Render scene
 }
