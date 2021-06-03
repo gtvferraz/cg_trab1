@@ -50,11 +50,13 @@ scene.add(plane);
 var cubeGeometry = new THREE.BoxGeometry(4, 4, 4);
 var cubeMaterial = new THREE.MeshNormalMaterial();
 var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-// position the cube
 cube.position.set(0.0, 0.0, 2.0);
-// add the cube to the scene
-scene.add(cube);
-cube.add(camera);
+
+var virtualParent = new THREE.Object3D();
+virtualParent.add(cube);
+virtualParent.add(camera);
+scene.add(virtualParent);
+
 // Use this to show information onscreen
 var controls = new InfoBox();
 controls.add("Basic Scene");
@@ -75,7 +77,7 @@ function keyboardUpdate() {
     var y = new THREE.Vector3(0, 1, 0); // Set Z axis
     var z = new THREE.Vector3(0, 0, 1); // Set Z axis
 
-    if (keyboard.pressed("space")) cube.translateY(speed);
+    if (keyboard.pressed("space")) virtualParent.translateY(speed);
 
     if (keyboard.pressed("up")) {
         cube.rotateOnAxis(x, -angle);
