@@ -8,22 +8,22 @@ import {
     InfoBox,
     onWindowResize,
     createGroundPlaneWired,
-    degreesToRadians
+    degreesToRadians,
+    initDefaultBasicLight
 } from "../libs/util/util.js";
 
 var stats = new Stats(); // To show FPS information
 var scene = new THREE.Scene(); // Create main scene
 var renderer = initRenderer(); // View function in util/utils
 var camera = initCamera(new THREE.Vector3(0, -30, 15)); // Init camera in this position
-//var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-/*camera.position.set(0, 0, 1);
-camera.lookAt(0, 0, 0);
-camera.up.set(0, 0, 1);*/
+initDefaultBasicLight(scene);
+
 //variáveis para o controle do avião
 var keyboard = new KeyboardState();
 var angle = degreesToRadians(2.5);
-var posicao = [0, 0]; //posição original dos avião em relação aos seus eixos de rotação(x,y/z)
-var speed = 1;
+var posicao = [0, 0]; //posição de rotação do avião (x,y)
+var posGlobal = [0, 0];
+var speed = 5;
 var max = degreesToRadians(45 / 2);
 var maxVet = [max, max]; //inclinação máxima
 
@@ -57,7 +57,7 @@ var virtualParent = new THREE.Object3D();
 virtualParent.add(cube);
 virtualParent.add(camera);
 scene.add(virtualParent);
-
+cube.add(new THREE.AxesHelper(12));
 // Use this to show information onscreen
 var controls = new InfoBox();
 controls.add("Basic Scene");
@@ -87,20 +87,29 @@ function keyboardUpdate() {
             cube.rotateOnAxis(x, -angle);
             posicao[0] -= 1;
         }
+        posGlobal[0] -= 1;
     } else if (keyboard.pressed("down")) {
         virtualParent.rotateOnAxis(x, angle);
         if (aux[0] < maxVet[0]) {
             cube.rotateOnAxis(x, angle);
             posicao[0] += 1;
         }
-    } else if (posicao[0] > 0) {
+        posGlobal[0] += 1;
+    } else if (posGlobal[0] > 0) {
         virtualParent.rotateOnAxis(x, -angle / 2);
-        cube.rotateOnAxis(x, -angle / 2);
-        posicao[0] -= 0.5;
-    } else if (posicao[0] < 0) {
+        posGlobal[0] -= 0.5;
+        if (posicao[0] > 0) {
+
+            cube.rotateOnAxis(x, -angle / 2);
+            posicao[0] -= 0.5;
+        }
+    } else if (posGlobal[0] < 0) {
         virtualParent.rotateOnAxis(x, angle / 2);
-        cube.rotateOnAxis(x, angle / 2);
-        posicao[0] += 0.5;
+        posGlobal[0] += 0.5;
+        if (posicao[0] < 0) {
+            cube.rotateOnAxis(x, angle / 2);
+            posicao[0] += 0.5;
+        }
     }
 
     if (keyboard.pressed("right")) {
@@ -116,11 +125,11 @@ function keyboardUpdate() {
             posicao[1] += 1;
         }
     } else if (posicao[1] > 0) {
-        virtualParent.rotateOnAxis(z, -angle / 2);
+        virtualParent.rotateOnAxis(z, angle / 2);
         cube.rotateOnAxis(y, angle / 2);
         posicao[1] -= 0.5;
     } else if (posicao[1] < 0) {
-        virtualParent.rotateOnAxis(z, angle / 2);
+        virtualParent.rotateOnAxis(z, -angle / 2);
         cube.rotateOnAxis(y, -angle / 2);
         posicao[1] += 0.5;
     }
