@@ -19,12 +19,14 @@ var camera = initCamera(new THREE.Vector3(0, -30, 15)); // Init camera in this p
 /*camera.position.set(0, 0, 1);
 camera.lookAt(0, 0, 0);
 camera.up.set(0, 0, 1);*/
-
+//variáveis para o controle do avião
 var keyboard = new KeyboardState();
 var angle = degreesToRadians(5);
 var angle2 = degreesToRadians(5) / 2;
 var posicao = [0, 0]; //posição original dos avião em relação aos seus eixos de rotação(x,y/z)
 var speed = 1;
+var max = degreesToRadians(45);
+var maxVet = [max, max, max]; //inclinação máxima
 
 // Enable mouse rotation, pan, zoom etc.
 //var trackballControls = new TrackballControls(camera, renderer.domElement);
@@ -77,31 +79,36 @@ function keyboardUpdate() {
 
     if (keyboard.pressed("space")) cube.translateY(speed);
 
-    if (keyboard.pressed("up")) {
+    if (keyboard.pressed("up") && posicao[0] > -maxVet[0]) {
         cube.rotateOnAxis(x, -angle);
-        posicao[0] -= 1;
-    } else if (keyboard.pressed("down")) {
+        posicao[0] -= angle;
+    } else if (keyboard.pressed("down") && posicao[0] < maxVet[0]) {
         cube.rotateOnAxis(x, angle);
-        posicao[0] += 1;
+        posicao[0] += angle;
     } else if (posicao[0] > 0) {
         cube.rotateOnAxis(x, -angle / 2);
-        posicao[0] -= 0.5;
+        posicao[0] -= 0.5 * angle;
     } else if (posicao[0] < 0) {
         cube.rotateOnAxis(x, angle / 2);
-        posicao[0] += 0.5;
+        posicao[0] += 0.5 * angle;
     }
 
-
-
-
-    if (keyboard.pressed("right")) {
+    if (keyboard.pressed("right") && posicao[1] > -maxVet[1]) {
         cube.rotateOnAxis(z, -angle);
         cube.rotateOnAxis(y, angle2);
-
-    } else if (keyboard.pressed("left")) {
+        posicao[1] -= angle;
+    } else if (keyboard.pressed("left") && posicao[1] < maxVet[1]) {
         cube.rotateOnAxis(z, angle);
         cube.rotateOnAxis(y, -angle2);
-
+        posicao[1] += angle;
+    } else if (posicao[1] > 0) {
+        cube.rotateOnAxis(z, -angle / 2);
+        cube.rotateOnAxis(y, angle2 / 2);
+        posicao[1] -= 0.5 * angle;
+    } else if (posicao[1] < 0) {
+        cube.rotateOnAxis(z, angle / 2);
+        cube.rotateOnAxis(y, -angle2 / 2);
+        posicao[1] += 0.5 * angle;
     }
     console.log(posicao);
 }
