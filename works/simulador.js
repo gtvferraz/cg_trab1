@@ -14,19 +14,23 @@ import {
 
 var stats = new Stats(); // To show FPS information
 var scene = new THREE.Scene(); // Create main scene
+scene.background = new THREE.Color('rgb(150,150,200)');
 var renderer = initRenderer(); // View function in util/utils
-var camera = initCamera(new THREE.Vector3(0, -30, 15)); // Init camera in this position
+
+var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000);
+camera.position.copy(new THREE.Vector3(0, -30, 15));
+camera.lookAt(0, 0, 0);
+camera.up.set(0, 1, 0);
+
 var trackballControls = new TrackballControls(camera, renderer.domElement);
 
-initDefaultBasicLight(scene);
+scene.add(new THREE.HemisphereLight());
 
 var keyboard = new KeyboardState();
-var angle = degreesToRadians(2.5);
-var posicao = [0, 0]; //posição de rotação do avião (x,y)
-var posGlobal = [0, 0];
-var speed = 5;
+var speedAngle = degreesToRadians(1);
+var speed = 10;
 var max = degreesToRadians(45 / 2);
-var maxVet = [max, max]; //inclinação máxima
+var maxAngle = [max, max, max/2]; //inclinação máxima do avião
 var turbineSpeed = 1; //velocidade de rotação da turbina
 
 var x = new THREE.Vector3(1, 0, 0); // Set Z axis
@@ -43,11 +47,12 @@ const grayMaterial = new THREE.MeshPhongMaterial({color: 'rgb(40,40,50)'});
 var axesHelper = new THREE.AxesHelper(12)
 scene.add(axesHelper);
 
-var plane = createGroundPlaneWired(500, 500);
+var plane = createGroundPlaneWired(10500, 10500);
 plane.rotateOnAxis(new THREE.Vector3(1, 0, 0), degreesToRadians(90));
 scene.add(plane);
 
 var {airplane, turbine} = createAirplane();
+let clouds = createClouds();
 
 var virtualParent = new THREE.Object3D();
 virtualParent.add(airplane);
@@ -188,65 +193,175 @@ function createStabilizer() {
 function keyboardUpdate() {
     keyboard.update();
 
-    var aux = [angle * posicao[0], angle * posicao[1]];
+    const airpAngleX = airplane.rotation.x;
+    const airpAngleY = airplane.rotation.y;
+    const airpAngleZ = airplane.rotation.z
 
-    if (keyboard.pressed("space")) virtualParent.translateY(speed);
+    if(keyboard.pressed("space")) virtualParent.translateY(speed);
 
-    if (keyboard.pressed("up")) {
-        virtualParent.rotateOnAxis(x, -angle);
-        if (aux[0] > -maxVet[0]) {
-          airplane.rotateOnAxis(x, -angle);
-            posicao[0] -= 1;
+    if(keyboard.pressed("up")) {
+        if(airpAngleX > -maxAngle[0]) {
+            airplane.rotation.x -= speedAngle;
         }
-        posGlobal[0] -= 1;
-    } else if (keyboard.pressed("down")) {
-        virtualParent.rotateOnAxis(x, angle);
-        if (aux[0] < maxVet[0]) {
-            airplane.rotateOnAxis(x, angle);
-            posicao[0] += 1;
+
+        if(keyboard.pressed("left")) {
+            if(airpAngleZ < maxAngle[2])
+                airplane.rotation.z += speedAngle/2;
+        } else if(keyboard.pressed("right")) {
+            if(airpAngleZ > -maxAngle[2])
+                airplane.rotation.z -= speedAngle/2;
         }
-        posGlobal[0] += 1;
-    } else if (posGlobal[0] > 0) {
-        virtualParent.rotateOnAxis(x, -angle / 2);
-        posGlobal[0] -= 0.5;
-        if (posicao[0] > 0) {
-            airplane.rotateOnAxis(x, -angle / 2);
-            posicao[0] -= 0.5;
+    } else if(keyboard.pressed("down")) {
+        if(airpAngleX < maxAngle[0]) {
+            airplane.rotation.x += speedAngle;
         }
-    } else if (posGlobal[0] < 0) {
-        virtualParent.rotateOnAxis(x, angle / 2);
-        posGlobal[0] += 0.5;
-        if (posicao[0] < 0) {
-            airplane.rotateOnAxis(x, angle / 2);
-            posicao[0] += 0.5;
+
+        if(keyboard.pressed("left")) {
+            if(airpAngleZ < maxAngle[2])
+                airplane.rotation.z += speedAngle/2;
+        } else if(keyboard.pressed("right")) {
+            if(airpAngleZ > -maxAngle[2])
+                airplane.rotation.z -= speedAngle/2;
         }
     }
 
-    if (keyboard.pressed("right")) {
-        virtualParent.rotateOnAxis(z, -angle);
-        if (aux[1] > -maxVet[1]) {
-            airplane.rotateOnAxis(y, angle);
-            posicao[1] -= 1;
+    if(!keyboard.pressed("up") && !keyboard.pressed("down")) {
+        if(airpAngleX > 0) {
+            airplane.rotation.x -= speedAngle/2;
+            if(airplane.rotation.x < 0) {
+                airplane.rotation.x = 0;
+            }
+        } else if(airpAngleX < 0) {
+            airplane.rotation.x += speedAngle/2;
+            if(airplane.rotation.x  > 0) {
+                airplane.rotation.x = 0;
+            }
         }
-    } else if (keyboard.pressed("left")) {
-        virtualParent.rotateOnAxis(z, angle);
-        if (aux[1] < maxVet[1]) {
-            airplane.rotateOnAxis(y, -angle);
-            posicao[1] += 1;
-        }
-    } else if (posicao[1] > 0) {
-        virtualParent.rotateOnAxis(z, angle / 2);
-        airplane.rotateOnAxis(y, angle / 2);
-        posicao[1] -= 0.5;
-    } else if (posicao[1] < 0) {
-        virtualParent.rotateOnAxis(z, -angle / 2);
-        airplane.rotateOnAxis(y, -angle / 2);
-        posicao[1] += 0.5;
     }
+
+    if(airpAngleX < 0) {
+        virtualParent.rotateOnAxis(x, -speedAngle/2);
+    } else if(airpAngleX > 0) {
+        virtualParent.rotateOnAxis(x, +speedAngle/2);
+    }
+
+    if(airpAngleX === 0 ){
+        if(virtualParent.rotation.x < 0) {
+            virtualParent.rotateOnAxis(x, +speedAngle/2);
+
+            if(virtualParent.rotation.x > 0) {
+                virtualParent.rotation.x = 0;
+            }
+        }else if(virtualParent.rotation.x > 0) {
+            virtualParent.rotateOnAxis(x, -speedAngle/2);
+
+            if(virtualParent.rotation.x < 0) {
+                virtualParent.rotation.x = 0;
+            }
+        }
+    }
+
+    if(keyboard.pressed("right")) {
+        if(airpAngleY < maxAngle[1]) {
+            airplane.rotation.y += speedAngle;
+        }
+    } else if(keyboard.pressed("left")) {
+        if(airpAngleY > -maxAngle[1]) {
+            airplane.rotation.y -= speedAngle;
+        }
+    }
+
+    if(!keyboard.pressed("left") && !keyboard.pressed("right")) {
+        if(airpAngleY > 0) {
+            airplane.rotation.y -= speedAngle/2;
+            if(airplane.rotation.y  < 0)
+                airplane.rotation.y = 0;
+        }
+
+        if(airpAngleY < 0) {
+            airplane.rotation.y += speedAngle/2;
+    
+            if(airplane.rotation.y > 0)
+                airplane.rotation.y = 0;
+        }
+    }
+
+    if(airpAngleY < 0) {
+        virtualParent.rotateOnAxis(z, speedAngle/2);
+    } else if(airpAngleY > 0) {
+        virtualParent.rotateOnAxis(z, -speedAngle/2);
+    }
+
+    
 }
 
 function rotateTurbine() {
-  turbine.rotateOnAxis(z, turbineSpeed);
+    turbine.rotateOnAxis(z, turbineSpeed);
+}
+
+function createClouds() {
+    let clouds = [];
+    let numClouds = 100;
+    let numSectors = 5;
+    let altitudeMin = 3000;
+    let altitudeMax = 7000;
+    let raio = 700;
+
+    let finalDistance = 10000;
+    let startPosition = [-10000, -10000];
+
+    var sphereGeometry = new THREE.SphereGeometry(500, 32, 32);
+    var sphereMaterial = new THREE.MeshPhongMaterial({
+        color:'rgb(230,230,230)',
+        opacity: 0.7,
+        transparent: true
+    });
+    
+    var sphere;
+    let sectorSize = (finalDistance - startPosition[0])/numSectors;
+    let position = [startPosition[0], startPosition[1]];
+    console.log(sectorSize);
+    for(let i=0; i<numSectors; i++) {
+        position[0] = startPosition[0];
+        for(let i=0; i<numSectors; i++) {
+            sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+            sphere.position.x = position[0] + Math.pow(-1,i)*(Math.random()*raio);
+            sphere.position.y = position[1] + Math.pow(-1,i)*(Math.random()*raio);
+            sphere.position.z = altitudeMin + (Math.random()*(altitudeMax-altitudeMin));
+        
+            clouds.push({object: sphere, scale: 1, alpha: -0.003});
+            scene.add(sphere);
+
+            let rootCloud = sphere;
+            for(let i=0; i<numClouds; i++) {
+                sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+                sphere.position.x = rootCloud.position.x + Math.pow(-1,i)*(Math.random()*raio);
+                sphere.position.y = rootCloud.position.y + Math.pow(-1,i)*(Math.random()*raio);
+                sphere.position.z = rootCloud.position.z + (Math.random()*raio);
+            
+                clouds.push({object: sphere, scale: 1, alpha: -0.003});
+                scene.add(sphere);
+            }
+            position[0] += sectorSize;
+        }
+        position[1] += sectorSize;
+    }
+
+    return clouds;
+}
+
+function updateClouds() {
+    clouds.forEach(element => {
+        element.scale += element.alpha;
+        if(element.scale <= 0.9) {
+            element.alpha *= -1;
+            element.scale += element.alpha;
+        } else if(element.scale >= 1) {
+            element.alpha *= -1;
+            element.scale += element.alpha;
+        }
+        element.object.scale.set(element.scale,element.scale,element.scale);
+    })
 }
 
 function render() {
@@ -254,6 +369,7 @@ function render() {
     //trackballControls.update(); // Enable mouse movements
     keyboardUpdate();
     rotateTurbine();
+    updateClouds();
     requestAnimationFrame(render);
     renderer.render(scene, camera) // Render scene
 }
