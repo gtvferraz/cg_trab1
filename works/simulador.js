@@ -47,8 +47,8 @@ var maxSpeed = 10; //velocidade máxima de translação
 var minSpeed = 3; //velocidade mínima de translação
 
 var speed = 0; //velocidade de translação
-var aceleracao = 0.05; //aceleração de translação em z
 var turbineSpeed = 1; //velocidade de rotação da turbina
+var aceleracao = 0.05; //aceleração de translação em z
 var speedAngle = degreesToRadians(1);
 
 var speedRetX = 0; //velocidade de translação
@@ -299,6 +299,7 @@ function keyboardUpdate() {
     if(airpAngleX !== 0) {
         virtualParent.rotateOnAxis(x, speedAngle*airplane.rotation.x);
         numTrocasDir = 1;
+        speedRetX = 0;
     } else {
         if(virtualParent.rotation.x < 0) {
             speedRetX += acelRetX*Math.pow(numTrocasDir,2);
@@ -306,7 +307,7 @@ function keyboardUpdate() {
 
             if(virtualParent.rotation.x > 0) {
                 if(numTrocasDir === 5) {
-                    numTrocasDir = 0;
+                    numTrocasDir = 1;
                     speedRetX = 0;
                     virtualParent.rotation.x = 0;
                 } else
@@ -318,7 +319,7 @@ function keyboardUpdate() {
 
             if(virtualParent.rotation.x < 0) {
                 if(numTrocasDir === 5) {
-                    numTrocasDir = 0;
+                    numTrocasDir = 1;
                     speedRetX = 0;
                     virtualParent.rotation.x = 0;
                 } else
@@ -383,7 +384,10 @@ function keyboardUpdate() {
 }
 
 function rotateTurbine() {
-    turbine.rotateOnAxis(z, turbineSpeed);
+    if(speed > 0.5)
+        turbine.rotateOnAxis(z, turbineSpeed);
+    else
+        turbine.rotateOnAxis(z, speed);
 }
 
 function createClouds() {
