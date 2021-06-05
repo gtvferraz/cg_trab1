@@ -18,7 +18,7 @@ scene.background = new THREE.Color('rgb(150,150,200)');
 var renderer = initRenderer(); // View function in util/utils
 
 var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000);
-camera.position.copy(new THREE.Vector3(0, -30, 15));
+camera.position.copy(new THREE.Vector3(0, -50, 15));
 camera.lookAt(0, 0, 0);
 camera.up.set(0, 1, 0);
 
@@ -26,12 +26,29 @@ var trackballControls = new TrackballControls(camera, renderer.domElement);
 
 scene.add(new THREE.HemisphereLight());
 
+// create an AudioListener and add it to the camera
+const listener = new THREE.AudioListener();
+camera.add(listener);
+
+// create a global audio source
+const sound = new THREE.Audio( listener );
+
+// load a sound and set it as the Audio object's buffer
+const audioLoader = new THREE.AudioLoader();
+audioLoader.load( 'turbine_sound.mp3', function( buffer ) {
+	sound.setBuffer( buffer );
+	sound.setLoop( true );
+	sound.setVolume( 0.5 );
+});
+
 var keyboard = new KeyboardState();
 var speedAngle = degreesToRadians(1);
 var speed = 10;
 var max = degreesToRadians(45 / 2);
 var maxAngle = [max, max, max/2]; //inclinação máxima do avião
 var turbineSpeed = 1; //velocidade de rotação da turbina
+var retornando = false;
+var returnSpeedY;
 
 var x = new THREE.Vector3(1, 0, 0); // Set Z axis
 var y = new THREE.Vector3(0, 1, 0); // Set Z axis
@@ -44,7 +61,7 @@ const redMaterial = new THREE.MeshPhongMaterial({color: 'rgb(110,0,0)'});
 const grayMaterial = new THREE.MeshPhongMaterial({color: 'rgb(40,40,50)'});
 
 // Show axes (parameter is size of each axis)
-var axesHelper = new THREE.AxesHelper(12)
+var axesHelper = new THREE.AxesHelper(100)
 scene.add(axesHelper);
 
 var plane = createGroundPlaneWired(10500, 10500);
@@ -54,11 +71,18 @@ scene.add(plane);
 var {airplane, turbine} = createAirplane();
 let clouds = createClouds();
 
+axesHelper = new THREE.AxesHelper(10)
+//airplane.add(axesHelper);
+
 var virtualParent = new THREE.Object3D();
 virtualParent.add(airplane);
 virtualParent.add(camera);
 virtualParent.translateZ(50);
 scene.add(virtualParent);
+
+axesHelper = new THREE.AxesHelper(20)
+virtualParent.add(axesHelper);
+
 var controls = new InfoBox();
 controls.add("Basic Scene");
 controls.addParagraph();
@@ -197,7 +221,24 @@ function keyboardUpdate() {
     const airpAngleY = airplane.rotation.y;
     const airpAngleZ = airplane.rotation.z
 
-    if(keyboard.pressed("space")) virtualParent.translateY(speed);
+    //console.log("Virtual: ", virtualParent.rotation.x,virtualParent.rotation.y,virtualParent.rotation.z);
+    //console.log("Avião: ", virtualParent.rotation.x,virtualParent.rotation.y,virtualParent.rotation.z);
+
+    controls.infoBox.innerHTML = `Objeto - x ---- y ---- z
+    <br/>
+    Avião: ${airplane.rotation.x.toFixed(2)}, 
+    ${airplane.rotation.y.toFixed(2)}, 
+    ${airplane.rotation.z.toFixed(2)}
+    <br/>
+    Virtual: ${virtualParent.rotation.x.toFixed(2)}, 
+    ${virtualParent.rotation.y.toFixed(2)}, 
+    ${virtualParent.rotation.z.toFixed(2)}`;
+
+    if(keyboard.pressed("space")) {
+        if(!sound.isPlaying)
+            sound.play();
+        virtualParent.translateY(speed);
+    }
 
     if(keyboard.pressed("up")) {
         if(airpAngleX > -maxAngle[0]) {
@@ -242,18 +283,18 @@ function keyboardUpdate() {
     if(airpAngleX < 0) {
         virtualParent.rotateOnAxis(x, -speedAngle/2);
     } else if(airpAngleX > 0) {
-        virtualParent.rotateOnAxis(x, +speedAngle/2);
+        virtualParent.rotateOnAxis(x, speedAngle/2);
     }
 
     if(airpAngleX === 0 ){
         if(virtualParent.rotation.x < 0) {
-            virtualParent.rotateOnAxis(x, +speedAngle/2);
+            virtualParent.rotation.x += speedAngle/2;
 
             if(virtualParent.rotation.x > 0) {
                 virtualParent.rotation.x = 0;
             }
         }else if(virtualParent.rotation.x > 0) {
-            virtualParent.rotateOnAxis(x, -speedAngle/2);
+            virtualParent.rotation.x -= speedAngle/2;
 
             if(virtualParent.rotation.x < 0) {
                 virtualParent.rotation.x = 0;
@@ -291,8 +332,41 @@ function keyboardUpdate() {
     } else if(airpAngleY > 0) {
         virtualParent.rotateOnAxis(z, -speedAngle/2);
     }
-
     
+    if(airpAngleX === 0 || airpAngleY === 0) {
+        if(airpAngleZ > 0) {
+            airplane.rotation.z -= speedAngle/2;
+            if(airplane.rotation.z  < 0)
+                airplane.rotation.z = 0;
+        } else if(airpAngleZ < 0) {
+            airplane.rotation.z += speedAngle/2;
+            if(airplane.rotation.z  > 0)
+                airplane.rotation.z = 0;
+        }
+    }
+
+    if(!keyboard.pressed("up") && !keyboard.pressed("down") && !keyboard.pressed("left") && !keyboard.pressed("right")) {
+        if(!retornando && airpAngleX === 0) {
+            retornando = true;
+            returnSpeedY = Math.abs((virtualParent.rotation.y/virtualParent.rotation.x)*(speedAngle/2));
+        }
+        
+        if(retornando) {
+            if(virtualParent.rotation.y > 0) {
+                virtualParent.rotation.y -= returnSpeedY;
+                if(virtualParent.rotation.y  < 0)
+                    virtualParent.rotation.y = 0;
+            } else if(virtualParent.rotation.y < 0) {
+                virtualParent.rotation.y += returnSpeedY;
+                if(virtualParent.rotation.y  > 0)
+                    virtualParent.rotation.y = 0;
+            }
+        }
+    } else {
+        retornando = false;
+    }
+
+    //virtualParent.rotation.y = 0;
 }
 
 function rotateTurbine() {
