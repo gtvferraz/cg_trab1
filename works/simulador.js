@@ -4,12 +4,10 @@ import { TrackballControls } from '../build/jsm/controls/TrackballControls.js';
 import KeyboardState from '../libs/util/KeyboardState.js';
 import {
     initRenderer,
-    initCamera,
     InfoBox,
     onWindowResize,
     createGroundPlaneWired,
     degreesToRadians,
-    initDefaultBasicLight
 } from "../libs/util/util.js";
 
 var stats = new Stats(); // To show FPS information
@@ -38,17 +36,24 @@ const audioLoader = new THREE.AudioLoader();
 audioLoader.load( 'turbine_sound.mp3', function( buffer ) {
 	sound.setBuffer( buffer );
 	sound.setLoop( true );
-	sound.setVolume( 0.5 );
+	sound.setVolume( 0.3 );
 });
 
 var keyboard = new KeyboardState();
-var speedAngle = degreesToRadians(1);
-var speed = 10;
+
 var max = degreesToRadians(45 / 2);
 var maxAngle = [max, max, max/2]; //inclinação máxima do avião
+var maxSpeed = 10; //velocidade máxima de translação
+var minSpeed = 3; //velocidade mínima de translação
+
+var speed = 0; //velocidade de translação
+var aceleracao = 0.05; //aceleração de translação em z
 var turbineSpeed = 1; //velocidade de rotação da turbina
-var retornando = false;
-var returnSpeedY;
+var speedAngle = degreesToRadians(1);
+
+var speedRetX = 0; //velocidade de translação
+var acelRetX = 0.0001; //aceleração de rotação em x
+var numTrocasDir = 1; //número de trocas de direção em x realizadas no retorno ao equilíbrio
 
 var x = new THREE.Vector3(1, 0, 0); // Set Z axis
 var y = new THREE.Vector3(0, 1, 0); // Set Z axis
@@ -224,7 +229,7 @@ function keyboardUpdate() {
     //console.log("Virtual: ", virtualParent.rotation.x,virtualParent.rotation.y,virtualParent.rotation.z);
     //console.log("Avião: ", virtualParent.rotation.x,virtualParent.rotation.y,virtualParent.rotation.z);
 
-    controls.infoBox.innerHTML = `Objeto - x ---- y ---- z
+    controls.infoBox.innerHTML = `Rotação  x ---- y ---- z
     <br/>
     Avião: ${airplane.rotation.x.toFixed(2)}, 
     ${airplane.rotation.y.toFixed(2)}, 
@@ -232,13 +237,24 @@ function keyboardUpdate() {
     <br/>
     Virtual: ${virtualParent.rotation.x.toFixed(2)}, 
     ${virtualParent.rotation.y.toFixed(2)}, 
-    ${virtualParent.rotation.z.toFixed(2)}`;
+    ${virtualParent.rotation.z.toFixed(2)}
+    <br/>
+    Velocidade: ${speed.toFixed(2)}
+    <br/>
+    Altitude: ${virtualParent.position.z.toFixed(2)}`;
 
-    if(keyboard.pressed("space")) {
+    if(keyboard.pressed("Q")) {
         if(!sound.isPlaying)
             sound.play();
-        virtualParent.translateY(speed);
+        
+        if(speed + aceleracao <= maxSpeed)
+            speed += aceleracao;
+    } else if(keyboard.pressed("A")) {
+        if(speed - aceleracao >= minSpeed)
+            speed -= aceleracao;
     }
+    
+    virtualParent.translateY(speed);
 
     if(keyboard.pressed("up")) {
         if(airpAngleX > -maxAngle[0]) {
@@ -280,24 +296,33 @@ function keyboardUpdate() {
         }
     }
 
-    if(airpAngleX < 0) {
-        virtualParent.rotateOnAxis(x, -speedAngle/2);
-    } else if(airpAngleX > 0) {
-        virtualParent.rotateOnAxis(x, speedAngle/2);
-    }
-
-    if(airpAngleX === 0 ){
+    if(airpAngleX !== 0) {
+        virtualParent.rotateOnAxis(x, speedAngle*airplane.rotation.x);
+        numTrocasDir = 1;
+    } else {
         if(virtualParent.rotation.x < 0) {
-            virtualParent.rotation.x += speedAngle/2;
+            speedRetX += acelRetX*Math.pow(numTrocasDir,2);
+            virtualParent.rotation.x += speedRetX;
 
             if(virtualParent.rotation.x > 0) {
-                virtualParent.rotation.x = 0;
+                if(numTrocasDir === 5) {
+                    numTrocasDir = 0;
+                    speedRetX = 0;
+                    virtualParent.rotation.x = 0;
+                } else
+                    numTrocasDir++;
             }
         }else if(virtualParent.rotation.x > 0) {
-            virtualParent.rotation.x -= speedAngle/2;
+            speedRetX -= acelRetX*Math.pow(numTrocasDir,2);
+            virtualParent.rotation.x += speedRetX;
 
             if(virtualParent.rotation.x < 0) {
-                virtualParent.rotation.x = 0;
+                if(numTrocasDir === 5) {
+                    numTrocasDir = 0;
+                    speedRetX = 0;
+                    virtualParent.rotation.x = 0;
+                } else
+                    numTrocasDir++;
             }
         }
     }
@@ -327,10 +352,8 @@ function keyboardUpdate() {
         }
     }
 
-    if(airpAngleY < 0) {
-        virtualParent.rotateOnAxis(z, speedAngle/2);
-    } else if(airpAngleY > 0) {
-        virtualParent.rotateOnAxis(z, -speedAngle/2);
+    if(airpAngleY !== 0) {
+        virtualParent.rotateOnAxis(z, -speedAngle*airplane.rotation.y);
     }
     
     if(airpAngleX === 0 || airpAngleY === 0) {
@@ -346,27 +369,17 @@ function keyboardUpdate() {
     }
 
     if(!keyboard.pressed("up") && !keyboard.pressed("down") && !keyboard.pressed("left") && !keyboard.pressed("right")) {
-        if(!retornando && airpAngleX === 0) {
-            retornando = true;
-            returnSpeedY = Math.abs((virtualParent.rotation.y/virtualParent.rotation.x)*(speedAngle/2));
-        }
-        
-        if(retornando) {
+
             if(virtualParent.rotation.y > 0) {
-                virtualParent.rotation.y -= returnSpeedY;
+                virtualParent.rotation.y -= speedAngle/2;
                 if(virtualParent.rotation.y  < 0)
                     virtualParent.rotation.y = 0;
             } else if(virtualParent.rotation.y < 0) {
-                virtualParent.rotation.y += returnSpeedY;
+                virtualParent.rotation.y += speedAngle/2;
                 if(virtualParent.rotation.y  > 0)
                     virtualParent.rotation.y = 0;
             }
-        }
-    } else {
-        retornando = false;
     }
-
-    //virtualParent.rotation.y = 0;
 }
 
 function rotateTurbine() {
