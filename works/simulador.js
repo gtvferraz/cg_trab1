@@ -305,6 +305,27 @@ function keyboardUpdate() {
             speedRetX += acelRetX*Math.pow(numTrocasDir,2);
             virtualParent.rotation.x += speedRetX;
 
+            if(virtualParent.rotation.x > 0)
+                virtualParent.rotation.x = 0;
+        }else if(virtualParent.rotation.x > 0) {
+            speedRetX -= acelRetX*Math.pow(numTrocasDir,2);
+            virtualParent.rotation.x += speedRetX;
+
+            if(virtualParent.rotation.x < 0)
+                virtualParent.rotation.x = 0;
+        }
+    }
+
+    /*
+    if(airpAngleX !== 0) {
+        virtualParent.rotateOnAxis(x, speedAngle*airplane.rotation.x);
+        numTrocasDir = 1;
+        speedRetX = 0;
+    } else {
+        if(virtualParent.rotation.x < 0) {
+            speedRetX += acelRetX*Math.pow(numTrocasDir,2);
+            virtualParent.rotation.x += speedRetX;
+
             if(virtualParent.rotation.x > 0) {
                 if(numTrocasDir === 5) {
                     numTrocasDir = 1;
@@ -326,7 +347,7 @@ function keyboardUpdate() {
                     numTrocasDir++;
             }
         }
-    }
+    }*/
 
     if(keyboard.pressed("right")) {
         if(airpAngleY < maxAngle[1]) {
@@ -370,16 +391,15 @@ function keyboardUpdate() {
     }
 
     if(!keyboard.pressed("up") && !keyboard.pressed("down") && !keyboard.pressed("left") && !keyboard.pressed("right")) {
-
-            if(virtualParent.rotation.y > 0) {
-                virtualParent.rotation.y -= speedAngle/2;
-                if(virtualParent.rotation.y  < 0)
-                    virtualParent.rotation.y = 0;
-            } else if(virtualParent.rotation.y < 0) {
-                virtualParent.rotation.y += speedAngle/2;
-                if(virtualParent.rotation.y  > 0)
-                    virtualParent.rotation.y = 0;
-            }
+        if(virtualParent.rotation.y > 0) {
+            virtualParent.rotation.y -= speedAngle/2;
+            if(virtualParent.rotation.y  < 0)
+                virtualParent.rotation.y = 0;
+        } else if(virtualParent.rotation.y < 0) {
+            virtualParent.rotation.y += speedAngle/2;
+            if(virtualParent.rotation.y  > 0)
+                virtualParent.rotation.y = 0;
+        }
     }
 }
 
