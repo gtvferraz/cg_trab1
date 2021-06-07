@@ -41,7 +41,7 @@ audioLoader.load( 'turbine_sound.mp3', function( buffer ) {
 
 var keyboard = new KeyboardState();
 
-var max = degreesToRadians(45 / 2);
+var max = degreesToRadians(45);
 var maxAngle = [max, max, max/2]; //inclinação máxima do avião
 var maxSpeed = 10; //velocidade máxima de translação
 var minSpeed = 3; //velocidade mínima de translação
@@ -219,6 +219,35 @@ function createStabilizer() {
   return stabilizer;
 }
 
+function equilibraAviao() {
+    const eixos = ['x', 'y', 'z'];
+    eixos.forEach(eixo => {
+        if(airplane.rotation[eixo] !== 0) {
+            let positivo = airplane.rotation[eixo] > 0 ? true : false; 
+            airplane.rotation[eixo] += speedAngle*(-airplane.rotation[eixo]/Math.abs(airplane.rotation[eixo]));
+
+            if(positivo && airplane.rotation[eixo] < 0)
+                airplane.rotation[eixo] = 0;
+            else if(!positivo && airplane.rotation[eixo] > 0)
+                airplane.rotation[eixo] = 0;
+        }
+    })
+}
+
+function equilibraCamera(eixos) {
+    eixos.forEach(eixo => {
+        if(virtualParent.rotation[eixo] !== 0) {
+            let positivo = virtualParent.rotation[eixo] > 0 ? true : false; 
+            virtualParent.rotation[eixo] += (speedAngle/4)*(-virtualParent.rotation[eixo]/Math.abs(virtualParent.rotation[eixo]));
+
+            if(positivo && virtualParent.rotation[eixo] < 0)
+                virtualParent.rotation[eixo] = 0;
+            else if(!positivo && virtualParent.rotation[eixo] > 0)
+                virtualParent.rotation[eixo] = 0;
+        }
+    })
+}
+
 function keyboardUpdate() {
     keyboard.update();
 
@@ -241,166 +270,85 @@ function keyboardUpdate() {
     <br/>
     Velocidade: ${speed.toFixed(2)}
     <br/>
-    Altitude: ${virtualParent.position.z.toFixed(2)}`;
+    Altitude: ${airplane.position.z.toFixed(2)}`;
 
+    //INÍCIO DA ACELERAÇÃO
     if(keyboard.pressed("Q")) {
-        if(!sound.isPlaying)
-            sound.play();
+        //if(!sound.isPlaying)
+        //    sound.play();
         
         if(speed + aceleracao <= maxSpeed)
             speed += aceleracao;
-    } else if(keyboard.pressed("A")) {
+    } else if(keyboard.pressed("E")) {
         if(speed - aceleracao >= minSpeed)
             speed -= aceleracao;
     }
+    //FIM DA ACELERAÇÃO
     
-    virtualParent.translateY(speed);
+    //INÍCIO MOVIMENTO PRA FRENTE
+    airplane.translateY(speed);
+    camera.position.setX(airplane.position.x);
+    camera.position.setY(airplane.position.y-50);
+    camera.position.setZ(airplane.position.z+10);
+    //FIM MOVIMENTO PRA FRENTE
 
-    if(keyboard.pressed("up")) {
-        if(airpAngleX > -maxAngle[0]) {
-            airplane.rotation.x -= speedAngle;
+    //INÍCIO DA ROTAÇÃO VERTICAL
+    if(keyboard.pressed("S")) {
+        if(airpAngleX < 0) {
+            equilibraAviao();
+            return;
+        } else if(airpAngleX < maxAngle[0]) {
+            if(keyboard.pressed("D") && airpAngleY < 0) {
+                equilibraAviao();
+                return;
+            } else if(keyboard.pressed("A") && airpAngleY > 0) {
+                equilibraAviao();
+                return;
+            }
+            airplane.rotateOnAxis(x, speedAngle);
         }
-
-        if(keyboard.pressed("left")) {
-            if(airpAngleZ < maxAngle[2])
-                airplane.rotation.z += speedAngle/2;
-        } else if(keyboard.pressed("right")) {
-            if(airpAngleZ > -maxAngle[2])
-                airplane.rotation.z -= speedAngle/2;
-        }
-    } else if(keyboard.pressed("down")) {
-        if(airpAngleX < maxAngle[0]) {
-            airplane.rotation.x += speedAngle;
-        }
-
-        if(keyboard.pressed("left")) {
-            if(airpAngleZ < maxAngle[2])
-                airplane.rotation.z += speedAngle/2;
-        } else if(keyboard.pressed("right")) {
-            if(airpAngleZ > -maxAngle[2])
-                airplane.rotation.z -= speedAngle/2;
-        }
-    }
-
-    if(!keyboard.pressed("up") && !keyboard.pressed("down")) {
+        if(!keyboard.pressed("D") && !keyboard.pressed("A"))
+            virtualParent.rotateOnAxis(x, speedAngle/4);
+    } else if(keyboard.pressed("W")) {
         if(airpAngleX > 0) {
-            airplane.rotation.x -= speedAngle/2;
-            if(airplane.rotation.x < 0) {
-                airplane.rotation.x = 0;
+            equilibraAviao();
+            return;
+        } else if(airpAngleX > -maxAngle[0]) {
+            if(keyboard.pressed("D") && airpAngleY < 0) {
+                equilibraAviao();
+                return;
+            } else if(keyboard.pressed("A") && airpAngleY > 0) {
+                equilibraAviao();
+                return;
             }
-        } else if(airpAngleX < 0) {
-            airplane.rotation.x += speedAngle/2;
-            if(airplane.rotation.x  > 0) {
-                airplane.rotation.x = 0;
-            }
+            airplane.rotateOnAxis(x, -speedAngle);
         }
+        if(!keyboard.pressed("D") && !keyboard.pressed("A"))
+            virtualParent.rotateOnAxis(x, -speedAngle/4);
     }
+    //FIM DA ROTAÇÃO VERTICAL 
 
-    if(airpAngleX !== 0) {
-        virtualParent.rotateOnAxis(x, speedAngle*airplane.rotation.x);
-        numTrocasDir = 1;
-        speedRetX = 0;
-    } else {
-        if(virtualParent.rotation.x < 0) {
-            speedRetX += acelRetX*Math.pow(numTrocasDir,2);
-            virtualParent.rotation.x += speedRetX;
-
-            if(virtualParent.rotation.x > 0)
-                virtualParent.rotation.x = 0;
-        }else if(virtualParent.rotation.x > 0) {
-            speedRetX -= acelRetX*Math.pow(numTrocasDir,2);
-            virtualParent.rotation.x += speedRetX;
-
-            if(virtualParent.rotation.x < 0)
-                virtualParent.rotation.x = 0;
-        }
-    }
-
-    /*
-    if(airpAngleX !== 0) {
-        virtualParent.rotateOnAxis(x, speedAngle*airplane.rotation.x);
-        numTrocasDir = 1;
-        speedRetX = 0;
-    } else {
-        if(virtualParent.rotation.x < 0) {
-            speedRetX += acelRetX*Math.pow(numTrocasDir,2);
-            virtualParent.rotation.x += speedRetX;
-
-            if(virtualParent.rotation.x > 0) {
-                if(numTrocasDir === 5) {
-                    numTrocasDir = 1;
-                    speedRetX = 0;
-                    virtualParent.rotation.x = 0;
-                } else
-                    numTrocasDir++;
-            }
-        }else if(virtualParent.rotation.x > 0) {
-            speedRetX -= acelRetX*Math.pow(numTrocasDir,2);
-            virtualParent.rotation.x += speedRetX;
-
-            if(virtualParent.rotation.x < 0) {
-                if(numTrocasDir === 5) {
-                    numTrocasDir = 1;
-                    speedRetX = 0;
-                    virtualParent.rotation.x = 0;
-                } else
-                    numTrocasDir++;
-            }
-        }
-    }*/
-
-    if(keyboard.pressed("right")) {
-        if(airpAngleY < maxAngle[1]) {
-            airplane.rotation.y += speedAngle;
-        }
-    } else if(keyboard.pressed("left")) {
-        if(airpAngleY > -maxAngle[1]) {
-            airplane.rotation.y -= speedAngle;
-        }
-    }
-
-    if(!keyboard.pressed("left") && !keyboard.pressed("right")) {
-        if(airpAngleY > 0) {
-            airplane.rotation.y -= speedAngle/2;
-            if(airplane.rotation.y  < 0)
-                airplane.rotation.y = 0;
-        }
-
+    //INÍCIO DA ROTAÇÃO HORIZONTAL
+    if(keyboard.pressed("D")) {
         if(airpAngleY < 0) {
-            airplane.rotation.y += speedAngle/2;
-    
-            if(airplane.rotation.y > 0)
-                airplane.rotation.y = 0;
+            equilibraAviao();
+            return;
+        } else if(airpAngleY < maxAngle[1]) {
+            airplane.rotateOnAxis(y, speedAngle);
         }
-    }
-
-    if(airpAngleY !== 0) {
-        virtualParent.rotateOnAxis(z, -speedAngle*airplane.rotation.y);
-    }
-    
-    if(airpAngleX === 0 || airpAngleY === 0) {
-        if(airpAngleZ > 0) {
-            airplane.rotation.z -= speedAngle/2;
-            if(airplane.rotation.z  < 0)
-                airplane.rotation.z = 0;
-        } else if(airpAngleZ < 0) {
-            airplane.rotation.z += speedAngle/2;
-            if(airplane.rotation.z  > 0)
-                airplane.rotation.z = 0;
+        equilibraCamera(['x', 'y']);
+        virtualParent.rotateOnAxis(z, -speedAngle/4);
+    } else if(keyboard.pressed("A")) {
+        if(airpAngleY > 0) {
+            equilibraAviao();
+            return;
+        } else if(airpAngleY > -maxAngle[1]) {
+            airplane.rotateOnAxis(y, -speedAngle);
         }
+        equilibraCamera(['x', 'y']);
+        virtualParent.rotateOnAxis(z, speedAngle/4);
     }
-
-    if(!keyboard.pressed("up") && !keyboard.pressed("down") && !keyboard.pressed("left") && !keyboard.pressed("right")) {
-        if(virtualParent.rotation.y > 0) {
-            virtualParent.rotation.y -= speedAngle/2;
-            if(virtualParent.rotation.y  < 0)
-                virtualParent.rotation.y = 0;
-        } else if(virtualParent.rotation.y < 0) {
-            virtualParent.rotation.y += speedAngle/2;
-            if(virtualParent.rotation.y  > 0)
-                virtualParent.rotation.y = 0;
-        }
-    }
+    //FIM DA ROTAÇÃO HORIZONTAL 
 }
 
 function rotateTurbine() {
