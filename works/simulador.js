@@ -41,22 +41,22 @@ audioLoader.load( 'turbine_sound.mp3', function( buffer ) {
 
 var keyboard = new KeyboardState();
 
-var max = degreesToRadians(45 / 2);
-var maxAngle = [max, max, max/2]; //inclinação máxima do avião
+var maxUD = degreesToRadians(45/2);
+var maxLR = degreesToRadians(45);
+var angle = degreesToRadians(45/100);
 var maxSpeed = 10; //velocidade máxima de translação
 var minSpeed = 3; //velocidade mínima de translação
+var reset = false;
 
 var speed = 0; //velocidade de translação
 var turbineSpeed = 1; //velocidade de rotação da turbina
-var aceleracao = 0.05; //aceleração de translação em z
-var speedAngle = degreesToRadians(1);
+var aceleracao = 1;//0.05; //aceleração de translação em z
 
-var speedRetX = 0; //velocidade de translação
-var acelRetX = 0.0001; //aceleração de rotação em x
-var numTrocasDir = 1; //número de trocas de direção em x realizadas no retorno ao equilíbrio
+var numTrocasX = 0; //número de trocas de direção em x realizadas no retorno ao equilíbrio
+var numTrocasY = 0; //número de trocas de direção em y realizadas no retorno ao equilíbrio
 
-var x = new THREE.Vector3(1, 0, 0); // Set Z axis
-var y = new THREE.Vector3(0, 1, 0); // Set Z axis
+var x = new THREE.Vector3(1, 0, 0); // Set x axis
+var y = new THREE.Vector3(0, 1, 0); // Set y axis
 var z = new THREE.Vector3(0, 0, 1); // Set Z axis
 
 //Materiais
@@ -219,13 +219,41 @@ function createStabilizer() {
   return stabilizer;
 }
 
+function resetAirPlane(){
+    var aux = airplane.rotation.x;
+    airplane.rotation.x = 0;
+    airplane.rotation.y = 0;
+
+    if(airplane.rotation.x == 0)
+        reset = false;
+    /*else if(aux < 0){
+        airplane.rotateOnAxis(x,angle);
+        angleA += angle;
+    }
+    else{
+        airplane.rotateOnAxis(x,-angle);
+        angleA -= angle;
+    }*/
+}
+
+function moveAirPlane(){
+    console.log(airplane.rotation.x);
+    if(airplane.rotation.x != 0)
+        console.log("Aqui");
+        virtualParent.translateZ(speed*airplane.rotation.x);
+    if(airplane.rotation.y != 0){
+        virtualParent.translateX(speed*airplane.rotation.y);
+        virtualParent.rotation.z -= speed*airplane.rotation.y/1000;
+    }
+        virtualParent.translateY(speed);
+}
+
 function keyboardUpdate() {
     keyboard.update();
 
     const airpAngleX = airplane.rotation.x;
     const airpAngleY = airplane.rotation.y;
     const airpAngleZ = airplane.rotation.z
-
     //console.log("Virtual: ", virtualParent.rotation.x,virtualParent.rotation.y,virtualParent.rotation.z);
     //console.log("Avião: ", virtualParent.rotation.x,virtualParent.rotation.y,virtualParent.rotation.z);
 
@@ -253,154 +281,67 @@ function keyboardUpdate() {
         if(speed - aceleracao >= minSpeed)
             speed -= aceleracao;
     }
-    
-    virtualParent.translateY(speed);
 
-    if(keyboard.pressed("up")) {
-        if(airpAngleX > -maxAngle[0]) {
-            airplane.rotation.x -= speedAngle;
-        }
-
-        if(keyboard.pressed("left")) {
-            if(airpAngleZ < maxAngle[2])
-                airplane.rotation.z += speedAngle/2;
-        } else if(keyboard.pressed("right")) {
-            if(airpAngleZ > -maxAngle[2])
-                airplane.rotation.z -= speedAngle/2;
-        }
-    } else if(keyboard.pressed("down")) {
-        if(airpAngleX < maxAngle[0]) {
-            airplane.rotation.x += speedAngle;
-        }
-
-        if(keyboard.pressed("left")) {
-            if(airpAngleZ < maxAngle[2])
-                airplane.rotation.z += speedAngle/2;
-        } else if(keyboard.pressed("right")) {
-            if(airpAngleZ > -maxAngle[2])
-                airplane.rotation.z -= speedAngle/2;
-        }
+    if(keyboard.pressed('R')){
+        reset = true;
+        resetAirPlane();
     }
 
-    if(!keyboard.pressed("up") && !keyboard.pressed("down")) {
-        if(airpAngleX > 0) {
-            airplane.rotation.x -= speedAngle/2;
-            if(airplane.rotation.x < 0) {
-                airplane.rotation.x = 0;
-            }
-        } else if(airpAngleX < 0) {
-            airplane.rotation.x += speedAngle/2;
-            if(airplane.rotation.x  > 0) {
-                airplane.rotation.x = 0;
-            }
+    if(keyboard.pressed("up")){
+        if(airpAngleX>-maxUD){
+            airplane.rotation.x -= angle;
+            //airplane.rotateOnAxis(x,-angle);
+            //airplane.rotation.z = 0;
+            numTrocasX -= 1;
         }
     }
-
-    if(airpAngleX !== 0) {
-        virtualParent.rotateOnAxis(x, speedAngle*airplane.rotation.x);
-        numTrocasDir = 1;
-        speedRetX = 0;
-    } else {
-        if(virtualParent.rotation.x < 0) {
-            speedRetX += acelRetX*Math.pow(numTrocasDir,2);
-            virtualParent.rotation.x += speedRetX;
-
-            if(virtualParent.rotation.x > 0)
-                virtualParent.rotation.x = 0;
-        }else if(virtualParent.rotation.x > 0) {
-            speedRetX -= acelRetX*Math.pow(numTrocasDir,2);
-            virtualParent.rotation.x += speedRetX;
-
-            if(virtualParent.rotation.x < 0)
-                virtualParent.rotation.x = 0;
+    else if(keyboard.pressed("down")){
+        if(airpAngleX<maxUD){
+            airplane.rotation.x += angle;
+            //airplane.rotateOnAxis(x,angle);
+            //airplane.rotation.z = 0;
+            numTrocasX += 1;
         }
     }
-
-    /*
-    if(airpAngleX !== 0) {
-        virtualParent.rotateOnAxis(x, speedAngle*airplane.rotation.x);
-        numTrocasDir = 1;
-        speedRetX = 0;
-    } else {
-        if(virtualParent.rotation.x < 0) {
-            speedRetX += acelRetX*Math.pow(numTrocasDir,2);
-            virtualParent.rotation.x += speedRetX;
-
-            if(virtualParent.rotation.x > 0) {
-                if(numTrocasDir === 5) {
-                    numTrocasDir = 1;
-                    speedRetX = 0;
-                    virtualParent.rotation.x = 0;
-                } else
-                    numTrocasDir++;
-            }
-        }else if(virtualParent.rotation.x > 0) {
-            speedRetX -= acelRetX*Math.pow(numTrocasDir,2);
-            virtualParent.rotation.x += speedRetX;
-
-            if(virtualParent.rotation.x < 0) {
-                if(numTrocasDir === 5) {
-                    numTrocasDir = 1;
-                    speedRetX = 0;
-                    virtualParent.rotation.x = 0;
-                } else
-                    numTrocasDir++;
-            }
+    else{
+        if(numTrocasX < 0){
+            airplane.rotation.x += angle;
+            numTrocasX += 1;
         }
-    }*/
-
-    if(keyboard.pressed("right")) {
-        if(airpAngleY < maxAngle[1]) {
-            airplane.rotation.y += speedAngle;
+        else if(numTrocasX > 0){
+            airplane.rotation.x -= angle;
+            numTrocasX -= 1;
         }
-    } else if(keyboard.pressed("left")) {
-        if(airpAngleY > -maxAngle[1]) {
-            airplane.rotation.y -= speedAngle;
-        }
+        else
+            airplane.rotation.x = 0;
     }
 
-    if(!keyboard.pressed("left") && !keyboard.pressed("right")) {
-        if(airpAngleY > 0) {
-            airplane.rotation.y -= speedAngle/2;
-            if(airplane.rotation.y  < 0)
-                airplane.rotation.y = 0;
-        }
-
-        if(airpAngleY < 0) {
-            airplane.rotation.y += speedAngle/2;
-    
-            if(airplane.rotation.y > 0)
-                airplane.rotation.y = 0;
+    if(keyboard.pressed("left")){
+        if(airpAngleY>-maxLR){
+            airplane.rotation.y -= angle;
+            numTrocasY -= 1;
         }
     }
-
-    if(airpAngleY !== 0) {
-        virtualParent.rotateOnAxis(z, -speedAngle*airplane.rotation.y);
+    else if(keyboard.pressed("right")){
+        if(airpAngleY<maxLR){
+            airplane.rotation.y += angle;
+            numTrocasY += 1;
+        }
+    }
+    else{ 
+        if(numTrocasY > 0){
+            airplane.rotation.y -= angle;
+            numTrocasY -= 1;
+        }
+        else if(numTrocasY < 0){
+            airplane.rotation.y += angle;
+            numTrocasY += 1;
+        }
+        else
+            airplane.rotation.y = 0;
     }
     
-    if(airpAngleX === 0 || airpAngleY === 0) {
-        if(airpAngleZ > 0) {
-            airplane.rotation.z -= speedAngle/2;
-            if(airplane.rotation.z  < 0)
-                airplane.rotation.z = 0;
-        } else if(airpAngleZ < 0) {
-            airplane.rotation.z += speedAngle/2;
-            if(airplane.rotation.z  > 0)
-                airplane.rotation.z = 0;
-        }
-    }
-
-    if(!keyboard.pressed("up") && !keyboard.pressed("down") && !keyboard.pressed("left") && !keyboard.pressed("right")) {
-        if(virtualParent.rotation.y > 0) {
-            virtualParent.rotation.y -= speedAngle/2;
-            if(virtualParent.rotation.y  < 0)
-                virtualParent.rotation.y = 0;
-        } else if(virtualParent.rotation.y < 0) {
-            virtualParent.rotation.y += speedAngle/2;
-            if(virtualParent.rotation.y  > 0)
-                virtualParent.rotation.y = 0;
-        }
-    }
+    
 }
 
 function rotateTurbine() {
@@ -478,7 +419,12 @@ function updateClouds() {
 function render() {
     stats.update(); // Update FPS
     //trackballControls.update(); // Enable mouse movements
-    keyboardUpdate();
+
+    if(!reset)
+        keyboardUpdate(); //muda a direção do avião (rotação)
+    else
+        resetAirPlane(); //reseta a rotação do avião (inacabado)
+    moveAirPlane(); //move o avião
     rotateTurbine();
     updateClouds();
     requestAnimationFrame(render);
