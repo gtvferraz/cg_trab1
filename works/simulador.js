@@ -8,6 +8,7 @@ import {
     onWindowResize,
     createGroundPlaneWired,
     degreesToRadians,
+    initDefaultBasicLight
 } from "../libs/util/util.js";
 
 var stats = new Stats(); // To show FPS information
@@ -20,7 +21,7 @@ camera.position.copy(new THREE.Vector3(0, -50, 15));
 camera.lookAt(0, 0, 0);
 camera.up.set(0, 1, 0);
 
-scene.add(new THREE.HemisphereLight());
+initDefaultBasicLight(scene, true);
 
 // create an AudioListener and add it to the camera
 const listener = new THREE.AudioListener();
@@ -72,7 +73,7 @@ plane.rotateOnAxis(new THREE.Vector3(1, 0, 0), degreesToRadians(90));
 scene.add(plane);
 
 var {airplane, turbine} = createAirplane();
-let clouds = createClouds();
+//let clouds = createClouds();
 
 axesHelper = new THREE.AxesHelper(10)
 //airplane.add(axesHelper);
@@ -271,21 +272,28 @@ function keyboardUpdate() {
     const airpAngleZ = airplane.rotation.z
     //console.log("Virtual: ", virtualParent.rotation.x,virtualParent.rotation.y,virtualParent.rotation.z);
     //console.log("Avião: ", virtualParent.rotation.x,virtualParent.rotation.y,virtualParent.rotation.z);
-
-    controls.infoBox.innerHTML = `Rotação  x ---- y ---- z
-    <br/>
-    Avião: ${airplane.rotation.x.toFixed(2)}, 
-    ${airplane.rotation.y.toFixed(2)}, 
-    ${airplane.rotation.z.toFixed(2)}
-    <br/>
-    Virtual: ${virtualParent.rotation.x.toFixed(2)}, 
-    ${virtualParent.rotation.y.toFixed(2)}, 
-    ${virtualParent.rotation.z.toFixed(2)}
-    <br/>
-    Velocidade: ${speed.toFixed(2)}
-    <br/>
-    Altitude: ${virtualParent.position.z.toFixed(2)}`;
-
+    if(cameraType == 1){
+        controls.infoBox.innerHTML = `Rotação  x ---- y ---- z
+        <br/>
+        Avião: ${airplane.rotation.x.toFixed(2)}, 
+        ${airplane.rotation.y.toFixed(2)}, 
+        ${airplane.rotation.z.toFixed(2)}
+        <br/>
+        Virtual: ${virtualParent.rotation.x.toFixed(2)}, 
+        ${virtualParent.rotation.y.toFixed(2)}, 
+        ${virtualParent.rotation.z.toFixed(2)}
+        <br/>
+        Velocidade: ${speed.toFixed(2)}
+        <br/>
+        Altitude: ${virtualParent.position.z.toFixed(2)}`;
+    }
+    else if (cameraType == 0)
+    {
+        controls.infoBox.innerHTML = `Use mouse to interact:<br/>
+        Left button to rotate<br/>
+        Right button to translate (pan)<br/>
+        Scroll to zoom in/out.`
+    }
     if(cameraType == 1){
         if(keyboard.pressed("Q")) {
             if(!sound.isPlaying)
@@ -483,7 +491,7 @@ function render() {
         resetAirPlane(); //reseta a rotação do avião (inacabado)
     moveAirPlane(); //move o avião
     rotateTurbine();
-    updateClouds();
+    //updateClouds();
     requestAnimationFrame(render);
     if(cameraType == 1)
         renderer.render(scene, camera) // Render scene
