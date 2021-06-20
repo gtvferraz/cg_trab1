@@ -20,8 +20,6 @@ camera.position.copy(new THREE.Vector3(0, -50, 15));
 camera.lookAt(0, 0, 0);
 camera.up.set(0, 1, 0);
 
-var trackballControls = new TrackballControls(camera, renderer.domElement);
-
 scene.add(new THREE.HemisphereLight());
 
 // create an AudioListener and add it to the camera
@@ -67,7 +65,7 @@ const grayMaterial = new THREE.MeshPhongMaterial({color: 'rgb(40,40,50)'});
 
 // Show axes (parameter is size of each axis)
 var axesHelper = new THREE.AxesHelper(100)
-scene.add(axesHelper);
+//scene.add(axesHelper);
 
 var plane = createGroundPlaneWired(10500, 10500);
 plane.rotateOnAxis(new THREE.Vector3(1, 0, 0), degreesToRadians(90));
@@ -78,15 +76,25 @@ let clouds = createClouds();
 
 axesHelper = new THREE.AxesHelper(10)
 //airplane.add(axesHelper);
+var camera2 = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000);
+camera2.position.copy(new THREE.Vector3(0, -50, 15));
+camera2.lookAt(0, 0, 0);
+camera2.up.set(0, 1.1, 0);
+
 
 var virtualParent = new THREE.Object3D();
 virtualParent.add(airplane);
 virtualParent.add(camera);
+virtualParent.add(camera2);
 virtualParent.translateZ(50);
 scene.add(virtualParent);
 
 axesHelper = new THREE.AxesHelper(20)
-virtualParent.add(axesHelper);
+//virtualParent.add(axesHelper);
+
+var trackballControls = new TrackballControls(camera2, renderer.domElement);
+
+camera2.add(listener);
 
 var controls = new InfoBox();
 controls.add("Basic Scene");
@@ -99,6 +107,7 @@ controls.show();
 
 // Listen window size changes
 window.addEventListener('resize', function() { onWindowResize(camera, renderer) }, false);
+window.addEventListener('resize', function() { onWindowResize(camera2, renderer) }, false);
 
 render();
 
@@ -237,9 +246,9 @@ function resetAirPlane(){
 }
 
 function moveAirPlane(){
-    console.log(airplane.rotation.x);
+    //console.log(airplane.rotation.x);
     if(airplane.rotation.x != 0)
-        console.log("Aqui");
+        //console.log("Aqui");
         virtualParent.translateZ(speed*airplane.rotation.x);
     if(airplane.rotation.y != 0){
         virtualParent.translateX(speed*airplane.rotation.y);
@@ -247,10 +256,16 @@ function moveAirPlane(){
     }
         virtualParent.translateY(speed);
 }
-
+var auxPosicaoX;
+var auxPosicaoY;
+var auxPosicaoZ;
+var auxRotationX;
+var auxRotationY;
+var auxRotationZ;
+var auxSpeed;
+var cameraType = 1;
 function keyboardUpdate() {
     keyboard.update();
-
     const airpAngleX = airplane.rotation.x;
     const airpAngleY = airplane.rotation.y;
     const airpAngleZ = airplane.rotation.z
@@ -271,15 +286,17 @@ function keyboardUpdate() {
     <br/>
     Altitude: ${virtualParent.position.z.toFixed(2)}`;
 
-    if(keyboard.pressed("Q")) {
-        if(!sound.isPlaying)
-            sound.play();
-        
-        if(speed + aceleracao <= maxSpeed)
-            speed += aceleracao;
-    } else if(keyboard.pressed("A")) {
-        if(speed - aceleracao >= minSpeed)
-            speed -= aceleracao;
+    if(cameraType == 1){
+        if(keyboard.pressed("Q")) {
+            if(!sound.isPlaying)
+                sound.play();
+            
+            if(speed + aceleracao <= maxSpeed)
+                speed += aceleracao;
+        } else if(keyboard.pressed("A")) {
+            if(speed - aceleracao >= minSpeed)
+                speed -= aceleracao;
+        }
     }
 
     if(keyboard.pressed('R')){
@@ -287,6 +304,46 @@ function keyboardUpdate() {
         resetAirPlane();
     }
 
+    if(keyboard.down('space')){
+        if(cameraType == 1){
+            //virtualParent.remove(camera2);
+            //camera2.lookAt(virtualParent.position);
+            camera2.position.copy(new THREE.Vector3(0, -50, 15));
+            camera2.lookAt(0, 0, 0);
+            camera2.up.set(0, 1.0  , 0);
+            virtualParent.remove(camera);
+            virtualParent.add(camera2);
+            auxSpeed = speed;
+            auxPosicaoX = virtualParent.position.x;
+            auxPosicaoY = virtualParent.position.y;
+            auxPosicaoZ = virtualParent.position.z;
+            auxRotationX = virtualParent.rotation.x;
+            auxRotationY = virtualParent.rotation.y;
+            auxRotationZ = virtualParent.rotation.z;
+            virtualParent.position.x = 0;
+            virtualParent.position.y = 0;
+            virtualParent.position.z = 0;
+            virtualParent.rotation.x = 0;
+            virtualParent.rotation.y = 0;
+            virtualParent.rotation.z = 0;
+            speed = 0;
+            scene.remove(plane);
+            cameraType = 0;
+        }
+        else if(cameraType == 0){
+            virtualParent.remove(camera2);
+            virtualParent.add(camera);
+            scene.add(plane);
+            virtualParent.position.x = auxPosicaoX;
+            virtualParent.position.y = auxPosicaoY;
+            virtualParent.position.z = auxPosicaoZ;
+            virtualParent.rotation.x = auxRotationX;
+            virtualParent.rotation.y = auxRotationY;
+            virtualParent.rotation.z = auxRotationZ;
+            speed = auxSpeed;
+            cameraType = 1;
+        }
+    }
     if(keyboard.pressed("up")){
         if(airpAngleX>-maxUD){
             airplane.rotation.x -= angle;
@@ -372,7 +429,7 @@ function createClouds() {
     var sphere;
     let sectorSize = (finalDistance - startPosition[0])/numSectors;
     let position = [startPosition[0], startPosition[1]];
-    console.log(sectorSize);
+    //console.log(sectorSize);
     for(let i=0; i<numSectors; i++) {
         position[0] = startPosition[0];
         for(let i=0; i<numSectors; i++) {
@@ -418,7 +475,7 @@ function updateClouds() {
 
 function render() {
     stats.update(); // Update FPS
-    //trackballControls.update(); // Enable mouse movements
+    trackballControls.update(); // Enable mouse movements
 
     if(!reset)
         keyboardUpdate(); //muda a direção do avião (rotação)
@@ -428,5 +485,9 @@ function render() {
     rotateTurbine();
     updateClouds();
     requestAnimationFrame(render);
-    renderer.render(scene, camera) // Render scene
+    if(cameraType == 1)
+        renderer.render(scene, camera) // Render scene
+    else if(cameraType == 0)
+        renderer.render(scene, camera2);
+    //renderer.render(scene, camera)
 }
