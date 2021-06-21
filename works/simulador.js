@@ -336,6 +336,7 @@ function keyboardUpdate() {
             virtualParent.rotation.z = 0;
             trackballControls.enabled = true;
             trackballControls.reset();
+            virtualParent.add(axesHelper);
             speed = 0;
             scene.remove(plane);
             cameraType = 0;
@@ -353,6 +354,7 @@ function keyboardUpdate() {
             virtualParent.rotation.y = auxRotationY;
             virtualParent.rotation.z = auxRotationZ;
             trackballControls.enabled = false;
+            virtualParent.remove(axesHelper);
             speed = auxSpeed;
             if(!sound.isPlaying && speed > 0)
                 sound.play();
