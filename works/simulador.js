@@ -339,6 +339,8 @@ function keyboardUpdate() {
             speed = 0;
             scene.remove(plane);
             cameraType = 0;
+            if(sound.isPlaying)
+                sound.stop();
         }
         else if(cameraType == 0){
             virtualParent.remove(camera2);
@@ -352,6 +354,8 @@ function keyboardUpdate() {
             virtualParent.rotation.z = auxRotationZ;
             trackballControls.enabled = false;
             speed = auxSpeed;
+            if(!sound.isPlaying && speed > 0)
+                sound.play();
             cameraType = 1;
         }
     }
