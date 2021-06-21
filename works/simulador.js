@@ -247,16 +247,13 @@ function resetAirPlane(){
 }
 
 function moveAirPlane(){
-    //console.log(airplane.rotation.x);
     if(airplane.rotation.x != 0)
-        //console.log("Aqui");
         virtualParent.translateZ(speed*airplane.rotation.x);
-    if(airplane.rotation.y != 0){
-        virtualParent.translateX(speed*airplane.rotation.y);
+    if(airplane.rotation.y != 0)
         virtualParent.rotation.z -= speed*airplane.rotation.y/1000;
-    }
-        virtualParent.translateY(speed);
+    virtualParent.translateY(speed);
 }
+
 var auxPosicaoX;
 var auxPosicaoY;
 var auxPosicaoZ;
