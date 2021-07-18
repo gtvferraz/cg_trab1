@@ -8,7 +8,7 @@ import {initRenderer,
         degreesToRadians, 
         createGroundPlaneWired,
         InfoBox} from "../../libs/util/util.js";
-import { Vector3 } from '../build/three.module.js';
+import { Vector3 } from '../../build/three.module.js';
         
 var scene = new THREE.Scene();    // Create main scene
 var stats = new Stats();          // To show FPS information
@@ -158,16 +158,16 @@ function keyboardUpdate() {
   var rotAxisX = new THREE.Vector3(1,0,0); // Set Z axis
   var rotAxisY = new THREE.Vector3(0,1,0); // Set Z axis
 
-  if ( keyboard.pressed("space") )  cameraHolder.translateZ(-10);
+  if ( keyboard.pressed("space") )  cameraHolder.translateZ(-1);
 
   if ( keyboard.pressed(",") )  cameraHolder.rotateOnAxis(rotAxisZ,  angle );
   if ( keyboard.pressed(".") )  cameraHolder.rotateOnAxis(rotAxisZ, -angle );
 
-  if ( keyboard.pressed("up") )  cameraHolder.rotateOnAxis(rotAxisX, -angle );
-  if ( keyboard.pressed("down") )  cameraHolder.rotateOnAxis(rotAxisX, angle );
+  if ( keyboard.pressed("S") )  cameraHolder.rotateOnAxis(rotAxisX, -angle );
+  if ( keyboard.pressed("W") )  cameraHolder.rotateOnAxis(rotAxisX, angle );
 
-  if ( keyboard.pressed("left") )  cameraHolder.rotateOnAxis(rotAxisY,  angle );
-  if ( keyboard.pressed("right") )  cameraHolder.rotateOnAxis(rotAxisY, -angle );
+  if ( keyboard.pressed("A") )  cameraHolder.rotateOnAxis(rotAxisY,  angle );
+  if ( keyboard.pressed("D") )  cameraHolder.rotateOnAxis(rotAxisY, -angle );
 }
 
 function render()
