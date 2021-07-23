@@ -90,6 +90,12 @@ virtualParent.add(camera2);
 virtualParent.translateZ(50);
 scene.add(virtualParent);
 
+for(var cont = 1; cont <= 15; cont++)
+{
+    generateTorus(cont*50);
+    console.log(cont);
+}
+
 axesHelper = new THREE.AxesHelper(20)
 //virtualParent.add(axesHelper);
 
@@ -106,11 +112,26 @@ controls.add("* Right button to translate (pan)");
 controls.add("* Scroll to zoom in/out.");
 controls.show();
 
+var controls2 = new InfoBox();
+controls2.add("Salve");
+controls2.show();
+
 // Listen window size changes
 window.addEventListener('resize', function() { onWindowResize(camera, renderer) }, false);
 window.addEventListener('resize', function() { onWindowResize(camera2, renderer) }, false);
 
 render();
+
+
+function generateTorus(position){
+    const TorusGeometry = new THREE.TorusGeometry( 15, 1, 16, 100 );
+    const TorusMaterial = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+    const torus = new THREE.Mesh( TorusGeometry, TorusMaterial );
+    torus.rotateOnAxis(new THREE.Vector3(1, 0, 0), degreesToRadians(90));
+    torus.translateOnAxis(y, 50);
+    torus.translateOnAxis(z, -position);
+    scene.add( torus ); 
+}
 
 function createAirplane() {
   var airplane = new THREE.Object3D();
