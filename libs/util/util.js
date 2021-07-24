@@ -259,10 +259,10 @@ export function initDefaultBasicLight(scene, castShadow = false, position = new 
   const ambientLight = new THREE.HemisphereLight(
     'white', // bright sky color
     'darkslategrey', // dim ground color
-    0.5, // intensity
+    0.3, // intensity
   );
 
-  const mainLight = new THREE.DirectionalLight('white', 0.7);
+  const mainLight = new THREE.DirectionalLight('white', 1);
     mainLight.position.copy(position);
     mainLight.castShadow = castShadow;
 
@@ -468,7 +468,9 @@ export function createGroundPlaneWired(width, height, widthSegments = 10, height
     color: gcolor,
     polygonOffset: true,
     polygonOffsetFactor: 1, // positive value pushes polygon further away
-    polygonOffsetUnits: 1
+    polygonOffsetUnits: 1,
+    receiveShadow: true,
+    castShadow: true
   });
   
   var wireframe = new THREE.WireframeGeometry( planeGeometry );

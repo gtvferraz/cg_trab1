@@ -28,7 +28,7 @@ camera.position.copy(new THREE.Vector3(0, -50, 15));
 camera.lookAt(0, 0, 0);
 camera.up.set(0, 1, 0);
 
-initDefaultBasicLight(scene, true);
+initDefaultBasicLight(scene, true, new THREE.Vector3(-500,-500,100));
 
 var keyboard = new KeyboardState();
 

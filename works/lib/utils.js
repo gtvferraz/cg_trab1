@@ -1,5 +1,5 @@
 import * as THREE from  '../../../build/three.module.js';
-import { degreesToRadians, createGroundPlaneWired } from "../../../libs/util/util.js";
+import { degreesToRadians, createGroundPlane } from "../../../libs/util/util.js";
 import { ConvexGeometry } from '../../../build/jsm/geometries/ConvexGeometry.js';
 
 export function addSound() {
@@ -70,10 +70,10 @@ export function createAirplane() {
   leftBaseWing.translateX(-3);
   mainBody.add(leftBaseWing);
 
-  var leftBaseWing = createWing();
-  leftBaseWing.translateX(3);
-  leftBaseWing.rotateOnAxis(y, degreesToRadians(180));
-  mainBody.add(leftBaseWing);
+  var rightBaseWing = createWing();
+  rightBaseWing.translateX(3);
+  rightBaseWing.rotateOnAxis(y, degreesToRadians(180));
+  mainBody.add(rightBaseWing);
 
   var topStabilizer = createStabilizer();
   topStabilizer.translateX(0.1);
@@ -102,6 +102,16 @@ export function createAirplane() {
   cabin.translateZ(0.5);
   cabin.scale.set(0.5, 1, 0.5);
   mainBody.add(cabin);
+
+  mainBody.castShadow = true;
+  backBody.castShadow = true;
+  frontBody.castShadow = true;
+  turbineBase.castShadow = true;
+  leftBaseWing.castShadow = true;
+  rightBaseWing.castShadow = true;
+  topStabilizer.castShadow = true;
+  leftStabilizer.castShadow = true;
+  rightStabilizer.castShadow = true;
 
   return {airplane, turbine};
 }
@@ -147,13 +157,10 @@ function createStabilizer() {
 }
 
 export function createTerrain() {
-  var terrain = new THREE.Object3D();
-  var plane = createGroundPlaneWired(10500, 10500,10,10,"rgb(60,163,60)");
-  plane.rotateOnAxis(new THREE.Vector3(1, 0, 0), degreesToRadians(90));
-  terrain.add(plane);
-  terrain.add(createMountain());
+  var plane = createGroundPlane(10500, 10500,10,10,"rgb(60,163,60)");
+  plane.add(createMountain());
 
-  return terrain;
+  return plane;
 }
 
 function createMountain() {
@@ -176,6 +183,10 @@ function createMountain() {
   mountain2.add(mountain3);
 
   mountain.scale.set(2,2,2);
+
+  mountain.castShadow = true;
+  mountain2.castShadow = true;
+  mountain3.castShadow = true;
 
   return mountain;
 }
@@ -518,6 +529,8 @@ export function createTrees() {
 
   const woodMaterial = new THREE.MeshPhongMaterial({color: 'rgb(139,69,19)'});
   const leafMaterial = new THREE.MeshPhongMaterial({color: 'rgb(60,163,60)'});
+  woodMaterial.side = THREE.DoubleSide;
+  leafMaterial.side = THREE.DoubleSide;
 
   for(let i=0; i<numTrees; i++) {
     var geometry = new THREE.CylinderGeometry(2, 3, trunkHeight, 50);
@@ -526,7 +539,7 @@ export function createTrees() {
     trunk.rotateOnAxis(x, degreesToRadians(90));
     trees.push(trunk);
 
-    geometry = new THREE.CylinderGeometry(1, 2, subTrunkHeight, 50);
+    var geometry = new THREE.CylinderGeometry(1, 2, subTrunkHeight, 50);
     var subTrunk1 = new THREE.Mesh(geometry, woodMaterial);
     subTrunk1.translateY(trunkHeight/2 + subTrunkHeight/4);
     subTrunk1.translateX(-4);
@@ -539,13 +552,13 @@ export function createTrees() {
     subTrunk2.rotateOnAxis(z, degreesToRadians(-45));
     trunk.add(subTrunk2);
 
-    geometry = new THREE.SphereGeometry(7, 10, 10);
+    var geometry = new THREE.SphereGeometry(7, 10, 10);
     var leaf1 = new THREE.Mesh(geometry, leafMaterial);
     leaf1.translateY(trunkHeight/2 + subTrunkHeight/2);
     leaf1.translateX(10);
     trunk.add(leaf1);
 
-    geometry = new THREE.SphereGeometry(9, 10, 10);
+    var geometry = new THREE.SphereGeometry(9, 10, 10);
     var leaf2 = new THREE.Mesh(geometry, leafMaterial);
     leaf2.translateY(trunkHeight/2 + subTrunkHeight*0.8);
     leaf2.translateX(-10);
@@ -578,6 +591,12 @@ export function createTrees() {
 
     trunk.scale.set(randomScale,randomScale,randomScale);
     trunk.rotateOnAxis(y, degreesToRadians(randomDegree));
+
+    trunk.castShadow = true;
+    subTrunk1.castShadow = true;
+    subTrunk2.castShadow = true;
+    leaf1.castShadow = true;
+    leaf2.castShadow = true;
   }
 
   /*
