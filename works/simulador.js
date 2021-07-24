@@ -11,6 +11,8 @@ import {
     initDefaultBasicLight
 } from "../libs/util/util.js";
 
+import { createMountain } from './lib/montanhas.js'
+
 var stats = new Stats(); // To show FPS information
 var scene = new THREE.Scene(); // Create main scene
 scene.background = new THREE.Color('rgb(150,150,200)');
@@ -72,6 +74,9 @@ var plane = createGroundPlaneWired(10500, 10500);
 plane.rotateOnAxis(new THREE.Vector3(1, 0, 0), degreesToRadians(90));
 scene.add(plane);
 
+const mountain = createMountain();
+scene.add(mountain);
+
 var {airplane, turbine} = createAirplane();
 //let clouds = createClouds();
 
@@ -87,7 +92,8 @@ var virtualParent = new THREE.Object3D();
 virtualParent.add(airplane);
 virtualParent.add(camera);
 virtualParent.add(camera2);
-virtualParent.translateZ(50);
+virtualParent.translateY(-2000);
+
 scene.add(virtualParent);
 
 axesHelper = new THREE.AxesHelper(20)

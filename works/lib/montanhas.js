@@ -1,71 +1,31 @@
 import * as THREE from  '../../../build/three.module.js';
-import Stats from       '../../../build/jsm/libs/stats.module.js';
-import KeyboardState from '../../../libs/util/KeyboardState.js';
-import {initRenderer, 
-        initCamera, 
-        onWindowResize, 
-        degreesToRadians, 
-        createGroundPlaneWired,
-        InfoBox} from "../../../libs/util/util.js";
-import { Vector3 } from '../../../build/three.module.js';
-import {TrackballControls} from '../../build/jsm/controls/TrackballControls.js';
+import { degreesToRadians } from "../../../libs/util/util.js";
 import { ConvexGeometry } from '../../../build/jsm/geometries/ConvexGeometry.js';
-        
-var scene = new THREE.Scene();    // Create main scene
-var stats = new Stats();          // To show FPS information
-var renderer = initRenderer();    // View function in util/utils
+      
+export function createMountain() {
+  const mountain = createMountain1();
+  mountain.castShadow = true;
 
-const blackMaterial = new THREE.MeshPhongMaterial({color: 'rgb(0,0,0)'});
-const redMaterial = new THREE.MeshPhongMaterial({color: 'rgb(110,0,0)'});
-const grayMaterial = new THREE.MeshPhongMaterial({color: 'rgb(40,40,50)'});
-var x = new THREE.Vector3(1, 0, 0); // Set x axis
-var y = new THREE.Vector3(0, 1, 0); // Set y axis
-var z = new THREE.Vector3(0, 0, 1); // Set Z axis
+  const mountain2 = createMountain2();
+  mountain2.castShadow = true;
+  mountain2.scale.set(1.4,1.4,1);
+  mountain2.translateX(350);
+  mountain2.translateY(-50);
+  mountain2.rotateZ(degreesToRadians(90));
+  mountain.add(mountain2);
 
-var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000);
-camera.position.copy(new THREE.Vector3(0, -50, 15));
-camera.lookAt(0, 0, 0);
-camera.up.set(0, 1.1, 0);
-scene.background = new THREE.Color('rgb(150,150,200)');
+  const mountain3 = createMountain3();
+  mountain3.castShadow = true;
+  mountain3.rotateZ(degreesToRadians(180));
+  mountain3.translateX(-400);
+  mountain3.translateY(200);
+  mountain2.add(mountain3);
 
-var trackballControls = new TrackballControls( camera, renderer.domElement );
+  return mountain;
+}
 
-// Show world axes
-var axesHelper = new THREE.AxesHelper(10000);
-scene.add(axesHelper);
-
-// To use the keyboard
-var keyboard = new KeyboardState();
-
-// Listen window size changes
-window.addEventListener( 'resize', function(){onWindowResize(camera, renderer)}, false );
-
-var plane = createGroundPlaneWired(10500, 10500);
-plane.rotateOnAxis(new THREE.Vector3(1, 0, 0), degreesToRadians(90));
-scene.add(plane);
-
-var {airplane, turbine} = createAirplane();
-scene.add(airplane);
-
-const mountain = createMountain();
-mountain.castShadow = true;
-scene.add(mountain);
-
-//scene.add(new THREE.HemisphereLight());
-const directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
-directionalLight.position.set(-1000,-1000,2000)
-directionalLight.target = airplane;
-directionalLight.castShadow = true;
-scene.add(directionalLight);
-
-render();
-
-function createMountain() {
-  //vermelho,verde,azul
-  //direita,frente,cima
+export function createMountain1() {
   var vertBase1 = [];
-  const vertBase2 = [];
-  const vertBase3 = [];
 
   const h1 = 0;
   const h2 = 150;
@@ -76,7 +36,7 @@ function createMountain() {
   var convexGeometry;
   const mountBaseMat1 = new THREE.MeshPhongMaterial({color: 'rgb(60,163,60)'});
   const mountMiddleMat = new THREE.MeshPhongMaterial({color: 'rgb(140,118,86)'});
-  const mountTopMat = new THREE.MeshPhongMaterial({color: 'rgb(214,197,171)'});
+  const mountTopMat = new THREE.MeshPhongMaterial({color: 'rgb(237,231,223)'});
   const mountEdgeMat = new THREE.MeshPhongMaterial({color: 'rgb(237,231,223)'});
 
   //INÍCIO DA MONTANHA PRINCIPAL
@@ -217,7 +177,20 @@ function createMountain() {
   mountTop1.add(mountEdge1)
   //FIM DA MONTANHA PRINCIPAL
 
-  //INÍCIO DA BASE DA SEGUNDA MONTANHA
+  return mountBase1;
+}
+
+export function createMountain2() {
+  let vertBase2 = [];
+
+  const h2 = 120;
+  const h3 = 240;
+
+  var convexGeometry;
+  const mountBaseMat2 = new THREE.MeshPhongMaterial({color: 'rgb(60,163,60)'});
+  const mountMiddleMat2 = new THREE.MeshPhongMaterial({color: 'rgb(140,118,86)'});
+
+  //INÍCIO DA BASE
   vertBase2.push(new THREE.Vector3(100,300,0));
   vertBase2.push(new THREE.Vector3(160,270,0));
   vertBase2.push(new THREE.Vector3(200,210,0));
@@ -230,138 +203,96 @@ function createMountain() {
   vertBase2.push(new THREE.Vector3(20,150,0));
   vertBase2.push(new THREE.Vector3(0,230,0));
   vertBase2.push(new THREE.Vector3(40,300,0));
+  //FIM DA BASE
 
-  vertBase2.push(new THREE.Vector3(100,200,100));
-  //FIM DA BASE DA SEGUNDA MONTANHA
+  //INÍCIO DO MEIO
+  vertBase2.push(new THREE.Vector3(50,250,h2));
+  vertBase2.push(new THREE.Vector3(120,230,h2));
+  vertBase2.push(new THREE.Vector3(160,180,h2));
+  vertBase2.push(new THREE.Vector3(180,120,h2));
+  vertBase2.push(new THREE.Vector3(150,100,h2));
+  vertBase2.push(new THREE.Vector3(100,150,h2));
+  vertBase2.push(new THREE.Vector3(40,200,h2));
+  //FIM DO MEIO
 
-  const mountainBaseMat2 = new THREE.MeshPhongMaterial({color: 'rgb(0,200,0)'});
   convexGeometry = new ConvexGeometry(vertBase2);
-  const mountainBase2 = new THREE.Mesh(convexGeometry, mountainBaseMat2);
+  const mountBase2 = new THREE.Mesh(convexGeometry, mountBaseMat2);
+  vertBase2 = []
 
-  return mountBase1;
+  //INÍCIO DO MEIO
+  vertBase2.push(new THREE.Vector3(50,250,h2));
+  vertBase2.push(new THREE.Vector3(120,230,h2));
+  vertBase2.push(new THREE.Vector3(160,180,h2));
+  vertBase2.push(new THREE.Vector3(180,120,h2));
+  vertBase2.push(new THREE.Vector3(150,100,h2));
+  vertBase2.push(new THREE.Vector3(100,150,h2));
+  vertBase2.push(new THREE.Vector3(40,200,h2));
+  //FIM DO MEIO
+
+  //INÍCIO DO TOPO
+  vertBase2.push(new THREE.Vector3(100,200,h3));
+  vertBase2.push(new THREE.Vector3(120,170,h3));
+  //FIM DO TOPO
+
+  convexGeometry = new ConvexGeometry(vertBase2);
+  const mountMiddle2 = new THREE.Mesh(convexGeometry, mountMiddleMat2);
+  mountBase2.add(mountMiddle2)
+  vertBase2 = []
+
+  return mountBase2;
 }
 
-function createAirplane() {
-  var airplane = new THREE.Object3D();
+export function createMountain3() {
+  let vertBase3 = [];
 
-  var geometry = new THREE.CylinderGeometry(1, 1, 9, 50);
-  var mainBody = new THREE.Mesh(geometry, blackMaterial);
-  airplane.add(mainBody);
+  const h2 = 120;
+  const h3 = 240;
 
-  geometry = new THREE.CylinderGeometry(0.5, 1, 3, 50);
-  var backBody = new THREE.Mesh(geometry, blackMaterial);
-  backBody.translateY(-6);
-  backBody.rotateOnAxis(z, degreesToRadians(180));
-  mainBody.add(backBody);
+  var convexGeometry;
+  const mountBaseMat3 = new THREE.MeshPhongMaterial({color: 'rgb(60,163,60)'});
+  const mountMiddleMat3 = new THREE.MeshPhongMaterial({color: 'rgb(140,118,86)'});
 
-  geometry = new THREE.CylinderGeometry(0.5, 1, 2, 50);
-  var frontBody = new THREE.Mesh(geometry, blackMaterial);
-  frontBody.translateY(5.5);
-  mainBody.add(frontBody);
+  //INÍCIO DA BASE
+  vertBase3.push(new THREE.Vector3(500,-150,0));
+  vertBase3.push(new THREE.Vector3(500,-190,0));
+  vertBase3.push(new THREE.Vector3(450,-210,0));
+  vertBase3.push(new THREE.Vector3(350,-230,0));
+  vertBase3.push(new THREE.Vector3(300,-150,0));
+  vertBase3.push(new THREE.Vector3(270,-50,0));
+  vertBase3.push(new THREE.Vector3(350,0,0));
+  vertBase3.push(new THREE.Vector3(450,-50,0));
+  vertBase3.push(new THREE.Vector3(510,-60,0));
+  //FIM DA BASE
 
-  geometry = new THREE.CylinderGeometry(0.1, 0.5, 1, 50);
-  var turbineBase = new THREE.Mesh(geometry, redMaterial);
-  turbineBase.translateY(1.5);
-  frontBody.add(turbineBase);
+  //INÍCIO DO MEIO
+  vertBase3.push(new THREE.Vector3(450,-150,h2));
+  vertBase3.push(new THREE.Vector3(350,-130,h2));
+  vertBase3.push(new THREE.Vector3(370,-80,h2));
+  vertBase3.push(new THREE.Vector3(400,-40,h2));
+  vertBase3.push(new THREE.Vector3(460,-80,h2));
+  //FIM DO MEIO
 
-  var path = new THREE.Shape();
-  path.absellipse(
-    0,  0,            // ax, aY
-    0.2, 3,           // xRadius, yRadius
-    0,  2 * Math.PI,  // aStartAngle, aEndAngle
-    false,            // aClockwise
-    0                 // aRotation
-  );
-  geometry = new THREE.ShapeBufferGeometry( path );
-  const ellipseMaterial = new THREE.MeshBasicMaterial({color:'rgb(56,56,56)'});
-  const turbine = new THREE.Mesh( geometry, ellipseMaterial );
-  turbine.rotateOnAxis(x, degreesToRadians(90));
-  turbineBase.add(turbine);
+  convexGeometry = new ConvexGeometry(vertBase3);
+  const mountBase3 = new THREE.Mesh(convexGeometry, mountBaseMat3);
+  vertBase3 = []
 
-  var leftBaseWing = createWing();
-  leftBaseWing.translateX(-3);
-  mainBody.add(leftBaseWing);
+  //INÍCIO DO MEIO
+  vertBase3.push(new THREE.Vector3(450,-150,h2));
+  vertBase3.push(new THREE.Vector3(350,-130,h2));
+  vertBase3.push(new THREE.Vector3(370,-80,h2));
+  vertBase3.push(new THREE.Vector3(400,-40,h2));
+  vertBase3.push(new THREE.Vector3(460,-80,h2));
+  //FIM DO MEIO
 
-  var leftBaseWing = createWing();
-  leftBaseWing.translateX(3);
-  leftBaseWing.rotateOnAxis(y, degreesToRadians(180));
-  mainBody.add(leftBaseWing);
+  //INÍCIO DO TOPO
+  vertBase3.push(new THREE.Vector3(410,-120,h3));
+  vertBase3.push(new THREE.Vector3(390,-100,h3));
+  //FIM DO TOPO
 
-  var topStabilizer = createStabilizer();
-  topStabilizer.translateX(0.1);
-  topStabilizer.translateY(1.4);
-  topStabilizer.translateZ(4);
-  topStabilizer.rotateOnAxis(z, degreesToRadians(180));
-  topStabilizer.rotateOnAxis(y, degreesToRadians(90));
-  backBody.add(topStabilizer);
+  convexGeometry = new ConvexGeometry(vertBase3);
+  const mountMiddle3 = new THREE.Mesh(convexGeometry, mountMiddleMat3);
+  mountBase3.add(mountMiddle3)
+  vertBase3 = []
 
-  var leftStabilizer = createStabilizer();
-  leftStabilizer.translateZ(-0.2);
-  leftStabilizer.translateX(4);
-  leftStabilizer.translateY(1.4);
-  leftStabilizer.rotateOnAxis(y, degreesToRadians(180));
-  leftStabilizer.rotateOnAxis(x, degreesToRadians(180));
-  backBody.add(leftStabilizer);
-
-  var rightStabilizer = createStabilizer();
-  rightStabilizer.translateX(-4);
-  rightStabilizer.translateY(1.4);
-  rightStabilizer.rotateOnAxis(x, degreesToRadians(180));
-  backBody.add(rightStabilizer);
-
-  geometry = new THREE.SphereGeometry(2, 32, 32);
-  var cabin = new THREE.Mesh(geometry, grayMaterial);
-  cabin.translateZ(0.5);
-  cabin.scale.set(0.5, 1, 0.5);
-  mainBody.add(cabin);
-
-  return {airplane, turbine};
-}
-
-function createWing() {
-  var geometry = new THREE.BoxGeometry(4, 2, 0.2);
-  var baseWing = new THREE.Mesh(geometry, redMaterial);
-
-  const edgeWing = createStabilizer();
-  edgeWing.translateX(-6);
-  edgeWing.translateY(1);
-  edgeWing.translateZ(0.1);
-  edgeWing.rotateOnAxis(x, degreesToRadians(180));
-  baseWing.add(edgeWing);
-
-  return baseWing;
-}
-
-function createStabilizer() {
-  var geometry = new THREE.BoxGeometry(4, 2, 0.2);
-
-  const shape = new THREE.Shape();
-  shape.moveTo( 0, 0 );
-  shape.lineTo( 0, 1 );
-  shape.lineTo( 4, 2 );
-  shape.lineTo( 4, 0 );
-  shape.lineTo( 0, 0 );
-
-  const extrudeSettings = {
-    steps: 2,
-    depth: 0.2,
-    bevelEnabled: true,
-    bevelThickness: 0,
-    bevelSize: 0,
-    bevelOffset: 0,
-    bevelSegments: 10
-  };
-
-  geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-  const stabilizer = new THREE.Mesh(geometry, redMaterial);
-
-  return stabilizer;
-}
-
-function render()
-{
-  stats.update(); // Update FPS
-  trackballControls.update();
-  requestAnimationFrame(render); // Show events
-  renderer.render(scene, camera) // Render scene
+  return mountBase3;
 }
