@@ -1,8 +1,162 @@
 import * as THREE from  '../../../build/three.module.js';
-import { degreesToRadians } from "../../../libs/util/util.js";
+import { degreesToRadians, createGroundPlaneWired } from "../../../libs/util/util.js";
 import { ConvexGeometry } from '../../../build/jsm/geometries/ConvexGeometry.js';
-      
-export function createMountain() {
+
+export function addSound() {
+  // create an AudioListener and add it to the camera
+  const listener = new THREE.AudioListener();
+
+  // create a global audio source
+  const sound = new THREE.Audio( listener );
+
+  // load a sound and set it as the Audio object's buffer
+  const audioLoader = new THREE.AudioLoader();
+  audioLoader.load( 'turbine_sound.mp3', function( buffer ) {
+      sound.setBuffer( buffer );
+      sound.setLoop( true );
+      sound.setVolume( 0.1 );
+  });
+
+  return { listener, sound };
+}
+
+var x = new THREE.Vector3(1, 0, 0); // Set x axis
+var y = new THREE.Vector3(0, 1, 0); // Set y axis
+var z = new THREE.Vector3(0, 0, 1); // Set Z axis
+
+//Materiais
+const blackMaterial = new THREE.MeshPhongMaterial({color: 'rgb(0,0,0)'});
+const redMaterial = new THREE.MeshPhongMaterial({color: 'rgb(110,0,0)'});
+const grayMaterial = new THREE.MeshPhongMaterial({color: 'rgb(40,40,50)'});
+
+export function createAirplane() {
+  var airplane = new THREE.Object3D();
+
+  var geometry = new THREE.CylinderGeometry(1, 1, 9, 50);
+  var mainBody = new THREE.Mesh(geometry, blackMaterial);
+  airplane.add(mainBody);
+
+  geometry = new THREE.CylinderGeometry(0.5, 1, 3, 50);
+  var backBody = new THREE.Mesh(geometry, blackMaterial);
+  backBody.translateY(-6);
+  backBody.rotateOnAxis(z, degreesToRadians(180));
+  mainBody.add(backBody);
+
+  geometry = new THREE.CylinderGeometry(0.5, 1, 2, 50);
+  var frontBody = new THREE.Mesh(geometry, blackMaterial);
+  frontBody.translateY(5.5);
+  mainBody.add(frontBody);
+
+  geometry = new THREE.CylinderGeometry(0.1, 0.5, 1, 50);
+  var turbineBase = new THREE.Mesh(geometry, redMaterial);
+  turbineBase.translateY(1.5);
+  frontBody.add(turbineBase);
+
+  var path = new THREE.Shape();
+  path.absellipse(
+    0,  0,            // ax, aY
+    0.2, 3,           // xRadius, yRadius
+    0,  2 * Math.PI,  // aStartAngle, aEndAngle
+    false,            // aClockwise
+    0                 // aRotation
+  );
+  geometry = new THREE.ShapeBufferGeometry( path );
+  const ellipseMaterial = new THREE.MeshBasicMaterial({color:'rgb(56,56,56)'});
+  const turbine = new THREE.Mesh( geometry, ellipseMaterial );
+  turbine.rotateOnAxis(x, degreesToRadians(90));
+  turbineBase.add(turbine);
+
+  var leftBaseWing = createWing();
+  leftBaseWing.translateX(-3);
+  mainBody.add(leftBaseWing);
+
+  var leftBaseWing = createWing();
+  leftBaseWing.translateX(3);
+  leftBaseWing.rotateOnAxis(y, degreesToRadians(180));
+  mainBody.add(leftBaseWing);
+
+  var topStabilizer = createStabilizer();
+  topStabilizer.translateX(0.1);
+  topStabilizer.translateY(1.4);
+  topStabilizer.translateZ(4);
+  topStabilizer.rotateOnAxis(z, degreesToRadians(180));
+  topStabilizer.rotateOnAxis(y, degreesToRadians(90));
+  backBody.add(topStabilizer);
+
+  var leftStabilizer = createStabilizer();
+  leftStabilizer.translateZ(-0.2);
+  leftStabilizer.translateX(4);
+  leftStabilizer.translateY(1.4);
+  leftStabilizer.rotateOnAxis(y, degreesToRadians(180));
+  leftStabilizer.rotateOnAxis(x, degreesToRadians(180));
+  backBody.add(leftStabilizer);
+
+  var rightStabilizer = createStabilizer();
+  rightStabilizer.translateX(-4);
+  rightStabilizer.translateY(1.4);
+  rightStabilizer.rotateOnAxis(x, degreesToRadians(180));
+  backBody.add(rightStabilizer);
+
+  geometry = new THREE.SphereGeometry(2, 32, 32);
+  var cabin = new THREE.Mesh(geometry, grayMaterial);
+  cabin.translateZ(0.5);
+  cabin.scale.set(0.5, 1, 0.5);
+  mainBody.add(cabin);
+
+  return {airplane, turbine};
+}
+
+function createWing() {
+  var geometry = new THREE.BoxGeometry(4, 2, 0.2);
+  var baseWing = new THREE.Mesh(geometry, redMaterial);
+
+  const edgeWing = createStabilizer();
+  edgeWing.translateX(-6);
+  edgeWing.translateY(1);
+  edgeWing.translateZ(0.1);
+  edgeWing.rotateOnAxis(x, degreesToRadians(180));
+  baseWing.add(edgeWing);
+
+  return baseWing;
+}
+
+function createStabilizer() {
+  var geometry = new THREE.BoxGeometry(4, 2, 0.2);
+
+  const shape = new THREE.Shape();
+  shape.moveTo( 0, 0 );
+  shape.lineTo( 0, 1 );
+  shape.lineTo( 4, 2 );
+  shape.lineTo( 4, 0 );
+  shape.lineTo( 0, 0 );
+
+  const extrudeSettings = {
+    steps: 2,
+    depth: 0.2,
+    bevelEnabled: true,
+    bevelThickness: 0,
+    bevelSize: 0,
+    bevelOffset: 0,
+    bevelSegments: 10
+  };
+
+  geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+  const stabilizer = new THREE.Mesh(geometry, redMaterial);
+
+  return stabilizer;
+}
+
+export function createTerrain() {
+  var terrain = new THREE.Object3D();
+  var plane = createGroundPlaneWired(10500, 10500,10,10,"rgb(60,163,60)");
+  plane.rotateOnAxis(new THREE.Vector3(1, 0, 0), degreesToRadians(90));
+  terrain.add(plane);
+  terrain.add(createMountain());
+
+  return terrain;
+}
+
+function createMountain() {
   const mountain = createMountain1();
   mountain.castShadow = true;
 
@@ -21,10 +175,12 @@ export function createMountain() {
   mountain3.translateY(200);
   mountain2.add(mountain3);
 
+  mountain.scale.set(2,2,2);
+
   return mountain;
 }
 
-export function createMountain1() {
+function createMountain1() {
   var vertBase1 = [];
 
   const h1 = 0;
@@ -180,7 +336,7 @@ export function createMountain1() {
   return mountBase1;
 }
 
-export function createMountain2() {
+function createMountain2() {
   let vertBase2 = [];
 
   const h2 = 120;
@@ -242,7 +398,7 @@ export function createMountain2() {
   return mountBase2;
 }
 
-export function createMountain3() {
+function createMountain3() {
   let vertBase3 = [];
 
   const h2 = 120;
@@ -295,4 +451,147 @@ export function createMountain3() {
   vertBase3 = []
 
   return mountBase3;
+}
+
+export function createClouds() {
+  let clouds = [];
+  let numClouds = 100;
+  let numSectors = 5;
+  let altitudeMin = 1000;
+  let altitudeMax = 1500;
+  let raio = 700;
+
+  let finalDistance = 10000;
+  let startPosition = [-10000, -10000];
+
+  var sphereGeometry = new THREE.SphereGeometry(500, 32, 32);
+  var sphereMaterial = new THREE.MeshPhongMaterial({
+      color:'rgb(230,230,230)',
+      opacity: 0.7,
+      transparent: true
+  });
+  
+  var sphere;
+  let sectorSize = (finalDistance - startPosition[0])/numSectors;
+  let position = [startPosition[0], startPosition[1]];
+  //console.log(sectorSize);
+  for(let i=0; i<numSectors; i++) {
+      position[0] = startPosition[0];
+      for(let i=0; i<numSectors; i++) {
+          sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+          sphere.position.x = position[0] + Math.pow(-1,i)*(Math.random()*raio);
+          sphere.position.y = position[1] + Math.pow(-1,i)*(Math.random()*raio);
+          sphere.position.z = altitudeMin + (Math.random()*(altitudeMax-altitudeMin));
+      
+          clouds.push({object: sphere, scale: 1, alpha: -0.003});
+
+          let rootCloud = sphere;
+          for(let i=0; i<numClouds; i++) {
+              sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+              sphere.position.x = rootCloud.position.x + Math.pow(-1,i)*(Math.random()*raio);
+              sphere.position.y = rootCloud.position.y + Math.pow(-1,i)*(Math.random()*raio);
+              sphere.position.z = rootCloud.position.z + (Math.random()*raio);
+          
+              clouds.push({object: sphere, scale: 1, alpha: -0.003});
+          }
+          position[0] += sectorSize;
+      }
+      position[1] += sectorSize;
+  }
+
+  return clouds;
+}
+
+export function createTrees() {
+  const trees = [];
+
+  //offsetX = 225*escala(montanha)
+  //mountainRadius = 400*escala(montanha)
+
+  const offsetX = 550;
+  const mountainRadius = 800;
+  const totalRadius = 8000;
+
+  const numTrees = 100;
+  const trunkHeight = 25;
+  const subTrunkHeight = 13;
+
+  const woodMaterial = new THREE.MeshPhongMaterial({color: 'rgb(139,69,19)'});
+  const leafMaterial = new THREE.MeshPhongMaterial({color: 'rgb(60,163,60)'});
+
+  for(let i=0; i<numTrees; i++) {
+    var geometry = new THREE.CylinderGeometry(2, 3, trunkHeight, 50);
+    var trunk = new THREE.Mesh(geometry, woodMaterial);
+    trunk.translateZ(trunkHeight/2);
+    trunk.rotateOnAxis(x, degreesToRadians(90));
+    trees.push(trunk);
+
+    geometry = new THREE.CylinderGeometry(1, 2, subTrunkHeight, 50);
+    var subTrunk1 = new THREE.Mesh(geometry, woodMaterial);
+    subTrunk1.translateY(trunkHeight/2 + subTrunkHeight/4);
+    subTrunk1.translateX(-4);
+    subTrunk1.rotateOnAxis(z, degreesToRadians(45));
+    trunk.add(subTrunk1);
+
+    var subTrunk2 = new THREE.Mesh(geometry, woodMaterial);
+    subTrunk2.translateY(trunkHeight/2 + subTrunkHeight/4);
+    subTrunk2.translateX(4); 
+    subTrunk2.rotateOnAxis(z, degreesToRadians(-45));
+    trunk.add(subTrunk2);
+
+    geometry = new THREE.SphereGeometry(7, 10, 10);
+    var leaf1 = new THREE.Mesh(geometry, leafMaterial);
+    leaf1.translateY(trunkHeight/2 + subTrunkHeight/2);
+    leaf1.translateX(10);
+    trunk.add(leaf1);
+
+    geometry = new THREE.SphereGeometry(9, 10, 10);
+    var leaf2 = new THREE.Mesh(geometry, leafMaterial);
+    leaf2.translateY(trunkHeight/2 + subTrunkHeight*0.8);
+    leaf2.translateX(-10);
+    trunk.add(leaf2);
+
+    let randomX = Math.random() * totalRadius - totalRadius/2 + offsetX;
+    let randomY = Math.random() * totalRadius - totalRadius/2;
+
+    if(randomX >= -mountainRadius+offsetX && randomX <= mountainRadius+offsetX) {
+      if(randomY >= -mountainRadius && randomY <= mountainRadius) {
+        if(randomX < offsetX) {
+          randomX -= (mountainRadius+offsetX)+randomX;
+        } else {
+          randomX += (mountainRadius+offsetX)-randomX;
+        }
+
+        if(randomY < 0) {
+          randomY -= mountainRadius+randomY;
+        } else {
+          randomY += mountainRadius-randomY;
+        }
+      }
+    }
+
+    trunk.translateX(randomX);
+    trunk.translateZ(randomY);
+
+    let randomScale = Math.random() * (2.0 - 1.0) + 1.0;
+    let randomDegree = Math.random() * 360.0;
+
+    trunk.scale.set(randomScale,randomScale,randomScale);
+    trunk.rotateOnAxis(y, degreesToRadians(randomDegree));
+  }
+
+  /*
+  var geometry = new THREE.CylinderGeometry(3000, 3000, 1, 10);
+  var mark = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color: 'rgb(139,69,19)'}));
+  mark.rotateOnAxis(x, degreesToRadians(90));
+  scene.add(mark)
+
+  var geometry = new THREE.CylinderGeometry(400, 400, 2, 10);
+  var mark = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color: 'rgb(255,255,255)'}));
+  mark.translateX(230);
+  mark.rotateOnAxis(x, degreesToRadians(90));
+  scene.add(mark)
+  */
+
+  return trees;
 }
