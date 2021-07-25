@@ -82,7 +82,7 @@ virtualParent.add(camera2);
 virtualParent.translateY(-2000);
 
 scene.add(virtualParent);
-generateTorus();
+var torusus = generateTorus();
 
 axesHelper = new THREE.AxesHelper(20)
 //virtualParent.add(axesHelper);
@@ -100,14 +100,14 @@ controls.add("* Right button to translate (pan)");
 controls.add("* Scroll to zoom in/out.");
 controls.show();
 
-var controls2 = new InfoBox();
-controls2.add("Salve");
-controls2.show();
+//pra depois
+// var tempo = new THREE.Clock();
+// tempo.autoStart = false;
 
 // Listen window size changes
 window.addEventListener('resize', function() { onWindowResize(camera, renderer) }, false);
 window.addEventListener('resize', function() { onWindowResize(camera2, renderer) }, false);
-
+var contadorAneisPassados = 0;
 render();
 
 function addClouds() {
@@ -117,10 +117,31 @@ function addClouds() {
     })
 }
 
+function estaDentro(aviao, anel, raio){
+    if(aviao.position.x <= anel.position.x + raio && aviao.position.x >= anel.position.x - raio)
+        if(aviao.position.y <= anel.position.y + raio && aviao.position.y >= anel.position.y - raio)
+            if(aviao.position.z <= anel.position.z + raio && aviao.position.z >= anel.position.z - raio)
+                return true
+
+    return false
+        
+}
+
+function destroyTauros(taurus){
+    for(var i = 0; i < taurus.length; i++){
+        if(estaDentro(virtualParent, taurus[i], 35)){
+            scene.remove(taurus[i]);
+            console.log(contadorAneisPassados)
+            contadorAneisPassados++;
+            console.log(contadorAneisPassados)
+        }
+    }
+}
+
 function generateTorus(){
     var torusus = [];
     var distance = -500;
-    const TorusGeometry = new THREE.TorusGeometry( 25, 2, 16, 100 );
+    const TorusGeometry = new THREE.TorusGeometry( 35, 2, 16, 100 );
     const TorusMaterial = new THREE.MeshBasicMaterial( { color: 'rgb(238, 238, 0)' } );
     for(var i = 0;i < 15; i ++){
         var torus = new THREE.Mesh( TorusGeometry, TorusMaterial );
@@ -128,7 +149,6 @@ function generateTorus(){
         torus.translateOnAxis(z, 1400+(i*20))
         torus.translateOnAxis(y, 50)
         torusus[i] = torus; 
-        console.log(torus.position)
     }
     scene.add(torusus[14])
     torusus[13].translateOnAxis(y,50)
@@ -188,13 +208,14 @@ function generateTorus(){
     torusus[1].translateOnAxis(y,100)
     torusus[1].translateOnAxis(z,(distance*7)-100)
     torusus[1].translateOnAxis(x,3800)
-    torusus[1].rotateOnAxis(y,degreesToRadians(90))
+    torusus[1].rotateOnAxis(y,degreesToRadians(60))
     scene.add(torusus[1])
     torusus[0].translateOnAxis(y,10)
     torusus[0].translateOnAxis(z,(distance*6)-300)
     torusus[0].translateOnAxis(x,4100)
     torusus[0].rotateOnAxis(y,degreesToRadians(60))
     scene.add(torusus[0])
+    return torusus
 }
 
 function resetAirPlane(){
@@ -340,7 +361,6 @@ function keyboardUpdate() {
     if(keyboard.down('space')){
         trocaCamera1();
     }
-
     if(keyboard.pressed("up")){
         if(airpAngleX>-maxUD){
             airplane.rotation.x -= angle;
@@ -420,7 +440,7 @@ function updateClouds() {
 function render() {
     stats.update(); // Update FPS
     trackballControls.update(); // Enable mouse movements
-    
+    destroyTauros(torusus);
     /*
     if(!reset)
         keyboardUpdate(); //muda a direção do avião (rotação)
