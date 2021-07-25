@@ -34,9 +34,9 @@ var keyboard = new KeyboardState();
 
 var maxUD = degreesToRadians(45/2);
 var maxLR = degreesToRadians(45);
-var angle = degreesToRadians(45/100);
+var angle = degreesToRadians(90/100);
 var maxSpeed = 20.0;//10; //velocidade máxima de translação
-var minSpeed = 3; //velocidade mínima de translação
+var minSpeed = 0; //velocidade mínima de translação
 //var reset = false; //reseta o avião
 
 var speed = 0; //velocidade de translação
@@ -66,7 +66,7 @@ trees.forEach(tree => {
 })
 
 var {airplane, turbine} = createAirplane();
-addClouds();
+//addClouds();
 
 axesHelper = new THREE.AxesHelper(10)
 //airplane.add(axesHelper);
@@ -82,12 +82,7 @@ virtualParent.add(camera2);
 virtualParent.translateY(-2000);
 
 scene.add(virtualParent);
-
-for(var cont = 1; cont <= 15; cont++)
-{
-    generateTorus(cont*50);
-    console.log(cont);
-}
+generateTorus();
 
 axesHelper = new THREE.AxesHelper(20)
 //virtualParent.add(axesHelper);
@@ -122,14 +117,84 @@ function addClouds() {
     })
 }
 
-function generateTorus(position){
-    const TorusGeometry = new THREE.TorusGeometry( 15, 1, 16, 100 );
-    const TorusMaterial = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
-    const torus = new THREE.Mesh( TorusGeometry, TorusMaterial );
-    torus.rotateOnAxis(new THREE.Vector3(1, 0, 0), degreesToRadians(90));
-    torus.translateOnAxis(y, 50);
-    torus.translateOnAxis(z, -position);
-    scene.add( torus ); 
+function generateTorus(){
+    var torusus = [];
+    var distance = -500;
+    const TorusGeometry = new THREE.TorusGeometry( 25, 2, 16, 100 );
+    const TorusMaterial = new THREE.MeshBasicMaterial( { color: 'rgb(238, 238, 0)' } );
+    for(var i = 0;i < 15; i ++){
+        var torus = new THREE.Mesh( TorusGeometry, TorusMaterial );
+        torus.rotateOnAxis(new THREE.Vector3(1, 0, 0), degreesToRadians(90));
+        torus.translateOnAxis(z, 1400+(i*20))
+        torus.translateOnAxis(y, 50)
+        torusus[i] = torus; 
+        console.log(torus.position)
+    }
+    scene.add(torusus[14])
+    torusus[13].translateOnAxis(y,50)
+    torusus[13].translateOnAxis(z,distance)
+    torusus[13].translateOnAxis(x,-65)
+    scene.add(torusus[13])
+    torusus[12].translateOnAxis(y,10)
+    torusus[12].translateOnAxis(z,distance*2)
+    torusus[12].translateOnAxis(x,-65)
+    scene.add(torusus[12])
+    torusus[11].translateOnAxis(y,90)
+    torusus[11].translateOnAxis(z,distance*3)
+    torusus[11].translateOnAxis(x,-30)
+    scene.add(torusus[11])
+    torusus[10].translateOnAxis(y,150)
+    torusus[10].translateOnAxis(z,distance*4)
+    torusus[10].translateOnAxis(x,-100)
+    scene.add(torusus[10])
+    torusus[9].translateOnAxis(y,10)
+    torusus[9].translateOnAxis(z,distance*5)
+    torusus[9].translateOnAxis(x,-70)
+    scene.add(torusus[9])
+    torusus[8].translateOnAxis(y,70)
+    torusus[8].translateOnAxis(z,distance*6)
+    torusus[8].translateOnAxis(x,100)
+    scene.add(torusus[8])
+    torusus[7].translateOnAxis(y,150)
+    torusus[7].translateOnAxis(z,distance*7)
+    torusus[7].translateOnAxis(x,400)
+    torusus[7].rotateOnAxis(y,degreesToRadians(120))
+    scene.add(torusus[7])
+    torusus[6].translateOnAxis(y,20)
+    torusus[6].translateOnAxis(z,(distance*7)-350)
+    torusus[6].translateOnAxis(x,800)
+    torusus[6].rotateOnAxis(y,degreesToRadians(120))
+    scene.add(torusus[6])
+    torusus[5].translateOnAxis(y,150)
+    torusus[5].translateOnAxis(z,(distance*8)-200)
+    torusus[5].translateOnAxis(x,1800)
+    torusus[5].rotateOnAxis(y,degreesToRadians(90))
+    scene.add(torusus[5])
+    torusus[4].translateOnAxis(y,100)
+    torusus[4].translateOnAxis(z,(distance*8)-100)
+    torusus[4].translateOnAxis(x,2500)
+    torusus[4].rotateOnAxis(y,degreesToRadians(60))
+    scene.add(torusus[4])
+    torusus[3].translateOnAxis(y,10)
+    torusus[3].translateOnAxis(z,(distance*8))
+    torusus[3].translateOnAxis(x,3000)
+    torusus[3].rotateOnAxis(y,degreesToRadians(90))
+    scene.add(torusus[3])
+    torusus[2].translateOnAxis(y,10)
+    torusus[2].translateOnAxis(z,(distance*7)-300)
+    torusus[2].translateOnAxis(x,3500)
+    torusus[2].rotateOnAxis(y,degreesToRadians(90))
+    scene.add(torusus[2])
+    torusus[1].translateOnAxis(y,100)
+    torusus[1].translateOnAxis(z,(distance*7)-100)
+    torusus[1].translateOnAxis(x,3800)
+    torusus[1].rotateOnAxis(y,degreesToRadians(90))
+    scene.add(torusus[1])
+    torusus[0].translateOnAxis(y,10)
+    torusus[0].translateOnAxis(z,(distance*6)-300)
+    torusus[0].translateOnAxis(x,4100)
+    torusus[0].rotateOnAxis(y,degreesToRadians(60))
+    scene.add(torusus[0])
 }
 
 function resetAirPlane(){
@@ -235,7 +300,7 @@ function trocaCamera1() {
     Right button to translate (pan)<br/>
     Scroll to zoom in/out.`
 }
-
+let cameratipo = true;
 function keyboardUpdate() {
     keyboard.update();
     const airpAngleX = airplane.rotation.x;
@@ -272,8 +337,9 @@ function keyboardUpdate() {
         resetAirPlane();
     }*/
 
-    if(keyboard.down('space'))
+    if(keyboard.down('space')){
         trocaCamera1();
+    }
 
     if(keyboard.pressed("up")){
         if(airpAngleX>-maxUD){
