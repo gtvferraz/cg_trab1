@@ -64,7 +64,6 @@ const trees = createTrees();
 trees.forEach(tree => {
     scene.add(tree);
 })
-
 var {airplane, turbine} = createAirplane();
 //addClouds();
 
@@ -84,8 +83,14 @@ virtualParent.translateY(-2000);
 scene.add(virtualParent);
 var torusus = generateTorus();
 
+var auxContador = true;
+
+console.log(auxContador)
 axesHelper = new THREE.AxesHelper(20)
 //virtualParent.add(axesHelper);
+
+var contador = document.getElementById("contador")
+contador.innerText = "0/15"
 
 var trackballControls = new TrackballControls(camera2, renderer.domElement);
 
@@ -131,9 +136,15 @@ function destroyTauros(taurus){
     for(var i = 0; i < taurus.length; i++){
         if(estaDentro(virtualParent, taurus[i], 35)){
             scene.remove(taurus[i]);
-            console.log(contadorAneisPassados)
-            contadorAneisPassados++;
-            console.log(contadorAneisPassados)
+            if(auxContador){
+                contadorAneisPassados++;
+                auxContador = false;
+                contador.innerText = contadorAneisPassados+"/15"; 
+                setTimeout(() => {
+                    auxContador = true;
+                }, 500)
+            
+            } 
         }
     }
 }
@@ -440,7 +451,6 @@ function updateClouds() {
 function render() {
     stats.update(); // Update FPS
     trackballControls.update(); // Enable mouse movements
-    destroyTauros(torusus);
     /*
     if(!reset)
         keyboardUpdate(); //muda a direção do avião (rotação)
@@ -449,6 +459,7 @@ function render() {
     */
     
     //updateClouds();
+    destroyTauros(torusus);
     requestAnimationFrame(render);
     if(cameraType == 1){
         keyboardUpdate();

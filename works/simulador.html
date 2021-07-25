@@ -4,12 +4,25 @@
     <title>Simulador de Voo</title>
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../html/resources/default.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1">  
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <style>
+      .info{
+        position: absolute;
+        top: 10px;
+        width: 100%;
+        text-align: center;
+        z-index: 100;
+        display:block;
+        font-size: 30px;
+        color:white;
+      }
+    </style> 
 </head>
 
 <body>
   <div id="webgl-output">
     <script type="module" src="simulador.js"></script>
+    <div id="contador" class="info"></div>
   </div>
 </body>
 </html>
