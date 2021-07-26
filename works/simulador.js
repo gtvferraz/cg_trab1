@@ -268,7 +268,7 @@ function trocaCamera0() {
     if(keyboard.down('space')) {
         virtualParent.remove(camera2);
         virtualParent.add(camera);
-        scene.add(plane);
+        //scene.add(plane);
         virtualParent.position.copy(new THREE.Vector3(auxPosicaoX,auxPosicaoY,auxPosicaoZ));
         virtualParent.rotation.x = auxRotationX;
         virtualParent.rotation.y = auxRotationY;
@@ -302,10 +302,12 @@ function trocaCamera1() {
     //virtualParent.remove(camera2);
     //camera2.lookAt(virtualParent.position);
     camera2.position.copy(new THREE.Vector3(0, -50, 15));
-    camera2.lookAt(0, 0, 0);
-    camera2.up.set(0, 1.0  , 0);
+    console.log(virtualParent.position);
+    camera2.lookAt(airplane.position);
+    camera2.up.set(0, 1.0, 0);
     virtualParent.remove(camera);
     virtualParent.add(camera2);
+    camera2.rotation.copy(virtualParent.rotation);
     auxSpeed = speed;
     auxPosicaoX = virtualParent.position.x;
     auxPosicaoY = virtualParent.position.y;
@@ -323,7 +325,7 @@ function trocaCamera1() {
     trackballControls.reset();
     virtualParent.add(axesHelper);
     speed = 0;
-    scene.remove(plane);
+    //scene.remove(plane);
     cameraType = 0;
     if(sound.isPlaying)
         sound.stop();
@@ -332,7 +334,7 @@ function trocaCamera1() {
     Right button to translate (pan)<br/>
     Scroll to zoom in/out.`
 }
-let cameratipo = true;
+//let cameratipo = true;
 function keyboardUpdate() {
     keyboard.update();
     const airpAngleX = airplane.rotation.x;
