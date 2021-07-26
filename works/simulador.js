@@ -32,8 +32,8 @@ initDefaultBasicLight(scene, true, new THREE.Vector3(-500,-500,100));
 
 var keyboard = new KeyboardState();
 
-var maxUD = degreesToRadians(45/2);
-var maxLR = degreesToRadians(45);
+var maxUD = degreesToRadians(45/2); //ângulo máximo rotação cima/baixo
+var maxLR = degreesToRadians(45); //ângulo máximo rotação esquerda/direita
 var angle = degreesToRadians(90/100);
 var maxSpeed = 20.0; //velocidade máxima de translação
 var minSpeed = 0; //velocidade mínima de translação
@@ -67,7 +67,6 @@ var {airplane, turbine} = createAirplane();
 //addClouds();
 
 axesHelper = new THREE.AxesHelper(10)
-//airplane.add(axesHelper);
 var camera2 = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000);
 camera2.position.copy(new THREE.Vector3(0, -50, 15));
 camera2.lookAt(0, 0, 0);
@@ -75,6 +74,7 @@ camera2.up.set(0, 1.1, 0);
 
 var virtualParent = new THREE.Object3D();
 virtualParent.add(airplane);
+airplane.position.z += 1;
 virtualParent.add(camera);
 virtualParent.add(camera2);
 virtualParent.translateY(-2000);
@@ -236,13 +236,7 @@ function moveAirPlane(){
     virtualParent.translateY(speed);
 }
 
-var auxPosicaoX;
-var auxPosicaoY;
-var auxPosicaoZ;
-var auxRotationX;
-var auxRotationY;
-var auxRotationZ;   
-var auxSpeed;
+var auxPosicao = new THREE.Vector3();  
 var cameraType = 1;
 
 function trocaCamera0() {
@@ -250,15 +244,12 @@ function trocaCamera0() {
     if(keyboard.down('space')) {
         virtualParent.remove(camera2);
         virtualParent.add(camera);
-        //scene.add(plane);
-        virtualParent.position.copy(new THREE.Vector3(auxPosicaoX,auxPosicaoY,auxPosicaoZ));
-        virtualParent.rotation.x = auxRotationX;
-        virtualParent.rotation.y = auxRotationY;
-        virtualParent.rotation.z = auxRotationZ;
+
+        virtualParent.position.copy(auxPosicao);
         trackballControls.enabled = false;
         virtualParent.remove(axesHelper);
         
-        speed = auxSpeed;
+
         if(!sound.isPlaying && speed > 0)
             sound.play();
         cameraType = 1;
@@ -276,38 +267,22 @@ function trocaCamera0() {
         Velocidade: ${speed.toFixed(2)}
         <br/>
         Altitude: ${virtualParent.position.z.toFixed(2)}`;
+        
+        //coloca tudo de volta na cena
+        scene.add(terrain);
+        trees.forEach(tree => {
+            scene.add(tree);
+        })
     }
-
 }
 
 function trocaCamera1() {
-    //virtualParent.remove(camera2);
-    //camera2.lookAt(virtualParent.position);
-    camera2.position.copy(new THREE.Vector3(0, -50, 15));
-    console.log(virtualParent.position);
-    camera2.lookAt(airplane.position);
-    camera2.up.set(0, 1.0, 0);
-    virtualParent.remove(camera);
-    virtualParent.add(camera2);
-    camera2.rotation.copy(virtualParent.rotation);
-    auxSpeed = speed;
-    auxPosicaoX = virtualParent.position.x;
-    auxPosicaoY = virtualParent.position.y;
-    auxPosicaoZ = virtualParent.position.z;
-    auxRotationX = virtualParent.rotation.x;
-    auxRotationY = virtualParent.rotation.y;
-    auxRotationZ = virtualParent.rotation.z;
-    virtualParent.position.x = 0;
-    virtualParent.position.y = 0;
-    virtualParent.position.z = 0;
-    virtualParent.rotation.x = 0;
-    virtualParent.rotation.y = 0;
-    virtualParent.rotation.z = 0;
-    trackballControls.enabled = true;
-    trackballControls.reset();
-    virtualParent.add(axesHelper);
-    speed = 0;
-    //scene.remove(plane);
+    //remove tudo da cena
+    scene.remove(terrain);
+    trees.forEach(tree => {
+        scene.remove(tree);
+    })
+
     cameraType = 0;
     if(sound.isPlaying)
         sound.stop();
@@ -315,8 +290,22 @@ function trocaCamera1() {
     Left button to rotate<br/>
     Right button to translate (pan)<br/>
     Scroll to zoom in/out.`
+
+    virtualParent.remove(camera);
+    virtualParent.add(camera2);
+
+    auxPosicao.copy(virtualParent.position);
+    virtualParent.position.copy(new THREE.Vector3(0,0,0));
+    virtualParent.rotation.x = 0;
+    virtualParent.rotation.y = 0;
+    virtualParent.rotation.z = 0;
+
+    trackballControls.enabled = true;
+    trackballControls.reset();
+    virtualParent.add(axesHelper);
+
 }
-//let cameratipo = true;
+
 function keyboardUpdate() {
     keyboard.update();
     const airpAngleX = airplane.rotation.x;
@@ -347,28 +336,20 @@ function keyboardUpdate() {
             speed -= aceleracao;
     }
 
-    /*
-    if(keyboard.pressed('R')){
-        reset = true;
-        resetAirPlane();
-    }*/
 
     if(keyboard.down('space')){
         trocaCamera1();
+        return;
     }
     if(keyboard.pressed("up")){
         if(airpAngleX>-maxUD){
             airplane.rotation.x -= angle;
-            //airplane.rotateOnAxis(x,-angle);
-            //airplane.rotation.z = 0;
             numTrocasX -= 1;
         }
     }
     else if(keyboard.pressed("down")){
         if(airpAngleX<maxUD){
             airplane.rotation.x += angle;
-            //airplane.rotateOnAxis(x,angle);
-            //airplane.rotation.z = 0;
             numTrocasX += 1;
         }
     }
@@ -409,6 +390,9 @@ function keyboardUpdate() {
         else
             airplane.rotation.y = 0;
     }
+
+    moveAirPlane(); //move o avião
+    rotateTurbine();
 }
 
 function rotateTurbine() {
@@ -440,8 +424,6 @@ function render() {
     requestAnimationFrame(render);
     if(cameraType == 1){
         keyboardUpdate();
-        moveAirPlane(); //move o avião
-        rotateTurbine();
         renderer.render(scene, camera); // Render scene
     }   
     else{
