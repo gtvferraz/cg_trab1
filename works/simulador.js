@@ -35,9 +35,8 @@ var keyboard = new KeyboardState();
 var maxUD = degreesToRadians(45/2);
 var maxLR = degreesToRadians(45);
 var angle = degreesToRadians(90/100);
-var maxSpeed = 20.0;//10; //velocidade máxima de translação
+var maxSpeed = 20.0; //velocidade máxima de translação
 var minSpeed = 0; //velocidade mínima de translação
-//var reset = false; //reseta o avião
 
 var speed = 0; //velocidade de translação
 var turbineSpeed = 1; //velocidade de rotação da turbina
@@ -227,23 +226,6 @@ function generateTorus(){
     torusus[0].rotateOnAxis(y,degreesToRadians(60))
     scene.add(torusus[0])
     return torusus
-}
-
-function resetAirPlane(){
-    var aux = airplane.rotation.x;
-    airplane.rotation.x = 0;
-    airplane.rotation.y = 0;
-
-    if(airplane.rotation.x == 0)
-        reset = false;
-    /*else if(aux < 0){
-        airplane.rotateOnAxis(x,angle);
-        angleA += angle;
-    }
-    else{
-        airplane.rotateOnAxis(x,-angle);
-        angleA -= angle;
-    }*/
 }
 
 function moveAirPlane(){
@@ -453,14 +435,7 @@ function updateClouds() {
 function render() {
     stats.update(); // Update FPS
     trackballControls.update(); // Enable mouse movements
-    /*
-    if(!reset)
-        keyboardUpdate(); //muda a direção do avião (rotação)
-    else
-        resetAirPlane(); //reseta a rotação do avião (inacabado)
-    */
-    
-    //updateClouds();
+
     destroyTauros(torusus);
     requestAnimationFrame(render);
     if(cameraType == 1){
