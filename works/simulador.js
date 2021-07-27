@@ -134,7 +134,11 @@ function estaDentro(aviao, anel, raio){
 function destroyTauros(taurus){
     for(var i = 0; i < taurus.length; i++){
         if(estaDentro(virtualParent, taurus[i], 35)){
+            taurus[i].geometry.dispose();
+            taurus[i].material.dispose();
             scene.remove(taurus[i]);
+            taurus.splice(i,1);
+            renderer.renderLists.dispose();
             if(auxContador){
                 contadorAneisPassados++;
                 auxContador = false;
@@ -142,7 +146,6 @@ function destroyTauros(taurus){
                 setTimeout(() => {
                     auxContador = true;
                 }, 500)
-            
             } 
         }
     }
@@ -158,7 +161,7 @@ function generateTorus(){
         torus.rotateOnAxis(new THREE.Vector3(1, 0, 0), degreesToRadians(90));
         torus.translateOnAxis(z, 1400+(i*20))
         torus.translateOnAxis(y, 50)
-        torusus[i] = torus; 
+        torusus.push(torus); 
     }
     scene.add(torusus[14])
     torusus[13].translateOnAxis(y,50)
@@ -236,7 +239,10 @@ function moveAirPlane(){
     virtualParent.translateY(speed);
 }
 
-var auxPosicao = new THREE.Vector3();  
+var auxPosicao = new THREE.Vector3();
+var auxRotx
+var auxRoty
+var auxRotz 
 var cameraType = 1;
 
 function trocaCamera0() {
@@ -248,7 +254,9 @@ function trocaCamera0() {
         virtualParent.position.copy(auxPosicao);
         trackballControls.enabled = false;
         virtualParent.remove(axesHelper);
-        
+        virtualParent.rotation.x = auxRotx
+        virtualParent.rotation.y = auxRoty
+        virtualParent.rotation.z = auxRotz
 
         if(!sound.isPlaying && speed > 0)
             sound.play();
@@ -273,6 +281,9 @@ function trocaCamera0() {
         trees.forEach(tree => {
             scene.add(tree);
         })
+        torusus.forEach(torus => {
+            scene.add(torus)
+        })
     }
 }
 
@@ -281,6 +292,9 @@ function trocaCamera1() {
     scene.remove(terrain);
     trees.forEach(tree => {
         scene.remove(tree);
+    })
+    torusus.forEach(torus => {
+        scene.remove(torus)
     })
 
     cameraType = 0;
@@ -296,6 +310,9 @@ function trocaCamera1() {
 
     auxPosicao.copy(virtualParent.position);
     virtualParent.position.copy(new THREE.Vector3(0,0,0));
+    auxRotx = virtualParent.rotation.x
+    auxRoty = virtualParent.rotation.y
+    auxRotz = virtualParent.rotation.z
     virtualParent.rotation.x = 0;
     virtualParent.rotation.y = 0;
     virtualParent.rotation.z = 0;
