@@ -637,6 +637,11 @@ function godView() {
         god.translateZ(maxSpeed);
     else if(keyboard.pressed('down'))
         god.translateZ(-maxSpeed);
+    
+    if(keyboard.pressed('left'))
+        god.rotateOnAxis(new THREE.Vector3(0,0,1),angle)
+    else if(keyboard.pressed('right'))
+    god.rotateOnAxis(new THREE.Vector3(0,0,1),-angle)
 }
 
 function render() {
@@ -646,7 +651,6 @@ function render() {
     
     if(godOn) {
         godView();
-
         renderer.render(scene, cameraGod);
     }
     else {
