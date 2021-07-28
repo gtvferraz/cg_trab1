@@ -1,7 +1,7 @@
 import * as THREE from  '../../../build/three.module.js';
-import { degreesToRadians, createGroundPlane, addGroundPlane } from "../../../libs/util/util.js";
+import {GUI} from       '../../build/jsm/libs/dat.gui.module.js';
+import { degreesToRadians, createGroundPlane, radiansToDegrees} from "../../../libs/util/util.js";
 import { ConvexGeometry } from '../../../build/jsm/geometries/ConvexGeometry.js';
-import { DirectionalLight } from '../../build/three.module.js';
 
 export function addSound() {
   // create an AudioListener and add it to the camera
@@ -684,4 +684,88 @@ export function createTrees() {
   */
 
   return trees;
+}
+
+function updateLight() {
+  directionalLight.target.updateMatrixWorld();
+  directionalLight.shadow.camera.updateProjectionMatrix();     
+  spotHelper.update();
+  shadowHelper.update();    
+}
+
+function makeXYZGUI(gui, vector3, name, onChangeFn) {
+  const folder = gui.addFolder(name);
+  folder.add(vector3, 'x', -10000, 10000).onChange(onChangeFn);
+  folder.add(vector3, 'y', -10000, 10000).onChange(onChangeFn);
+  folder.add(vector3, 'z', -10000, 10000).onChange(onChangeFn);
+  folder.open();
+}    
+
+export function buildInterface(directionalLight, scene)
+{
+//------------------------------------------------------------
+// Interface
+
+// Create helper for the spotlight
+const spotHelper = new THREE.DirectionalLightHelper(directionalLight, 0xFF8C00);
+scene.add(spotHelper);
+
+// Create helper for the spotlight shadow
+const shadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
+scene.add(shadowHelper);
+
+var controls = new function ()
+{
+  this.angle = radiansToDegrees(directionalLight.angle);
+  this.shadowMapSize = directionalLight.shadow.mapSize.width;
+
+  this.onUpdateLightAngle = function(){
+    directionalLight.angle = degreesToRadians(this.angle);
+    updateLight();      
+  };   
+  this.onUpdateShadowFar = function(){
+    if(directionalLight.shadow.camera.far <= directionalLight.shadow.camera.near-0.1) // set far always greater than near
+      directionalLight.shadow.camera.near = 0.1;
+    updateLight(); 
+  };   
+  this.onUpdateShadowNear = function(){
+    if(directionalLight.shadow.camera.near >= directionalLight.shadow.camera.far) // set near always smaller than far
+      directionalLight.shadow.camera.far = directionalLight.shadow.camera.near+10;
+    updateLight();                
+  };
+  this.onUpdateShadowMap = function(){
+    directionalLight.shadow.mapSize.width = this.shadowMapSize;
+    directionalLight.shadow.mapSize.height = this.shadowMapSize;   
+    directionalLight.shadow.map = null;
+  };     
+};
+
+var gui = new GUI();
+
+var spotFolder = gui.addFolder("SpotLight Parameters");
+spotFolder.open();    
+spotFolder.add(directionalLight, 'intensity', 0, 5);
+spotFolder.add(directionalLight, 'penumbra', 0, 1); 
+makeXYZGUI(spotFolder, directionalLight.position, 'position', updateLight);
+makeXYZGUI(spotFolder, directionalLight.target.position, 'target', updateLight);
+
+var shadowFolder = gui.addFolder("Shadow");
+shadowFolder.open();    
+shadowFolder.add(shadowHelper, 'visible', true);
+shadowFolder.add(directionalLight.shadow.camera, 'left', -10000, 0)
+  .onChange(function() { updateLight() });
+shadowFolder.add(directionalLight.shadow.camera, 'right', 0, 10000)
+  .onChange(function() { updateLight() });
+shadowFolder.add(directionalLight.shadow.camera, 'top', 0, 10000)
+  .onChange(function() { updateLight() });
+shadowFolder.add(directionalLight.shadow.camera, 'bottom', -10000, 0)
+  .onChange(function() { updateLight() });  
+shadowFolder.add(controls, 'shadowMapSize', 100, 50000, 10)
+  .onChange(function() { controls.onUpdateShadowMap() });
+shadowFolder.add(directionalLight.shadow.camera, 'near', .1, 30, 0.1)
+  .onChange(function() { controls.onUpdateShadowNear() })
+  .listen(); // Change GUI when the value changes outside
+shadowFolder.add(directionalLight.shadow.camera, 'far', .1, 50000, 0.1)
+  .onChange(function() { controls.onUpdateShadowFar()  })
+  .listen();
 }
