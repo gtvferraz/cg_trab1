@@ -126,33 +126,16 @@ window.addEventListener('resize', function() { onWindowResize(camera2, renderer)
 window.addEventListener('resize', function() { onWindowResize(camera3, renderer) }, false);
 var contadorAneisPassados = 0;
 
-let directionalLight = initLight(scene, new THREE.Vector3(-200,500,100));
+let directionalLight = initLight(scene, new THREE.Vector3(-200,5000,1900));      
 
-const lightSphere = createLightSphere(scene, 1, 10, 10, directionalLight.position, "rgb(255,0,0)");
-scene.add(lightSphere);
-
-var spotLight = new THREE.SpotLight("rgb(255,255,255)");
-  spotLight.position.copy(directionalLight.position);
-  spotLight.distance = 0;
-  spotLight.castShadow = true;
-  spotLight.decay = 2;
-  spotLight.penumbra = 0.5;
-  spotLight.angle= degreesToRadians(40);
-  // Shadow Parameters
-  spotLight.shadow.mapSize.width = 512;
-  spotLight.shadow.mapSize.height = 512;
-  spotLight.shadow.camera.fov = radiansToDegrees(spotLight.angle);
-  spotLight.shadow.camera.near = .2;    
-  spotLight.shadow.camera.far = 500.0;        
-
-scene.add(spotLight);
+//scene.add(spotLight);
 
 // Create helper for the spotlight
-const spotHelper = new THREE.SpotLightHelper(spotLight, 0xFF8C00);
+const spotHelper = new THREE.DirectionalLightHelper(directionalLight, 0xFF8C00);
 scene.add(spotHelper);
 
 // Create helper for the spotlight shadow
-const shadowHelper = new THREE.CameraHelper(spotLight.shadow.camera);
+const shadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
 scene.add(shadowHelper);
 
 //god mod
@@ -168,18 +151,17 @@ render();
 buildInterface();
 
 function updateLight() {
-    spotLight.target.updateMatrixWorld();
-    lightSphere.position.copy(spotLight.position);
-    spotLight.shadow.camera.updateProjectionMatrix();     
+    directionalLight.target.updateMatrixWorld();
+    directionalLight.shadow.camera.updateProjectionMatrix();     
     spotHelper.update();
     shadowHelper.update();    
   }
 
 function makeXYZGUI(gui, vector3, name, onChangeFn) {
     const folder = gui.addFolder(name);
-    folder.add(vector3, 'x', -1000, 1000).onChange(onChangeFn);
-    folder.add(vector3, 'y', -1000, 1000).onChange(onChangeFn);
-    folder.add(vector3, 'z', -1000, 1000).onChange(onChangeFn);
+    folder.add(vector3, 'x', -10000, 10000).onChange(onChangeFn);
+    folder.add(vector3, 'y', -10000, 10000).onChange(onChangeFn);
+    folder.add(vector3, 'z', -10000, 10000).onChange(onChangeFn);
     folder.open();
   }    
 
@@ -189,28 +171,28 @@ function buildInterface()
   // Interface
   var controls = new function ()
   {
-    this.angle = radiansToDegrees(spotLight.angle);
-    this.shadowMapSize = spotLight.shadow.mapSize.width;
+    this.angle = radiansToDegrees(directionalLight.angle);
+    this.shadowMapSize = directionalLight.shadow.mapSize.width;
   
     this.onUpdateLightAngle = function(){
-      spotLight.angle = degreesToRadians(this.angle);
+      directionalLight.angle = degreesToRadians(this.angle);
       updateLight();      
     };   
     this.onUpdateShadowFar = function(){
-      if(spotLight.shadow.camera.far <= spotLight.shadow.camera.near-0.1) // set far always greater than near
-        spotLight.shadow.camera.near = 0.1;
+      if(directionalLight.shadow.camera.far <= directionalLight.shadow.camera.near-0.1) // set far always greater than near
+        directionalLight.shadow.camera.near = 0.1;
       updateLight(); 
     };   
     this.onUpdateShadowNear = function(){
-      if(spotLight.shadow.camera.near >= spotLight.shadow.camera.far) // set near always smaller than far
-        spotLight.shadow.camera.far = spotLight.shadow.camera.near+10;
+      if(directionalLight.shadow.camera.near >= directionalLight.shadow.camera.far) // set near always smaller than far
+        directionalLight.shadow.camera.far = directionalLight.shadow.camera.near+10;
       updateLight();                
     };
     this.onUpdateShadowMap = function(){
-      spotLight.shadow.mapSize.width = this.shadowMapSize;
-      spotLight.shadow.mapSize.height = this.shadowMapSize;   
-      //spotLight.shadow.map.dispose(); 
-      spotLight.shadow.map = null;
+      directionalLight.shadow.mapSize.width = this.shadowMapSize;
+      directionalLight.shadow.mapSize.height = this.shadowMapSize;   
+      //directionalLight.shadow.map.dispose(); 
+      directionalLight.shadow.map = null;
     };     
   };
 
@@ -218,25 +200,28 @@ function buildInterface()
 
   var spotFolder = gui.addFolder("SpotLight Parameters");
   spotFolder.open();    
-  spotFolder.add(spotLight, 'intensity', 0, 5);
-  spotFolder.add(spotLight, 'penumbra', 0, 1);    
-  spotFolder.add(spotLight, 'distance', 0, 40, 0.5)
-    .onChange(function(){updateLight()});        
-  spotFolder.add(controls, 'angle', 20, 80)
-    .name("Angle")
-    .onChange(function() { controls.onUpdateLightAngle() });
-  makeXYZGUI(spotFolder, spotLight.position, 'position', updateLight);
-  makeXYZGUI(spotFolder, spotLight.target.position, 'target', updateLight);
+  spotFolder.add(directionalLight, 'intensity', 0, 5);
+  spotFolder.add(directionalLight, 'penumbra', 0, 1); 
+  makeXYZGUI(spotFolder, directionalLight.position, 'position', updateLight);
+  makeXYZGUI(spotFolder, directionalLight.target.position, 'target', updateLight);
   
   var shadowFolder = gui.addFolder("Shadow");
   shadowFolder.open();    
   shadowFolder.add(shadowHelper, 'visible', true);
-  shadowFolder.add(controls, 'shadowMapSize', 16, 512, 16)
+  shadowFolder.add(directionalLight.shadow.camera, 'left', -10000, 0)
+    .onChange(function() { updateLight() });
+  shadowFolder.add(directionalLight.shadow.camera, 'right', 0, 10000)
+    .onChange(function() { updateLight() });
+  shadowFolder.add(directionalLight.shadow.camera, 'top', 0, 10000)
+    .onChange(function() { updateLight() });
+  shadowFolder.add(directionalLight.shadow.camera, 'bottom', -10000, 0)
+    .onChange(function() { updateLight() });  
+  shadowFolder.add(controls, 'shadowMapSize', 100, 50000, 10)
     .onChange(function() { controls.onUpdateShadowMap() });
-  shadowFolder.add(spotLight.shadow.camera, 'near', .1, 30, 0.1)
+  shadowFolder.add(directionalLight.shadow.camera, 'near', .1, 30, 0.1)
     .onChange(function() { controls.onUpdateShadowNear() })
     .listen(); // Change GUI when the value changes outside
-  shadowFolder.add(spotLight.shadow.camera, 'far', .1, 30, 0.1)
+  shadowFolder.add(directionalLight.shadow.camera, 'far', .1, 50000, 0.1)
     .onChange(function() { controls.onUpdateShadowFar()  })
     .listen();
 }

@@ -1,6 +1,7 @@
 import * as THREE from  '../../../build/three.module.js';
 import { degreesToRadians, createGroundPlane, addGroundPlane } from "../../../libs/util/util.js";
 import { ConvexGeometry } from '../../../build/jsm/geometries/ConvexGeometry.js';
+import { DirectionalLight } from '../../build/three.module.js';
 
 export function addSound() {
   // create an AudioListener and add it to the camera
@@ -123,30 +124,32 @@ export function initLight(scene, position = new THREE.Vector3(1, 1, 1))
   const ambientLight = new THREE.HemisphereLight(
     'white', // bright sky color
     'darkslategrey', // dim ground color
-    0, // intensity
+    0.0, // intensity
   );
 
-  const mainLight = new THREE.DirectionalLight('rgb(255, 255, 255)', 1.0);
-    mainLight.position.copy(position);
-    mainLight.castShadow = true;
+  const directionalLight = new THREE.DirectionalLight('rgb(255, 255, 255)');
+  directionalLight.position.copy(position);
+  directionalLight.castShadow = true;  
 
-  // Directional ligth's shadow uses an OrthographicCamera to set shadow parameteres
-  // and its left, right, bottom, top, near and far parameters are, respectively,
-  // (-5, 5, -5, 5, 0.5, 500).    
-  const shadow = mainLight.shadow;
-    shadow.mapSize.width  =  512; 
-    shadow.mapSize.height =  512; 
-    shadow.camera.near    =  0.1; 
-    shadow.camera.far     =  50; 
-    shadow.camera.left    = -8.0; 
-    shadow.camera.right   =  8.0; 
-    shadow.camera.bottom  = -8.0; 
-    shadow.camera.top     =  8.0; 
+  directionalLight.shadow.mapSize.width = 5000;
+  directionalLight.shadow.mapSize.height = 5000;
+  directionalLight.shadow.autoUpdate = true;
+  directionalLight.shadow.needsUpdate = true;
+  directionalLight.shadow.camera.near = 1;
+  directionalLight.shadow.camera.far = 40000;
+  directionalLight.shadow.camera.left = -10000.0;
+  directionalLight.shadow.camera.right = 10000;
+  directionalLight.shadow.camera.top = 10000.0;
+  directionalLight.shadow.camera.bottom = -10000.0;
+  directionalLight.visible = true;
+  directionalLight.intensity = 1.0;
+  directionalLight.decay = 1;
+  directionalLight.penumbra = 0.1;
 
   scene.add(ambientLight);
-  scene.add(mainLight);
+  scene.add(directionalLight);
 
-  return mainLight;
+  return directionalLight;
 }
 
 function createWing() {
@@ -191,9 +194,6 @@ function createStabilizer() {
 
 export function createTerrain() {
   var plane = createGroundPlane(11000, 11000,10,10,"rgb(60,163,60)");
-  plane.receiveShadow = true;
-  plane.castShadow = true;
-  plane.material.side = THREE.DoubleSide;
   plane.add(createMountain());
 
   return plane;
@@ -570,7 +570,7 @@ export function createTrees() {
   let randomY;
 
   const woodMaterial = new THREE.MeshPhongMaterial({color: 'rgb(139,69,19)'});
-  const leafMaterial = new THREE.MeshPhongMaterial({color: 'rgb(60,163,60)', shininess: "300"});
+  const leafMaterial = new THREE.MeshPhongMaterial({color: 'rgb(60,163,60)'});
   woodMaterial.side = THREE.DoubleSide;
   leafMaterial.side = THREE.DoubleSide;
 
