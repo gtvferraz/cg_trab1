@@ -155,6 +155,14 @@ scene.add(spotHelper);
 const shadowHelper = new THREE.CameraHelper(spotLight.shadow.camera);
 scene.add(shadowHelper);
 
+//god mod
+var god = new THREE.Object3D();
+var cameraGod = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000);
+cameraGod.position.copy(new THREE.Vector3(0, -50, 15));
+cameraGod.lookAt(0, 0, 0);
+cameraGod.up.set(0, 1, 0);
+god.add(cameraGod);
+var godOn = false;
 render();
 
 buildInterface();
@@ -478,6 +486,15 @@ function keyboardUpdate() {
     <br/>
     Altitude: ${virtualParent.position.z.toFixed(2)}`;
 
+    if(keyboard.down('G')) {
+        speed = 0;
+        if(sound.isPlaying)
+            sound.stop();
+        scene.remove(virtualParent);
+        scene.add(god);
+        godOn = true;
+    }
+
     if(cameraType == 1) {
         if(keyboard.down('space') && !circuito) {
             trocaCamera2();
@@ -596,15 +613,48 @@ function updateClouds() {
     })
 }
 
+function godView() {
+    keyboard.update();
+    console.log("oi")
+    if(keyboard.down('G')) {
+        scene.remove(god);
+        scene.add(virtualParent);
+        godOn = false;
+        return;
+    }
+
+    if(keyboard.pressed('W'))
+        god.translateY(maxSpeed);
+    else if(keyboard.pressed('S'))
+        god.translateY(-maxSpeed);
+    
+    if(keyboard.pressed('A'))
+        god.translateX(-maxSpeed);
+    else if(keyboard.pressed('D'))
+        god.translateX(maxSpeed);
+
+    if(keyboard.pressed('up'))
+        god.translateZ(maxSpeed);
+    else if(keyboard.pressed('down'))
+        god.translateZ(-maxSpeed);
+}
+
 function render() {
     stats.update(); // Update FPS
     trackballControls.update(); // Enable mouse movements
-
     requestAnimationFrame(render);
-    if(cameraType == 2)
-        trocaCamera1();
-    else
-        keyboardUpdate();
+    
+    if(godOn) {
+        godView();
 
-    renderer.render(scene, cameras[cameraType-1]);
+        renderer.render(scene, cameraGod);
+    }
+    else {
+        if(cameraType == 2)
+            trocaCamera1();
+        else
+            keyboardUpdate();
+
+        renderer.render(scene, cameras[cameraType-1]);
+    }
 }
