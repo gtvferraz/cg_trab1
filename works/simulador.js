@@ -71,7 +71,6 @@ var cameraType = 1; //tipo de câmera
 var circuito = false; //circuito desligado ou ligado
 var torusus = [];
 var auxContador = true;
-console.log(auxContador);
 var contador = document.getElementById("contador");
 var posInicialCircuito = new THREE.Object3D();
 
@@ -104,7 +103,6 @@ camera3.position.copy(cabin.position)
 camera3.position.z += 1
 camera3.position.y -= 1
 
-console.log(virtualParent.position)
 //var axesHelper = new THREE.AxesHelper(20)
 //virtualParent.add(axesHelper);
 posInicialCircuito.position.copy(virtualParent.position);
@@ -399,7 +397,6 @@ function keyboardUpdate() {
             return;
         }
         if(keyboard.down('C')) {
-            console.log("oi");
             cameraType = 3;
             cabin.material.transparent = true;
             cabin.material.opacity = 0;
@@ -513,7 +510,6 @@ function updateClouds() {
 
 function godView() {
     keyboard.update();
-    console.log("oi")
     if(keyboard.down('G')) {
         scene.remove(god);
         scene.add(virtualParent);
