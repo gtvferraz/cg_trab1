@@ -1,5 +1,5 @@
 import * as THREE from  '../../../build/three.module.js';
-import { degreesToRadians, createGroundPlane } from "../../../libs/util/util.js";
+import { degreesToRadians, createGroundPlane, addGroundPlane } from "../../../libs/util/util.js";
 import { ConvexGeometry } from '../../../build/jsm/geometries/ConvexGeometry.js';
 
 export function addSound() {
@@ -116,6 +116,39 @@ export function createAirplane() {
   return {airplane, turbine, cabin};
 }
 
+export function initLight(scene, position = new THREE.Vector3(1, 1, 1)) 
+{
+  //let position = (initialPosition !== undefined) ? initialPosition : new THREE.Vector3(1, 1, 1);
+
+  const ambientLight = new THREE.HemisphereLight(
+    'white', // bright sky color
+    'darkslategrey', // dim ground color
+    0, // intensity
+  );
+
+  const mainLight = new THREE.DirectionalLight('rgb(255, 255, 255)', 1.0);
+    mainLight.position.copy(position);
+    mainLight.castShadow = true;
+
+  // Directional ligth's shadow uses an OrthographicCamera to set shadow parameteres
+  // and its left, right, bottom, top, near and far parameters are, respectively,
+  // (-5, 5, -5, 5, 0.5, 500).    
+  const shadow = mainLight.shadow;
+    shadow.mapSize.width  =  512; 
+    shadow.mapSize.height =  512; 
+    shadow.camera.near    =  0.1; 
+    shadow.camera.far     =  50; 
+    shadow.camera.left    = -8.0; 
+    shadow.camera.right   =  8.0; 
+    shadow.camera.bottom  = -8.0; 
+    shadow.camera.top     =  8.0; 
+
+  scene.add(ambientLight);
+  scene.add(mainLight);
+
+  return mainLight;
+}
+
 function createWing() {
   var geometry = new THREE.BoxGeometry(4, 2, 0.2);
   var baseWing = new THREE.Mesh(geometry, redMaterial);
@@ -157,7 +190,10 @@ function createStabilizer() {
 }
 
 export function createTerrain() {
-  var plane = createGroundPlane(10500, 10500,10,10,"rgb(60,163,60)");
+  var plane = createGroundPlane(11000, 11000,10,10,"rgb(60,163,60)");
+  plane.receiveShadow = true;
+  plane.castShadow = true;
+  plane.material.side = THREE.DoubleSide;
   plane.add(createMountain());
 
   return plane;
@@ -520,83 +556,118 @@ export function createTrees() {
   //mountainRadius = 400*escala(montanha)
 
   const offsetX = 550;
-  const mountainRadius = 800;
+  const mountainRadius = 1000;
   const totalRadius = 8000;
 
   const numTrees = 100;
   const trunkHeight = 25;
   const subTrunkHeight = 13;
 
+  const treesPos = [];
+  const treeRadius = 10;
+
+  let randomX;
+  let randomY;
+
   const woodMaterial = new THREE.MeshPhongMaterial({color: 'rgb(139,69,19)'});
-  const leafMaterial = new THREE.MeshPhongMaterial({color: 'rgb(60,163,60)'});
+  const leafMaterial = new THREE.MeshPhongMaterial({color: 'rgb(60,163,60)', shininess: "300"});
   woodMaterial.side = THREE.DoubleSide;
   leafMaterial.side = THREE.DoubleSide;
 
   for(let i=0; i<numTrees; i++) {
-    var geometry = new THREE.CylinderGeometry(2, 3, trunkHeight, 50);
+    var geometry = new THREE.CylinderGeometry(0.1, 0.1, 0.1, 10);
+    var tree = new THREE.Mesh(geometry, woodMaterial);
+    tree.rotateOnAxis(x, degreesToRadians(90));
+
+    var geometry = new THREE.CylinderGeometry(2.5, 3, trunkHeight, 50);
     var trunk = new THREE.Mesh(geometry, woodMaterial);
-    trunk.translateZ(trunkHeight/2);
-    trunk.rotateOnAxis(x, degreesToRadians(90));
-    trees.push(trunk);
+    trunk.scale.set(1,1,0.8);
 
     var geometry = new THREE.CylinderGeometry(1, 2, subTrunkHeight, 50);
     var subTrunk1 = new THREE.Mesh(geometry, woodMaterial);
     subTrunk1.translateY(trunkHeight/2 + subTrunkHeight/4);
     subTrunk1.translateX(-4);
     subTrunk1.rotateOnAxis(z, degreesToRadians(45));
-    trunk.add(subTrunk1);
 
     var subTrunk2 = new THREE.Mesh(geometry, woodMaterial);
     subTrunk2.translateY(trunkHeight/2 + subTrunkHeight/4);
     subTrunk2.translateX(4); 
     subTrunk2.rotateOnAxis(z, degreesToRadians(-45));
-    trunk.add(subTrunk2);
 
     var geometry = new THREE.SphereGeometry(7, 10, 10);
     var leaf1 = new THREE.Mesh(geometry, leafMaterial);
     leaf1.translateY(trunkHeight/2 + subTrunkHeight/2);
     leaf1.translateX(10);
-    trunk.add(leaf1);
 
     var geometry = new THREE.SphereGeometry(9, 10, 10);
     var leaf2 = new THREE.Mesh(geometry, leafMaterial);
     leaf2.translateY(trunkHeight/2 + subTrunkHeight*0.8);
     leaf2.translateX(-10);
-    trunk.add(leaf2);
 
-    let randomX = Math.random() * totalRadius - totalRadius/2 + offsetX;
-    let randomY = Math.random() * totalRadius - totalRadius/2;
+    let redo = true;
+    while(redo) {
+      randomX = Math.random() * totalRadius - totalRadius/2 + offsetX;
+      randomY = Math.random() * totalRadius - totalRadius/2;
 
-    if(randomX >= -mountainRadius+offsetX && randomX <= mountainRadius+offsetX) {
-      if(randomY >= -mountainRadius && randomY <= mountainRadius) {
-        if(randomX < offsetX) {
-          randomX -= (mountainRadius+offsetX)+randomX;
-        } else {
-          randomX += (mountainRadius+offsetX)-randomX;
+      if(randomX >= -mountainRadius+offsetX && randomX <= mountainRadius+offsetX) {
+        if(randomY >= -mountainRadius && randomY <= mountainRadius) {
+          if(randomX < offsetX) {
+            randomX -= (mountainRadius+offsetX)+randomX;
+          } else {
+            randomX += (mountainRadius+offsetX)-randomX;
+          }
+
+          if(randomY < 0) {
+            randomY -= mountainRadius+randomY;
+          } else {
+            randomY += mountainRadius-randomY;
+          }
         }
+      }
 
-        if(randomY < 0) {
-          randomY -= mountainRadius+randomY;
-        } else {
-          randomY += mountainRadius-randomY;
+      redo = false;
+      for(let j=0; j<treesPos.length; j++) {
+        const dist = Math.sqrt(
+          Math.pow(treesPos[j].x - randomX,2) 
+          + Math.pow(treesPos[j].y - randomY,2)
+        );
+
+        if(dist <= treeRadius) {
+          redo = true;
+          break;
         }
       }
     }
 
-    trunk.translateX(randomX);
-    trunk.translateZ(randomY);
+    treesPos.push({
+      x: randomX,
+      y: randomY
+    });
 
+    tree.add(trunk);
+    tree.add(subTrunk1);
+    tree.add(subTrunk2);
+    tree.add(leaf1);
+    tree.add(leaf2);
+    
     let randomScale = Math.random() * (2.0 - 1.0) + 1.0;
     let randomDegree = Math.random() * 360.0;
+    
+    tree.scale.set(randomScale,randomScale,randomScale);
+    tree.rotateOnAxis(y, degreesToRadians(randomDegree));
+    
+    tree.translateX(randomX);
+    tree.translateZ(randomY);
+    tree.translateY((randomScale*trunkHeight)/2);
 
-    trunk.scale.set(randomScale,randomScale,randomScale);
-    trunk.rotateOnAxis(y, degreesToRadians(randomDegree));
-
+    tree.castShadow = true;
     trunk.castShadow = true;
     subTrunk1.castShadow = true;
     subTrunk2.castShadow = true;
     leaf1.castShadow = true;
     leaf2.castShadow = true;
+
+    trees.push(tree);
   }
 
   /*

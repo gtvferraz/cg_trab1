@@ -1,4 +1,5 @@
 import * as THREE from '../build/three.module.js';
+import {GUI} from       '../build/jsm/libs/dat.gui.module.js';
 import Stats from '../build/jsm/libs/stats.module.js';
 import { TrackballControls } from '../build/jsm/controls/TrackballControls.js';
 import KeyboardState from '../libs/util/KeyboardState.js';
@@ -7,7 +8,9 @@ import {
     InfoBox,
     onWindowResize,
     degreesToRadians,
-    initDefaultBasicLight
+    initDefaultBasicLight,
+    createLightSphere,
+    radiansToDegrees
 } from "../libs/util/util.js";
 
 import { 
@@ -15,14 +18,15 @@ import {
     createTerrain,
     createAirplane,
     createClouds,
-    createTrees
+    createTrees,
+    initLight
 } from './lib/utils.js';
 
 var stats = new Stats(); // To show FPS information
 var scene = new THREE.Scene(); // Create main scene
 scene.background = new THREE.Color('rgb(150,150,200)');
 var renderer = initRenderer(); // View function in util/utils
-initDefaultBasicLight(scene, true, new THREE.Vector3(-500,-500,100));
+
 var keyboard = new KeyboardState();
 
 //câmeras
@@ -100,6 +104,8 @@ scene.add(virtualParent);
 camera3.position.copy(cabin.position)
 camera3.position.z += 1
 camera3.position.y -= 1
+
+console.log(virtualParent.position)
 //var axesHelper = new THREE.AxesHelper(20)
 //virtualParent.add(axesHelper);
 posInicialCircuito.position.copy(virtualParent.position);
@@ -119,7 +125,113 @@ window.addEventListener('resize', function() { onWindowResize(camera, renderer) 
 window.addEventListener('resize', function() { onWindowResize(camera2, renderer) }, false);
 window.addEventListener('resize', function() { onWindowResize(camera3, renderer) }, false);
 var contadorAneisPassados = 0;
+
+let directionalLight = initLight(scene, new THREE.Vector3(-200,500,100));
+
+const lightSphere = createLightSphere(scene, 1, 10, 10, directionalLight.position, "rgb(255,0,0)");
+scene.add(lightSphere);
+
+var spotLight = new THREE.SpotLight("rgb(255,255,255)");
+  spotLight.position.copy(directionalLight.position);
+  spotLight.distance = 0;
+  spotLight.castShadow = true;
+  spotLight.decay = 2;
+  spotLight.penumbra = 0.5;
+  spotLight.angle= degreesToRadians(40);
+  // Shadow Parameters
+  spotLight.shadow.mapSize.width = 512;
+  spotLight.shadow.mapSize.height = 512;
+  spotLight.shadow.camera.fov = radiansToDegrees(spotLight.angle);
+  spotLight.shadow.camera.near = .2;    
+  spotLight.shadow.camera.far = 500.0;        
+
+scene.add(spotLight);
+
+// Create helper for the spotlight
+const spotHelper = new THREE.SpotLightHelper(spotLight, 0xFF8C00);
+scene.add(spotHelper);
+
+// Create helper for the spotlight shadow
+const shadowHelper = new THREE.CameraHelper(spotLight.shadow.camera);
+scene.add(shadowHelper);
+
 render();
+
+buildInterface();
+
+function updateLight() {
+    spotLight.target.updateMatrixWorld();
+    lightSphere.position.copy(spotLight.position);
+    spotLight.shadow.camera.updateProjectionMatrix();     
+    spotHelper.update();
+    shadowHelper.update();    
+  }
+
+function makeXYZGUI(gui, vector3, name, onChangeFn) {
+    const folder = gui.addFolder(name);
+    folder.add(vector3, 'x', -1000, 1000).onChange(onChangeFn);
+    folder.add(vector3, 'y', -1000, 1000).onChange(onChangeFn);
+    folder.add(vector3, 'z', -1000, 1000).onChange(onChangeFn);
+    folder.open();
+  }    
+
+function buildInterface()
+{
+  //------------------------------------------------------------
+  // Interface
+  var controls = new function ()
+  {
+    this.angle = radiansToDegrees(spotLight.angle);
+    this.shadowMapSize = spotLight.shadow.mapSize.width;
+  
+    this.onUpdateLightAngle = function(){
+      spotLight.angle = degreesToRadians(this.angle);
+      updateLight();      
+    };   
+    this.onUpdateShadowFar = function(){
+      if(spotLight.shadow.camera.far <= spotLight.shadow.camera.near-0.1) // set far always greater than near
+        spotLight.shadow.camera.near = 0.1;
+      updateLight(); 
+    };   
+    this.onUpdateShadowNear = function(){
+      if(spotLight.shadow.camera.near >= spotLight.shadow.camera.far) // set near always smaller than far
+        spotLight.shadow.camera.far = spotLight.shadow.camera.near+10;
+      updateLight();                
+    };
+    this.onUpdateShadowMap = function(){
+      spotLight.shadow.mapSize.width = this.shadowMapSize;
+      spotLight.shadow.mapSize.height = this.shadowMapSize;   
+      //spotLight.shadow.map.dispose(); 
+      spotLight.shadow.map = null;
+    };     
+  };
+
+  var gui = new GUI();
+
+  var spotFolder = gui.addFolder("SpotLight Parameters");
+  spotFolder.open();    
+  spotFolder.add(spotLight, 'intensity', 0, 5);
+  spotFolder.add(spotLight, 'penumbra', 0, 1);    
+  spotFolder.add(spotLight, 'distance', 0, 40, 0.5)
+    .onChange(function(){updateLight()});        
+  spotFolder.add(controls, 'angle', 20, 80)
+    .name("Angle")
+    .onChange(function() { controls.onUpdateLightAngle() });
+  makeXYZGUI(spotFolder, spotLight.position, 'position', updateLight);
+  makeXYZGUI(spotFolder, spotLight.target.position, 'target', updateLight);
+  
+  var shadowFolder = gui.addFolder("Shadow");
+  shadowFolder.open();    
+  shadowFolder.add(shadowHelper, 'visible', true);
+  shadowFolder.add(controls, 'shadowMapSize', 16, 512, 16)
+    .onChange(function() { controls.onUpdateShadowMap() });
+  shadowFolder.add(spotLight.shadow.camera, 'near', .1, 30, 0.1)
+    .onChange(function() { controls.onUpdateShadowNear() })
+    .listen(); // Change GUI when the value changes outside
+  shadowFolder.add(spotLight.shadow.camera, 'far', .1, 30, 0.1)
+    .onChange(function() { controls.onUpdateShadowFar()  })
+    .listen();
+}
 
 function addClouds() {
     let clouds = createClouds();

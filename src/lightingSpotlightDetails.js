@@ -7,7 +7,8 @@ import {initRenderer,
         createLightSphere,        
         onWindowResize, 
         degreesToRadians,
-        radiansToDegrees} from "../libs/util/util.js";
+        radiansToDegrees,
+        initDefaultDirectionalLighting} from "../libs/util/util.js";
 
 var scene = new THREE.Scene();    // Create main scene
   
@@ -24,7 +25,7 @@ var trackballControls = new TrackballControls(camera, renderer.domElement );
 // Listen window size changes
 window.addEventListener( 'resize', function(){onWindowResize(camera, renderer)}, false );
 
-var groundPlane = createGroundPlane(10, 10, 40, 40); // width, height, resolutionW, resolutionH
+var groundPlane = createGroundPlane(10, 10, 40, 40, "rgb(60,163,60)"); // width, height, resolutionW, resolutionH
   groundPlane.rotateX(degreesToRadians(-90));
 scene.add(groundPlane);
 
@@ -42,6 +43,9 @@ var lightSphere = createLightSphere(scene, 0.05, 10, 10, lightPosition);
 
 //---------------------------------------------------------
 // Create and set the spotlight
+
+initDefaultDirectionalLighting(scene, lightPosition);
+
 var spotLight = new THREE.SpotLight("rgb(255,255,255)");
   spotLight.position.copy(lightPosition);
   spotLight.distance = 0;
