@@ -113,7 +113,7 @@ export function createAirplane() {
   leftStabilizer.castShadow = true;
   rightStabilizer.castShadow = true;
 
-  return {airplane, turbine};
+  return {airplane, turbine, cabin};
 }
 
 function createWing() {
