@@ -65,8 +65,6 @@ var numTrocasY = 0; //número de trocas de direção em y realizadas no retorno 
 var axesHelper = new THREE.AxesHelper(20)
 //variáveis para troca de câmera
 var auxPosicao = new THREE.Vector3();
-var auxRotx;
-var auxRoty;
 var auxRotz;
 var cameraType = 1; //tipo de câmera
 //váriaveis do circuito de voo
@@ -289,8 +287,6 @@ function trocaCamera1() {
         virtualParent.position.copy(auxPosicao);
         trackballControls.enabled = false;
         virtualParent.remove(axesHelper);
-        virtualParent.rotation.x = auxRotx
-        virtualParent.rotation.y = auxRoty
         virtualParent.rotation.z = auxRotz
 
         if(!sound.isPlaying && speed > 0)
@@ -340,8 +336,6 @@ function trocaCamera2() {
     //trocando posição
     auxPosicao.copy(virtualParent.position);
     virtualParent.position.copy(new THREE.Vector3(0,0,0));
-    auxRotx = virtualParent.rotation.x
-    auxRoty = virtualParent.rotation.y
     auxRotz = virtualParent.rotation.z
     virtualParent.rotation.x = 0;
     virtualParent.rotation.y = 0;
@@ -360,9 +354,12 @@ function criaPercurso() {
     circuito = true;
     contador.innerText = "0/15"
     virtualParent.position.copy(posInicialCircuito.position);
-    virtualParent.rotation.x = 0;
-    virtualParent.rotation.y = 0;
     virtualParent.rotation.z = 0;
+    airplane.rotation.x = 0;
+    airplane.rotation.y = 0;
+    numTrocasX = 0;
+    numTrocasY = 0;
+
     speed = 0;
     if(sound.isPlaying)
         sound.stop();
