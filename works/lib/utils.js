@@ -163,7 +163,7 @@ export function initAirplaneLight(scene, position = new THREE.Vector3(1, 1, 1), 
   directionalLight.shadow.autoUpdate = true;
   directionalLight.shadow.needsUpdate = true;
   directionalLight.shadow.camera.near = 0.5;
-  directionalLight.shadow.camera.far = 400;
+  directionalLight.shadow.camera.far = 5000;
   directionalLight.shadow.camera.left = -100.0;
   directionalLight.shadow.camera.right = 100;
   directionalLight.shadow.camera.top = 100.0;
@@ -872,7 +872,7 @@ shadowFolder.add(controls, 'shadowMapSize', 100, 5000, 10)
 shadowFolder.add(directionalLight.shadow.camera, 'near', .1, 30, 0.1)
   .onChange(function() { controls.onUpdateShadowNear() })
   .listen(); // Change GUI when the value changes outside
-shadowFolder.add(directionalLight.shadow.camera, 'far', .1, 500, 0.1)
+shadowFolder.add(directionalLight.shadow.camera, 'far', .1, 5000, 0.1)
   .onChange(function() { controls.onUpdateShadowFar()  })
   .listen();
 }
