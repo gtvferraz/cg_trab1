@@ -63,16 +63,19 @@ var cameras = [camera,camera2,camera3];
 var x = new THREE.Vector3(1, 0, 0); // Set x axis
 var y = new THREE.Vector3(0, 1, 0); // Set y axis
 var z = new THREE.Vector3(0, 0, 1); // Set Z axis
-var maxUD = degreesToRadians(45/2); //ângulo máximo rotação cima/baixo
+var maxUD =  degreesToRadians(45/2);//ângulo máximo rotação cima/baixo
 var maxLR = degreesToRadians(45); //ângulo máximo rotação esquerda/direita
 var angle = degreesToRadians(90/100);
 var maxSpeed = 20.0; //velocidade máxima de translação
-var minSpeed = 2; //velocidade mínima de translação
+var minSpeed = 5; //velocidade mínima de translação
 var speed = 0; //velocidade de translação
 var turbineSpeed = 1; //velocidade de rotação da turbina
 var aceleracao = 0.1;//0.05; //aceleração de translação em z
 var numTrocasX = 0; //número de trocas de direção em x realizadas no retorno ao equilíbrio
 var numTrocasY = 0; //número de trocas de direção em y realizadas no retorno ao equilíbrio
+//váriaveis decolagem
+var emTerra = true;
+var decolando = false;
 
 //variáveis para troca de câmera
 var auxPosicao = new THREE.Vector3(); //guarda a posição antes da troca de câmera
@@ -83,7 +86,7 @@ var cameraType = 1; //tipo de câmera
 var circuito = false; //circuito desligado ou ligado
 var torusus = []; //arraylist para guardar os torus
 var contador = document.getElementById("contador");
-var posInicialCircuito = new THREE.Vector3(0,-2000,0); //marca a posição inicial do circuito
+var posInicialCircuito = new THREE.Vector3(0,-3000,0); //marca a posição inicial do circuito
 var caminho; //caminho do percurso
 var caminhoOn = true; //se o caminho está ativou ou não
 var timer = new THREE.Clock();
@@ -106,7 +109,7 @@ var {airplane, turbine, cabin} = createAirplane();
 var virtualParent = new THREE.Object3D();
 virtualParent.add(airplane);
 airplane.position.z += 1;
-virtualParent.translateY(-2000);
+virtualParent.translateY(-3000);
 scene.add(virtualParent);
 
 //adiciona as câmeras
@@ -270,6 +273,7 @@ function destroyTorus(){
 }
 
 function moveAirPlane(){
+
     if(airplane.rotation.x != 0)
         virtualParent.translateZ(speed*airplane.rotation.x);
     if(airplane.rotation.y != 0)
@@ -369,6 +373,7 @@ function criaPercurso() {
         sound.stop();
 
     circuito = true;
+    decolando = false;
     contador.innerText = "0/15"
     caminho = criaCaminho();
     
@@ -463,7 +468,7 @@ function keyboardUpdate() {
 
     //god mod on
     if(keyboard.down('G')) {
-        speed = 0;
+        //speed = 0;
         if(sound.isPlaying)
             sound.stop();
         godOn = true;
@@ -520,70 +525,86 @@ function keyboardUpdate() {
     }
 
     //aceleração
-    if(keyboard.pressed("Q")) {
-        if(!sound.isPlaying)
-            sound.play();
-        
-        if(speed <= maxSpeed)
-            speed += aceleracao;
-    } else if(keyboard.pressed("A")) {
-        if(speed - aceleracao >= minSpeed)
-            speed -= aceleracao;
-    }
+    if(speed >= minSpeed)
+        emTerra = false;
 
-    //movimentos cima/baixo
-    if(keyboard.pressed("up")){
-        if(airpAngleX>-maxUD){
-            airplane.rotation.x -= angle;
-            numTrocasX -= 1;
+    if(!emTerra) {
+        if(keyboard.pressed("Q")) {
+            if(!sound.isPlaying)
+                sound.play();
+            
+            if(speed <= maxSpeed)
+                speed += aceleracao;
+                
+        } else if(keyboard.pressed("A")) {
+            if(speed - aceleracao >= minSpeed)
+                speed -= aceleracao;
         }
-    }
-    else if(keyboard.pressed("down")){
-        if(airpAngleX<maxUD){
-            airplane.rotation.x += angle;
-            numTrocasX += 1;
-        }
-    }
-    else{
-        if(numTrocasX < 0){
-            airplane.rotation.x += angle;
-            numTrocasX += 1;
-        }
-        else if(numTrocasX > 0){
-            airplane.rotation.x -= angle;
-            numTrocasX -= 1;
-        }
-        else {
-            airplane.rotation.x = 0;
-        }
-    }
 
-    //movimentos esquerda/direita
-    if(keyboard.pressed("left")){
-        if(airpAngleY>-maxLR){
-            airplane.rotation.y -= angle;
-            numTrocasY -= 1;
+        //movimentos cima/baixo
+        if(keyboard.pressed("up")){
+            if(airpAngleX>-maxUD){
+                airplane.rotation.x -= angle;
+                numTrocasX -= 1;
+            }
+        }
+        else if(keyboard.pressed("down")){
+            if(airpAngleX<maxUD){
+                airplane.rotation.x += angle;
+                numTrocasX += 1;
+            }
+        }
+        else{
+            if(numTrocasX < 0){
+                airplane.rotation.x += angle;
+                numTrocasX += 1;
+            }
+            else if(numTrocasX > 0){
+                airplane.rotation.x -= angle;
+                numTrocasX -= 1;
+            }
+            else {
+                airplane.rotation.x = 0;
+            }
+        }
+
+        //movimentos esquerda/direita
+        if(keyboard.pressed("left")){
+            if(airpAngleY>-maxLR){
+                airplane.rotation.y -= angle;
+                numTrocasY -= 1;
+            }
+        }
+        else if(keyboard.pressed("right")){
+            if(airpAngleY<maxLR){
+                airplane.rotation.y += angle;
+                numTrocasY += 1;
+            }
+        }
+        else{ 
+            if(numTrocasY > 0){
+                airplane.rotation.y -= angle;
+                numTrocasY -= 1;
+            }
+            else if(numTrocasY < 0){
+                airplane.rotation.y += angle;
+                numTrocasY += 1;
+            }
+            else {
+                airplane.rotation.y = 0;
+            }
         }
     }
-    else if(keyboard.pressed("right")){
-        if(airpAngleY<maxLR){
-            airplane.rotation.y += angle;
-            numTrocasY += 1;
+    else {
+        if(keyboard.pressed("Q")) {
+            decolando = true;
+            if(!sound.isPlaying)
+                sound.play();
         }
+        if(decolando)
+            speed += aceleracao/5; //acelera sozinho ate a velocidade mínima
     }
-    else{ 
-        if(numTrocasY > 0){
-            airplane.rotation.y -= angle;
-            numTrocasY -= 1;
-        }
-        else if(numTrocasY < 0){
-            airplane.rotation.y += angle;
-            numTrocasY += 1;
-        }
-        else {
-            airplane.rotation.y = 0;
-        }
-    }
+    
 
     moveAirPlane(); //move o avião
     rotateTurbine();
@@ -616,6 +637,7 @@ function godView() {
     keyboard.update();
     if(keyboard.down('G')) {
         godOn = false;
+        sound.play();
         infoBox();
         return;
     }
@@ -645,7 +667,7 @@ function render() {
     stats.update(); // Update FPS
     trackballControls.update(); // Enable mouse movements
     requestAnimationFrame(render);
-    
+
     if(circuito)
         timerDiv.innerText = timer.getElapsedTime().toFixed(2) + "s";
     if(godOn) {
