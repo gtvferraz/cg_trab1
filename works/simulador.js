@@ -138,6 +138,9 @@ cameraGod.lookAt(0, 0, 0);
 cameraGod.up.set(0, 1, 0);
 god.add(cameraGod);
 var godOn = false;
+var timer = new THREE.Clock();
+timer.autoStart = false;
+var timerDiv = document.getElementById("timer")
 render();
 
 //buildSunInterface(sunLight, scene);
@@ -244,6 +247,15 @@ function destroyTorus(torusus){
         if(estaDentro(virtualParent, torusus[i], 35)){
             torusus[i].geometry.dispose();
             torusus[i].material.dispose();
+            if(!timer.running && estaDentro(virtualParent, torusus[14], 35))
+                timer.start();
+            if(timer.running && estaDentro(virtualParent, torusus[0], 35)){
+                timer.stop();
+                setTimeout(() => {
+                    contador.style.visibility = "hidden";
+                    timerDiv.style.visibility = "hidden";
+                }, 5000)
+            }
             scene.remove(torusus[i]);
             torusus.splice(i,1);
             renderer.renderLists.dispose();
@@ -354,6 +366,9 @@ function criaPercurso() {
     speed = 0;
     if(sound.isPlaying)
         sound.stop();
+
+    contador.style.visibility = "visible";
+    timerDiv.style.visibility = "visible";
 }
 
 function destroiPercurso() {
@@ -366,7 +381,8 @@ function destroiPercurso() {
     renderer.renderLists.dispose();
     torusus.length = 0;
     circuito = false;
-    contador.innerText = "";
+    contador.style.visibility = "hidden";
+    timerDiv.style.visibility = "hidden";
 }
 
 function keyboardUpdate() {
@@ -415,10 +431,16 @@ function keyboardUpdate() {
     }
 
     if(keyboard.down('enter')) {
-        if(circuito)
+        if(circuito){
             destroiPercurso();
-        else
+            timer.elapsedTime = 0;
+            timer.stop();
+        }
+        else{
             criaPercurso();
+            timer.elapsedTime = 0;
+            timer.stop();
+        }
     }
 
     //aceleração
@@ -548,7 +570,8 @@ function render() {
     stats.update(); // Update FPS
     trackballControls.update(); // Enable mouse movements
     requestAnimationFrame(render);
-    
+    if(circuito)
+        timerDiv.innerText = timer.getElapsedTime().toFixed(2) + "s";
     if(godOn) {
         godView();
         renderer.render(scene, cameraGod);
