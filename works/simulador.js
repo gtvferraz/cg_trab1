@@ -27,8 +27,16 @@ var stats = new Stats(); // To show FPS information
 var scene = new THREE.Scene(); // Create main scene
 scene.background = new THREE.Color('rgb(150,150,200)');
 var renderer = initRenderer(); // View function in util/utils
-
 var keyboard = new KeyboardState();
+var controls = new InfoBox();
+controls.infoBox.innerHTML =
+    `Controles:<br/>
+    WASD => Move o Avião<br/>
+    QA => Velocidade do Avião<br/>
+    P => Iniciar o Percurso<br/>
+    ESPAÇO => Modo de Inspeção<br/>
+    C => Modo Cockpit`
+controls.show();
 
 //câmeras
 //câmera padrão
@@ -36,11 +44,14 @@ var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHei
 camera.position.copy(new THREE.Vector3(0, -50, 15));
 camera.lookAt(0, 0, 0);
 camera.up.set(0, 1, 0);
+const { listener, sound } = addSound();
+camera.add(listener);
 //câmera 2
 var camera2 = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000);
 camera2.position.copy(new THREE.Vector3(0, -50, 15));
 camera2.lookAt(0, 0, 0);
 camera2.up.set(0, 1.1, 0);
+var axesHelper = new THREE.AxesHelper(20)
 //câmera 3
 var camera3 = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000);
 camera3.position.copy(new THREE.Vector3(0, -50, 15));
@@ -48,7 +59,7 @@ camera3.lookAt(0, 1000, 0);
 camera3.up.set(0, 1, 0);
 var cameras = [camera,camera2,camera3];
 
-//variáveis
+//variáveis para o controle do avião
 var x = new THREE.Vector3(1, 0, 0); // Set x axis
 var y = new THREE.Vector3(0, 1, 0); // Set y axis
 var z = new THREE.Vector3(0, 0, 1); // Set Z axis
@@ -62,72 +73,62 @@ var turbineSpeed = 1; //velocidade de rotação da turbina
 var aceleracao = 0.1;//0.05; //aceleração de translação em z
 var numTrocasX = 0; //número de trocas de direção em x realizadas no retorno ao equilíbrio
 var numTrocasY = 0; //número de trocas de direção em y realizadas no retorno ao equilíbrio
-var axesHelper = new THREE.AxesHelper(20)
+
 //variáveis para troca de câmera
-var auxPosicao = new THREE.Vector3();
-var auxRotz;
+var auxPosicao = new THREE.Vector3(); //guarda a posição antes da troca de câmera
+var auxRotz; //guarda a rotação antes da troca de câmera
 var cameraType = 1; //tipo de câmera
+
 //váriaveis do circuito de voo
 var circuito = false; //circuito desligado ou ligado
-var torusus = [];
+var torusus = []; //arraylist para guardar os torus
 var contador = document.getElementById("contador");
-var posInicialCircuito = new THREE.Object3D();
+var posInicialCircuito = new THREE.Vector3(0,-2000,0); //marca a posição inicial do circuito
 var caminho; //caminho do percurso
-var caminhoOn = true;
+var caminhoOn = true; //se o caminho está ativou ou não
+var timer = new THREE.Clock();
+timer.autoStart = false;
+var timerDiv = document.getElementById("timer")
+var contadorAneisPassados = 0; 
 
-// Show axes (parameter is size of each axis)
-//var axesHelper = new THREE.AxesHelper(100)
-//scene.add(axesHelper);
-
-const { listener, sound } = addSound();
-camera.add(listener);
-
+//cria cenário
 const terrain = createTerrain();
 scene.add(terrain);
-
 const trees = createTrees();
 trees.forEach(tree => {
     scene.add(tree);
 })
-var {airplane, turbine, cabin} = createAirplane();
 //addClouds();
 
+
+//cria avião
+var {airplane, turbine, cabin} = createAirplane();
 var virtualParent = new THREE.Object3D();
 virtualParent.add(airplane);
 airplane.position.z += 1;
+virtualParent.translateY(-2000);
+scene.add(virtualParent);
+
+//adiciona as câmeras
 virtualParent.add(camera);
 virtualParent.add(camera2);
 airplane.add(camera3);
-virtualParent.translateY(-2000);
-scene.add(virtualParent);
 camera3.position.copy(cabin.position)
 camera3.position.z += 1
 camera3.position.y -= 1
 
+//adiciona luz
 let airplaneLight = initAirplaneLight(scene, new THREE.Vector3(0,20,20), airplane);
-virtualParent.add(airplaneLight);      
+virtualParent.add(airplaneLight);
+let sunLight = initLight(scene, new THREE.Vector3(-200,5000,1900));      
 
-//var axesHelper = new THREE.AxesHelper(20)
-//virtualParent.add(axesHelper);
-posInicialCircuito.position.copy(virtualParent.position);
-
-
+//trackballControls
 var trackballControls = new TrackballControls(camera2, renderer.domElement);
-
-var controls = new InfoBox();
-controls.show();
-
-//pra depois
-// var tempo = new THREE.Clock();
-// tempo.autoStart = false;
 
 // Listen window size changes
 window.addEventListener('resize', function() { onWindowResize(camera, renderer) }, false);
 window.addEventListener('resize', function() { onWindowResize(camera2, renderer) }, false);
-window.addEventListener('resize', function() { onWindowResize(camera3, renderer) }, false);
-var contadorAneisPassados = 0;
-
-let sunLight = initLight(scene, new THREE.Vector3(-200,5000,1900));      
+window.addEventListener('resize', function() { onWindowResize(camera3, renderer) }, false);   
 
 //god mod
 var god = new THREE.Object3D();
@@ -136,10 +137,9 @@ cameraGod.position.copy(new THREE.Vector3(0, -50, 15));
 cameraGod.lookAt(0, 0, 0);
 cameraGod.up.set(0, 1, 0);
 god.add(cameraGod);
+scene.add(god);
 var godOn = false;
-var timer = new THREE.Clock();
-timer.autoStart = false;
-var timerDiv = document.getElementById("timer")
+
 render();
 
 //buildSunInterface(sunLight, scene);
@@ -158,8 +158,7 @@ function estaDentro(aviao, anel, raio){
             if(aviao.position.z <= anel.position.z + raio && aviao.position.z >= anel.position.z - raio)
                 return true
 
-    return false
-        
+    return false      
 }
 
 function generateTorus(){
@@ -239,11 +238,9 @@ function generateTorus(){
     torusus[0].translateOnAxis(z,(distance*6)-300)
     torusus[0].translateOnAxis(x,4100)
     torusus[0].rotateOnAxis(y,degreesToRadians(60))
-
-    return torusus
 }
 
-function destroyTorus(torusus){
+function destroyTorus(){
     for(var i = 0; i < torusus.length; i++){
         if(estaDentro(virtualParent, torusus[i], 35)){
             if(!timer.running && estaDentro(virtualParent, torusus[14], 35))
@@ -262,7 +259,6 @@ function destroyTorus(torusus){
         }
         if(torusus.length == 0) {
             destroiPercurso(true);
-            circuito = false;
             timer.stop();
             setTimeout(() => {
                 contador.style.visibility = "hidden";
@@ -294,20 +290,6 @@ function trocaCamera1() {
         if(!sound.isPlaying && speed > 0)
             sound.play();
         cameraType = 1;
-
-        controls.infoBox.innerHTML = `Rotação  x ---- y ---- z
-        <br/>
-        Avião: ${airplane.rotation.x.toFixed(2)}, 
-        ${airplane.rotation.y.toFixed(2)}, 
-        ${airplane.rotation.z.toFixed(2)}
-        <br/>
-        Virtual: ${virtualParent.rotation.x.toFixed(2)}, 
-        ${virtualParent.rotation.y.toFixed(2)}, 
-        ${virtualParent.rotation.z.toFixed(2)}
-        <br/>
-        Velocidade: ${speed.toFixed(2)}
-        <br/>
-        Altitude: ${virtualParent.position.z.toFixed(2)}`;
         
         //coloca tudo de volta na cena
         scene.add(terrain);
@@ -317,6 +299,7 @@ function trocaCamera1() {
         torusus.forEach(torus => {
             scene.add(torus)
         })
+        infoBox();
     }
 }
 
@@ -330,10 +313,6 @@ function trocaCamera2() {
     cameraType = 2;
     if(sound.isPlaying)
         sound.stop();
-    controls.infoBox.innerHTML = `Use mouse to interact:<br/>
-    Left button to rotate<br/>
-    Right button to translate (pan)<br/>
-    Scroll to zoom in/out.`
 
     //trocando posição
     auxPosicao.copy(virtualParent.position);
@@ -346,48 +325,22 @@ function trocaCamera2() {
     trackballControls.enabled = true;
     trackballControls.reset();
     virtualParent.add(axesHelper);
+    infoBox();
 }
 
 function criaCaminho() {
-    //Vector3.add(Vector3) Vector3.addScaledVector(Vector3,float)
-    //console.log(torusus[0].position,virtualParent.position);
     var linhas = [new THREE.Vector3(0,0,0).add(virtualParent.position)];
-    for(var i=torusus.length-1; i>=0; i--) {
+    for(var i=torusus.length-1; i>=0; i--)
         linhas.push(new THREE.Vector3(0,0,0).add(torusus[i].position));
-        //console.log(linhas[torusus.length-i+1].position);
-    }
-        const curve = new THREE.CatmullRomCurve3( [
-        linhas[0],
-        linhas[1],
-        linhas[2],
-        linhas[3],
-        linhas[4],
-        linhas[5],
-        linhas[6],
-        linhas[7],
-        linhas[8],
-        linhas[9],
-        linhas[10],
-        linhas[11],
-        linhas[12],
-        linhas[13],
-        linhas[14],
-        linhas[15]
-        /*new THREE.Vector3( -10, 0, 10 ),
-        new THREE.Vector3( -5, 5, 5 ),
-        new THREE.Vector3( 0, 0, 0 ),
-        new THREE.Vector3( 5, -5, 5 ),
-        new THREE.Vector3( 10, 0, 10 )*/
-    ] );
-    
-    const points = curve.getPoints( 8000 );
+
+    //cria o caminho
+    const curve = new THREE.CatmullRomCurve3(linhas); 
+    const points = curve.getPoints( 8000 ); 
     const geometry = new THREE.BufferGeometry().setFromPoints( points );
-    
     const material = new THREE.LineBasicMaterial( { color : 'rgb(255,0,0)' } );
-    
-    // Create the final object to add to the scene
     const curveObject = new THREE.Line( geometry, material );
     scene.add(curveObject);
+
     return curveObject;
 }
 
@@ -399,46 +352,108 @@ function destroiCaminho() {
 }
 
 function criaPercurso() {
-    torusus = generateTorus();
+    generateTorus();
     torusus.forEach(torus => {
         scene.add(torus)
     })
-    
-    circuito = true;
-    contador.innerText = "0/15"
-    virtualParent.position.copy(posInicialCircuito.position);
+
+    //posiciona o avião no começo do circuito
+    virtualParent.position.copy(posInicialCircuito);
     virtualParent.rotation.z = 0;
     airplane.rotation.x = 0;
     airplane.rotation.y = 0;
     numTrocasX = 0;
     numTrocasY = 0;
-
     speed = 0;
-    caminho = criaCaminho();
     if(sound.isPlaying)
         sound.stop();
 
+    circuito = true;
+    contador.innerText = "0/15"
+    caminho = criaCaminho();
+    
     contador.style.visibility = "visible";
     timerDiv.style.visibility = "visible";
+    infoBox();
 }
 
 function destroiPercurso(terminou) {
     terminou = arguments.length > 0 ? arguments[0]:false;
-    
-    destroiCaminho();
-    contadorAneisPassados = 0;
-    torusus.forEach(torus => {
-        torus.geometry.dispose();
-        torus.material.dispose();
-        scene.remove(torus);
-    })
-    renderer.renderLists.dispose();
-    torusus.length = 0;
-    circuito = false;
     if(!terminou) {
         contador.style.visibility = "hidden";
         timerDiv.style.visibility = "hidden";
+
+        torusus.forEach(torus => {
+            torus.geometry.dispose();
+            torus.material.dispose();
+            scene.remove(torus);
+        })
+        torusus.length = 0;
+        //renderer.renderLists.dispose();
     }
+
+    contadorAneisPassados = 0;
+    circuito = false;
+    destroiCaminho();
+    infoBox();
+}
+
+function infoBox() {
+    if(godOn)
+        controls.infoBox.innerHTML = "";
+    else {
+        if(!circuito) {
+            if(cameraType == 1) {
+                controls.infoBox.innerHTML =
+                `Controles:<br/>
+                WASD => Move o Avião<br/>
+                QA => Velocidade do Avião<br/>
+                P => Iniciar o Percurso<br/>
+                ESPAÇO => Modo de Inspeção<br/>
+                C => Modo Cockpit`;
+            }
+            else if(cameraType == 2) {
+                controls.infoBox.innerHTML =
+                `Controles:<br/>
+                Mouse Direito => Move o Avião<br/>
+                Mouse Esquerdo => Gira o Avião<br/>
+                Scroll => Zoom<br/>
+                ESPAÇO => Terceira Pessoa<br/>`;
+            }
+            else {
+                controls.infoBox.innerHTML =
+                `Controles:<br/>
+                WASD => Move o Avião<br/>
+                QA => Velocidade do Avião<br/>
+                P => Iniciar o Percurso<br/>
+                ENTER => Desliga/Liga Caminho<br/>
+                C => Terceira Pessoa`;
+            }
+        }
+        else {
+            if(cameraType == 1) {
+                controls.infoBox.innerHTML =
+                `Controles:<br/>
+                WASD => Move o Avião<br/>
+                QA => Velocidade do Avião<br/>
+                P => Sair do Percurso<br/>
+                C => Modo Cockpit`;
+            }
+            else {
+                controls.infoBox.innerHTML =
+                `Controles:<br/>
+                WASD => Move o Avião<br/>
+                QA => Velocidade do Avião<br/>
+                P => Sair do Percurso<br/>
+                ENTER => Desliga/Liga Caminho<br/>
+                C => Terceira Pessoa`;
+            }
+        }
+    }    
+    //câmera inicial
+
+    //cockpit
+
 }
 
 function keyboardUpdate() {
@@ -446,29 +461,16 @@ function keyboardUpdate() {
     const airpAngleX = airplane.rotation.x;
     const airpAngleY = airplane.rotation.y;
 
-    controls.infoBox.innerHTML = `Rotação  x ---- y ---- z
-    <br/>
-    Avião: ${airplane.rotation.x.toFixed(2)}, 
-    ${airplane.rotation.y.toFixed(2)}, 
-    ${airplane.rotation.z.toFixed(2)}
-    <br/>
-    Virtual: ${virtualParent.rotation.x.toFixed(2)}, 
-    ${virtualParent.rotation.y.toFixed(2)}, 
-    ${virtualParent.rotation.z.toFixed(2)}
-    <br/>
-    Velocidade: ${speed.toFixed(2)}
-    <br/>
-    Altitude: ${virtualParent.position.z.toFixed(2)}`;
-
+    //god mod on
     if(keyboard.down('G')) {
         speed = 0;
         if(sound.isPlaying)
             sound.stop();
-        scene.remove(virtualParent);
-        scene.add(god);
         godOn = true;
+        infoBox();
     }
 
+    //muda o modo de câmera
     if(cameraType == 1) {
         if(keyboard.down('space') && !circuito) {
             trocaCamera2();
@@ -476,12 +478,14 @@ function keyboardUpdate() {
         }
         if(keyboard.down('C')) {
             cameraType = 3;
+            infoBox();
             cabin.material.transparent = true;
             cabin.material.opacity = 0;
         }
     }
     else if(keyboard.down('C')) {
         cameraType = 1;
+        infoBox();
         cabin.material.transparent = false;
         cabin.material.opacity = 1;
     }
@@ -584,7 +588,7 @@ function keyboardUpdate() {
     moveAirPlane(); //move o avião
     rotateTurbine();
     if(circuito)
-        destroyTorus(torusus);
+        destroyTorus();
 }
 
 function rotateTurbine() {
@@ -611,9 +615,8 @@ function updateClouds() {
 function godView() {
     keyboard.update();
     if(keyboard.down('G')) {
-        scene.remove(god);
-        scene.add(virtualParent);
         godOn = false;
+        infoBox();
         return;
     }
     
@@ -633,9 +636,9 @@ function godView() {
         god.translateZ(-maxSpeed);
     
     if(keyboard.pressed('left'))
-        god.rotateOnAxis(new THREE.Vector3(0,0,1),angle)
+        god.rotateOnAxis(new THREE.Vector3(0,0,1),angle);
     else if(keyboard.pressed('right'))
-    god.rotateOnAxis(new THREE.Vector3(0,0,1),-angle)
+        god.rotateOnAxis(new THREE.Vector3(0,0,1),-angle);
 }
 
 function render() {
