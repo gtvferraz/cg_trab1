@@ -152,6 +152,34 @@ export function initLight(scene, position = new THREE.Vector3(1, 1, 1))
   return directionalLight;
 }
 
+export function initAirplaneLight(scene, position = new THREE.Vector3(1, 1, 1), target) 
+{
+  const directionalLight = new THREE.DirectionalLight('rgb(255, 255, 255)');
+  directionalLight.position.copy(position);
+  directionalLight.castShadow = true;  
+
+  directionalLight.shadow.mapSize.width = 3000;
+  directionalLight.shadow.mapSize.height = 3000;
+  directionalLight.shadow.autoUpdate = true;
+  directionalLight.shadow.needsUpdate = true;
+  directionalLight.shadow.camera.near = 0.5;
+  directionalLight.shadow.camera.far = 400;
+  directionalLight.shadow.camera.left = -100.0;
+  directionalLight.shadow.camera.right = 100;
+  directionalLight.shadow.camera.top = 100.0;
+  directionalLight.shadow.camera.bottom = -100.0;
+  directionalLight.visible = true;
+  directionalLight.intensity = 0.0;
+  directionalLight.decay = 1;
+  directionalLight.penumbra = 0.1;
+
+  directionalLight.target = target;
+
+  scene.add(directionalLight);
+
+  return directionalLight;
+}
+
 function createWing() {
   var geometry = new THREE.BoxGeometry(4, 2, 0.2);
   var baseWing = new THREE.Mesh(geometry, redMaterial);
@@ -162,6 +190,8 @@ function createWing() {
   edgeWing.translateZ(0.1);
   edgeWing.rotateOnAxis(x, degreesToRadians(180));
   baseWing.add(edgeWing);
+
+  edgeWing.castShadow = true;
 
   return baseWing;
 }
@@ -693,15 +723,23 @@ function updateLight(directionalLight, spotHelper, shadowHelper) {
   shadowHelper.update();    
 }
 
-function makeXYZGUI(gui, vector3, name, onChangeFn) {
+function makeXYZGUISun(gui, vector3, name, onChangeFn) {
   const folder = gui.addFolder(name);
   folder.add(vector3, 'x', -10000, 10000).onChange(onChangeFn);
   folder.add(vector3, 'y', -10000, 10000).onChange(onChangeFn);
   folder.add(vector3, 'z', -10000, 10000).onChange(onChangeFn);
   folder.open();
+}  
+
+function makeXYZGUIAirpLight(gui, vector3, name, onChangeFn) {
+  const folder = gui.addFolder(name);
+  folder.add(vector3, 'x', -1000, 1000).onChange(onChangeFn);
+  folder.add(vector3, 'y', -100, 100).onChange(onChangeFn);
+  folder.add(vector3, 'z', -100, 100).onChange(onChangeFn);
+  folder.open();
 }    
 
-export function buildInterface(directionalLight, scene)
+export function buildSunInterface(directionalLight, scene)
 {
 //------------------------------------------------------------
 // Interface
@@ -742,12 +780,12 @@ var controls = new function ()
 
 var gui = new GUI();
 
-var spotFolder = gui.addFolder("SpotLight Parameters");
+var spotFolder = gui.addFolder("Sun Light Parameters");
 spotFolder.open();    
 spotFolder.add(directionalLight, 'intensity', 0, 5);
 spotFolder.add(directionalLight, 'penumbra', 0, 1); 
-makeXYZGUI(spotFolder, directionalLight.position, 'position', () => updateLight(directionalLight, spotHelper, shadowHelper));
-makeXYZGUI(spotFolder, directionalLight.target.position, 'target', () => updateLight(directionalLight, spotHelper, shadowHelper));
+makeXYZGUISun(spotFolder, directionalLight.position, 'position', () => updateLight(directionalLight, spotHelper, shadowHelper));
+makeXYZGUISun(spotFolder, directionalLight.target.position, 'target', () => updateLight(directionalLight, spotHelper, shadowHelper));
 
 var shadowFolder = gui.addFolder("Shadow");
 shadowFolder.open();    
@@ -766,6 +804,75 @@ shadowFolder.add(directionalLight.shadow.camera, 'near', .1, 30, 0.1)
   .onChange(function() { controls.onUpdateShadowNear() })
   .listen(); // Change GUI when the value changes outside
 shadowFolder.add(directionalLight.shadow.camera, 'far', .1, 50000, 0.1)
+  .onChange(function() { controls.onUpdateShadowFar()  })
+  .listen();
+}
+
+export function buildAirpLightInterface(directionalLight, scene)
+{
+//------------------------------------------------------------
+// Interface
+
+// Create helper for the spotlight
+const spotHelper = new THREE.DirectionalLightHelper(directionalLight, 0xFF8C00);
+scene.add(spotHelper);
+
+// Create helper for the spotlight shadow
+const shadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
+scene.add(shadowHelper);
+
+var controls = new function ()
+{
+  this.angle = radiansToDegrees(directionalLight.angle);
+  this.shadowMapSize = directionalLight.shadow.mapSize.width;
+
+  this.onUpdateLightAngle = function(){
+    directionalLight.angle = degreesToRadians(this.angle);
+    updateLight(directionalLight, spotHelper, shadowHelper);      
+  };   
+  this.onUpdateShadowFar = function(){
+    if(directionalLight.shadow.camera.far <= directionalLight.shadow.camera.near-0.1) // set far always greater than near
+      directionalLight.shadow.camera.near = 0.1;
+    updateLight(directionalLight, spotHelper, shadowHelper); 
+  };   
+  this.onUpdateShadowNear = function(){
+    if(directionalLight.shadow.camera.near >= directionalLight.shadow.camera.far) // set near always smaller than far
+      directionalLight.shadow.camera.far = directionalLight.shadow.camera.near+10;
+    updateLight(directionalLight, spotHelper, shadowHelper);                
+  };
+  this.onUpdateShadowMap = function(){
+    directionalLight.shadow.mapSize.width = this.shadowMapSize;
+    directionalLight.shadow.mapSize.height = this.shadowMapSize;   
+    directionalLight.shadow.map = null;
+  };     
+};
+
+var gui = new GUI();
+
+var spotFolder = gui.addFolder("Airplane Light Parameters");
+spotFolder.open();    
+spotFolder.add(directionalLight, 'intensity', 0, 5);
+spotFolder.add(directionalLight, 'penumbra', 0, 1); 
+makeXYZGUIAirpLight(spotFolder, directionalLight.position, 'position', () => updateLight(directionalLight, spotHelper, shadowHelper));
+makeXYZGUIAirpLight(spotFolder, directionalLight.target.position, 'target', () => updateLight(directionalLight, spotHelper, shadowHelper));
+
+var shadowFolder = gui.addFolder("Shadow");
+shadowFolder.open();    
+shadowFolder.add(shadowHelper, 'visible', true);
+shadowFolder.add(directionalLight.shadow.camera, 'left', -100, 0)
+  .onChange(function() { updateLight(directionalLight, spotHelper, shadowHelper) });
+shadowFolder.add(directionalLight.shadow.camera, 'right', 0, 100)
+  .onChange(function() { updateLight(directionalLight, spotHelper, shadowHelper) });
+shadowFolder.add(directionalLight.shadow.camera, 'top', 0, 100)
+  .onChange(function() { updateLight(directionalLight, spotHelper, shadowHelper) });
+shadowFolder.add(directionalLight.shadow.camera, 'bottom', -100, 0)
+  .onChange(function() { updateLight(directionalLight, spotHelper, shadowHelper) });  
+shadowFolder.add(controls, 'shadowMapSize', 100, 5000, 10)
+  .onChange(function() { controls.onUpdateShadowMap() });
+shadowFolder.add(directionalLight.shadow.camera, 'near', .1, 30, 0.1)
+  .onChange(function() { controls.onUpdateShadowNear() })
+  .listen(); // Change GUI when the value changes outside
+shadowFolder.add(directionalLight.shadow.camera, 'far', .1, 500, 0.1)
   .onChange(function() { controls.onUpdateShadowFar()  })
   .listen();
 }

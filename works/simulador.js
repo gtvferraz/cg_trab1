@@ -18,7 +18,9 @@ import {
     createClouds,
     createTrees,
     initLight,
-    buildInterface
+    buildSunInterface,
+    initAirplaneLight,
+    buildAirpLightInterface
 } from './lib/utils.js';
 
 var stats = new Stats(); // To show FPS information
@@ -103,6 +105,9 @@ camera3.position.copy(cabin.position)
 camera3.position.z += 1
 camera3.position.y -= 1
 
+let airplaneLight = initAirplaneLight(scene, new THREE.Vector3(0,20,20), airplane);
+virtualParent.add(airplaneLight);      
+
 //var axesHelper = new THREE.AxesHelper(20)
 //virtualParent.add(axesHelper);
 posInicialCircuito.position.copy(virtualParent.position);
@@ -123,7 +128,7 @@ window.addEventListener('resize', function() { onWindowResize(camera2, renderer)
 window.addEventListener('resize', function() { onWindowResize(camera3, renderer) }, false);
 var contadorAneisPassados = 0;
 
-let directionalLight = initLight(scene, new THREE.Vector3(-200,5000,1900));      
+let sunLight = initLight(scene, new THREE.Vector3(-200,5000,1900));      
 
 //god mod
 var god = new THREE.Object3D();
@@ -135,7 +140,8 @@ god.add(cameraGod);
 var godOn = false;
 render();
 
-buildInterface(directionalLight, scene);
+//buildSunInterface(sunLight, scene);
+buildAirpLightInterface(airplaneLight, scene);
 
 function addClouds() {
     let clouds = createClouds();
