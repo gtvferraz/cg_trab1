@@ -56,7 +56,7 @@ var maxUD = degreesToRadians(45/2); //ângulo máximo rotação cima/baixo
 var maxLR = degreesToRadians(45); //ângulo máximo rotação esquerda/direita
 var angle = degreesToRadians(90/100);
 var maxSpeed = 20.0; //velocidade máxima de translação
-var minSpeed = 0; //velocidade mínima de translação
+var minSpeed = 2; //velocidade mínima de translação
 var speed = 0; //velocidade de translação
 var turbineSpeed = 1; //velocidade de rotação da turbina
 var aceleracao = 0.1;//0.05; //aceleração de translação em z
@@ -70,9 +70,10 @@ var cameraType = 1; //tipo de câmera
 //váriaveis do circuito de voo
 var circuito = false; //circuito desligado ou ligado
 var torusus = [];
-var auxContador = true;
 var contador = document.getElementById("contador");
 var posInicialCircuito = new THREE.Object3D();
+var caminho; //caminho do percurso
+var caminhoOn = true;
 
 // Show axes (parameter is size of each axis)
 //var axesHelper = new THREE.AxesHelper(100)
@@ -142,7 +143,7 @@ var timerDiv = document.getElementById("timer")
 render();
 
 //buildSunInterface(sunLight, scene);
-buildAirpLightInterface(airplaneLight, scene);
+//buildAirpLightInterface(airplaneLight, scene);
 
 function addClouds() {
     let clouds = createClouds();
@@ -165,6 +166,8 @@ function generateTorus(){
     var distance = -500;
     const TorusGeometry = new THREE.TorusGeometry( 35, 2, 16, 100 );
     const TorusMaterial = new THREE.MeshBasicMaterial( { color: 'rgb(238, 238, 0)' } );
+    TorusMaterial.transparent = true;
+    TorusMaterial.opacity = 0.5;
     for(var i = 0;i < 15; i ++){
         var torus = new THREE.Mesh( TorusGeometry, TorusMaterial );
         torus.rotateOnAxis(new THREE.Vector3(1, 0, 0), degreesToRadians(90));
@@ -243,33 +246,31 @@ function generateTorus(){
 function destroyTorus(torusus){
     for(var i = 0; i < torusus.length; i++){
         if(estaDentro(virtualParent, torusus[i], 35)){
-            torusus[i].geometry.dispose();
-            torusus[i].material.dispose();
             if(!timer.running && estaDentro(virtualParent, torusus[14], 35))
                 timer.start();
-            if(timer.running && estaDentro(virtualParent, torusus[0], 35)){
-                timer.stop();
-                setTimeout(() => {
-                    contador.style.visibility = "hidden";
-                    timerDiv.style.visibility = "hidden";
-                }, 5000)
-            }
+
+            //destroi torus passado
+            torusus[i].geometry.dispose();
+            torusus[i].material.dispose();
             scene.remove(torusus[i]);
             torusus.splice(i,1);
             renderer.renderLists.dispose();
-            if(auxContador){
-                contadorAneisPassados++;
-                auxContador = false;
-                contador.innerText = contadorAneisPassados+"/15"; 
-                setTimeout(() => {
-                    auxContador = true;
-                }, 500)
-            } 
+
+            //atualiza o contador
+            contadorAneisPassados++;
+            contador.innerText = contadorAneisPassados+"/15"; 
+        }
+        if(torusus.length == 0) {
+            destroiPercurso(true);
+            circuito = false;
+            timer.stop();
+            setTimeout(() => {
+                contador.style.visibility = "hidden";
+                timerDiv.style.visibility = "hidden";
+            }, 1000)
         }
     }
-    if(torusus.length == 0) {
-        circuito = false;
-    }
+
 }
 
 function moveAirPlane(){
@@ -277,6 +278,7 @@ function moveAirPlane(){
         virtualParent.translateZ(speed*airplane.rotation.x);
     if(airplane.rotation.y != 0)
         virtualParent.rotation.z -= speed*airplane.rotation.y/1000;
+
     virtualParent.translateY(speed);
 }
 
@@ -346,11 +348,62 @@ function trocaCamera2() {
     virtualParent.add(axesHelper);
 }
 
+function criaCaminho() {
+    //Vector3.add(Vector3) Vector3.addScaledVector(Vector3,float)
+    //console.log(torusus[0].position,virtualParent.position);
+    var linhas = [new THREE.Vector3(0,0,0).add(virtualParent.position)];
+    for(var i=torusus.length-1; i>=0; i--) {
+        linhas.push(new THREE.Vector3(0,0,0).add(torusus[i].position));
+        //console.log(linhas[torusus.length-i+1].position);
+    }
+        const curve = new THREE.CatmullRomCurve3( [
+        linhas[0],
+        linhas[1],
+        linhas[2],
+        linhas[3],
+        linhas[4],
+        linhas[5],
+        linhas[6],
+        linhas[7],
+        linhas[8],
+        linhas[9],
+        linhas[10],
+        linhas[11],
+        linhas[12],
+        linhas[13],
+        linhas[14],
+        linhas[15]
+        /*new THREE.Vector3( -10, 0, 10 ),
+        new THREE.Vector3( -5, 5, 5 ),
+        new THREE.Vector3( 0, 0, 0 ),
+        new THREE.Vector3( 5, -5, 5 ),
+        new THREE.Vector3( 10, 0, 10 )*/
+    ] );
+    
+    const points = curve.getPoints( 8000 );
+    const geometry = new THREE.BufferGeometry().setFromPoints( points );
+    
+    const material = new THREE.LineBasicMaterial( { color : 'rgb(255,0,0)' } );
+    
+    // Create the final object to add to the scene
+    const curveObject = new THREE.Line( geometry, material );
+    scene.add(curveObject);
+    return curveObject;
+}
+
+function destroiCaminho() {
+    caminho.geometry.dispose();
+    caminho.material.dispose();
+    scene.remove(caminho);
+    renderer.renderLists.dispose();
+}
+
 function criaPercurso() {
     torusus = generateTorus();
     torusus.forEach(torus => {
         scene.add(torus)
     })
+    
     circuito = true;
     contador.innerText = "0/15"
     virtualParent.position.copy(posInicialCircuito.position);
@@ -361,6 +414,7 @@ function criaPercurso() {
     numTrocasY = 0;
 
     speed = 0;
+    caminho = criaCaminho();
     if(sound.isPlaying)
         sound.stop();
 
@@ -368,7 +422,10 @@ function criaPercurso() {
     timerDiv.style.visibility = "visible";
 }
 
-function destroiPercurso() {
+function destroiPercurso(terminou) {
+    terminou = arguments.length > 0 ? arguments[0]:false;
+    
+    destroiCaminho();
     contadorAneisPassados = 0;
     torusus.forEach(torus => {
         torus.geometry.dispose();
@@ -378,8 +435,10 @@ function destroiPercurso() {
     renderer.renderLists.dispose();
     torusus.length = 0;
     circuito = false;
-    contador.style.visibility = "hidden";
-    timerDiv.style.visibility = "hidden";
+    if(!terminou) {
+        contador.style.visibility = "hidden";
+        timerDiv.style.visibility = "hidden";
+    }
 }
 
 function keyboardUpdate() {
@@ -427,17 +486,33 @@ function keyboardUpdate() {
         cabin.material.opacity = 1;
     }
 
-    if(keyboard.down('enter')) {
-        if(circuito){
+    //entra no modo do percurso
+    if(keyboard.down('P')) {
+        if(circuito) {
             destroiPercurso();
             timer.elapsedTime = 0;
             timer.stop();
         }
-        else{
+        else {
             criaPercurso();
             timer.elapsedTime = 0;
             timer.stop();
         }
+    }
+
+    //remove e recoloca o caminho
+    if(circuito) {
+        if(keyboard.down('enter')) {
+            if(caminhoOn) {
+                scene.remove(caminho);
+                caminhoOn = false;
+            }
+            else {
+                scene.add(caminho);
+                caminhoOn = true
+            }
+        }
+
     }
 
     //aceleração
@@ -541,7 +616,7 @@ function godView() {
         godOn = false;
         return;
     }
-
+    
     if(keyboard.pressed('W'))
         god.translateY(maxSpeed);
     else if(keyboard.pressed('S'))
@@ -567,6 +642,7 @@ function render() {
     stats.update(); // Update FPS
     trackballControls.update(); // Enable mouse movements
     requestAnimationFrame(render);
+    
     if(circuito)
         timerDiv.innerText = timer.getElapsedTime().toFixed(2) + "s";
     if(godOn) {
