@@ -44,8 +44,10 @@ var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHei
 camera.position.copy(new THREE.Vector3(0, -50, 15));
 camera.lookAt(0, 0, 0);
 camera.up.set(0, 1, 0);
-const { listener, sound } = addSound();
+const { listener, sound } = addSound("turbine_sound.mp3", true);
 camera.add(listener);
+const  listenerRing  = addSound("ringtone.mp3", false);
+camera.add(listenerRing.listener);
 //câmera 2
 var camera2 = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000);
 camera2.position.copy(new THREE.Vector3(0, -50, 15));
@@ -160,7 +162,6 @@ function estaDentro(aviao, anel, raio){
         if(aviao.position.y <= anel.position.y + raio && aviao.position.y >= anel.position.y - raio)
             if(aviao.position.z <= anel.position.z + raio && aviao.position.z >= anel.position.z - raio)
                 return true
-
     return false      
 }
 
@@ -256,6 +257,7 @@ function destroyTorus(){
             torusus.splice(i,1);
             renderer.renderLists.dispose();
 
+            listenerRing.sound.play();
             //atualiza o contador
             contadorAneisPassados++;
             contador.innerText = contadorAneisPassados+"/15"; 
@@ -266,7 +268,7 @@ function destroyTorus(){
             setTimeout(() => {
                 contador.style.visibility = "hidden";
                 timerDiv.style.visibility = "hidden";
-            }, 1000)
+            }, 3000)
         }
     }
 
@@ -374,6 +376,7 @@ function criaPercurso() {
 
     circuito = true;
     decolando = false;
+    emTerra = true;
     contador.innerText = "0/15"
     caminho = criaCaminho();
     
@@ -411,7 +414,7 @@ function infoBox() {
             if(cameraType == 1) {
                 controls.infoBox.innerHTML =
                 `Controles:<br/>
-                WASD => Move o Avião<br/>
+                ↑↓→← => Move o Avião<br/>
                 QA => Velocidade do Avião<br/>
                 P => Iniciar o Percurso<br/>
                 ESPAÇO => Modo de Inspeção<br/>
@@ -428,7 +431,7 @@ function infoBox() {
             else {
                 controls.infoBox.innerHTML =
                 `Controles:<br/>
-                WASD => Move o Avião<br/>
+                ↑↓→← => Move o Avião<br/>
                 QA => Velocidade do Avião<br/>
                 P => Iniciar o Percurso<br/>
                 ENTER => Desliga/Liga Caminho<br/>
@@ -439,7 +442,7 @@ function infoBox() {
             if(cameraType == 1) {
                 controls.infoBox.innerHTML =
                 `Controles:<br/>
-                WASD => Move o Avião<br/>
+                ↑↓→← => Move o Avião<br/>
                 QA => Velocidade do Avião<br/>
                 P => Sair do Percurso<br/>
                 C => Modo Cockpit`;
@@ -447,7 +450,7 @@ function infoBox() {
             else {
                 controls.infoBox.innerHTML =
                 `Controles:<br/>
-                WASD => Move o Avião<br/>
+                ↑↓→← => Move o Avião<br/>
                 QA => Velocidade do Avião<br/>
                 P => Sair do Percurso<br/>
                 ENTER => Desliga/Liga Caminho<br/>

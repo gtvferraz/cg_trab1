@@ -3,7 +3,7 @@ import {GUI} from       '../../build/jsm/libs/dat.gui.module.js';
 import { degreesToRadians, createGroundPlane, radiansToDegrees} from "../../../libs/util/util.js";
 import { ConvexGeometry } from '../../../build/jsm/geometries/ConvexGeometry.js';
 
-export function addSound() {
+export function addSound(som, loop) {
   // create an AudioListener and add it to the camera
   const listener = new THREE.AudioListener();
 
@@ -12,9 +12,9 @@ export function addSound() {
 
   // load a sound and set it as the Audio object's buffer
   const audioLoader = new THREE.AudioLoader();
-  audioLoader.load( 'turbine_sound.mp3', function( buffer ) {
+  audioLoader.load( som, function( buffer ) {
       sound.setBuffer( buffer );
-      sound.setLoop( true );
+      sound.setLoop( loop );
       sound.setVolume( 0.1 );
   });
 
@@ -594,7 +594,7 @@ export function createTrees() {
   const subTrunkHeight = 13;
 
   const treesPos = [];
-  const treeRadius = 10;
+  const treeRadius = 100;
 
   let randomX;
   let randomY;
