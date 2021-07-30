@@ -31,7 +31,7 @@ var keyboard = new KeyboardState();
 var controls = new InfoBox();
 controls.infoBox.innerHTML =
     `Controles:<br/>
-    WASD => Move o Avião<br/>
+    ↑↓→← => Move o Avião<br/>
     QA => Velocidade do Avião<br/>
     P => Iniciar o Percurso<br/>
     ESPAÇO => Modo de Inspeção<br/>
@@ -99,7 +99,7 @@ var contadorAneisPassados = 0;
 //cria cenário
 const terrain = createTerrain();
 scene.add(terrain);
-const trees = createTrees();
+const trees = createTrees(scene);
 trees.forEach(tree => {
     scene.add(tree);
 })
@@ -113,6 +113,9 @@ virtualParent.add(airplane);
 airplane.position.z += 1;
 virtualParent.translateY(-3000);
 scene.add(virtualParent);
+
+console.log(virtualParent.position);
+console.log(airplane.position);
 
 //adiciona as câmeras
 virtualParent.add(camera);

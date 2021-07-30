@@ -579,22 +579,27 @@ export function createClouds() {
   return clouds;
 }
 
-export function createTrees() {
+export function createTrees(scene) {
   const trees = [];
 
   //offsetX = 225*escala(montanha)
   //mountainRadius = 400*escala(montanha)
 
   const offsetX = 550;
-  const mountainRadius = 1000;
-  const totalRadius = 8000;
+  const mountainRadius = 1500;
+  const totalRadius = 11000;
 
-  const numTrees = 100;
+  const numTrees = 1000;
   const trunkHeight = 25;
   const subTrunkHeight = 13;
 
   const treesPos = [];
   const treeRadius = 100;
+
+  const trackLeft = -50;
+  const trackRight = 50;
+  const trackFront = -1500;
+  const trackBack = -3000;
 
   let randomX;
   let randomY;
@@ -636,21 +641,21 @@ export function createTrees() {
 
     let redo = true;
     while(redo) {
-      randomX = Math.random() * totalRadius - totalRadius/2 + offsetX;
+      randomX = Math.random() * totalRadius - totalRadius/2;
       randomY = Math.random() * totalRadius - totalRadius/2;
 
-      if(randomX >= -mountainRadius+offsetX && randomX <= mountainRadius+offsetX) {
-        if(randomY >= -mountainRadius && randomY <= mountainRadius) {
+      if(randomX >= -(mountainRadius/2)+offsetX && randomX <= (mountainRadius/2)+offsetX) {
+        if(randomY >= -(mountainRadius/2) && randomY <= (mountainRadius/2)) {
           if(randomX < offsetX) {
-            randomX -= (mountainRadius+offsetX)+randomX;
+            randomX -= ((mountainRadius/2)+offsetX)+randomX;
           } else {
-            randomX += (mountainRadius+offsetX)-randomX;
+            randomX += ((mountainRadius/2)+offsetX)-randomX;
           }
 
           if(randomY < 0) {
-            randomY -= mountainRadius+randomY;
+            randomY -= (mountainRadius/2)+randomY;
           } else {
-            randomY += mountainRadius-randomY;
+            randomY += (mountainRadius/2)-randomY;
           }
         }
       }
@@ -665,6 +670,12 @@ export function createTrees() {
         if(dist <= treeRadius) {
           redo = true;
           break;
+        }
+      }
+
+      if(!redo) {
+        if(randomX >= trackLeft && randomX <= trackRight && randomY >= trackBack && randomY <= trackFront) {
+          redo = true;
         }
       }
     }
@@ -686,9 +697,7 @@ export function createTrees() {
     tree.scale.set(randomScale,randomScale,randomScale);
     tree.rotateOnAxis(y, degreesToRadians(randomDegree));
     
-    tree.translateX(randomX);
-    tree.translateZ(randomY);
-    tree.translateY((randomScale*trunkHeight)/2);
+    tree.position.copy(new THREE.Vector3(randomX, randomY, (randomScale*trunkHeight)/2));
 
     tree.castShadow = true;
     trunk.castShadow = true;
@@ -700,18 +709,23 @@ export function createTrees() {
     trees.push(tree);
   }
 
-  /*
-  var geometry = new THREE.CylinderGeometry(3000, 3000, 1, 10);
+  
+  /*var geometry = new THREE.BoxGeometry(totalRadius, 10, totalRadius, 1, 10);
   var mark = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color: 'rgb(139,69,19)'}));
   mark.rotateOnAxis(x, degreesToRadians(90));
   scene.add(mark)
 
-  var geometry = new THREE.CylinderGeometry(400, 400, 2, 10);
+  var geometry = new THREE.BoxGeometry(mountainRadius, 20, mountainRadius, 2, 10);
   var mark = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color: 'rgb(255,255,255)'}));
-  mark.translateX(230);
+  mark.position.copy(new THREE.Vector3(offsetX, 0, 0));
   mark.rotateOnAxis(x, degreesToRadians(90));
   scene.add(mark)
-  */
+  
+  var geometry = new THREE.BoxGeometry(Math.abs(trackRight-trackLeft), 100, Math.abs(trackBack-trackFront), 2, 10);
+  var mark = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color: 'rgb(255,0,255)'}));
+  mark.position.copy(new THREE.Vector3(0, -2250, 0));
+  mark.rotateOnAxis(x, degreesToRadians(90));
+  scene.add(mark)*/
 
   return trees;
 }
