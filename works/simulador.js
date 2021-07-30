@@ -273,7 +273,6 @@ function destroyTorus(){
 }
 
 function moveAirPlane(){
-
     if(airplane.rotation.x != 0)
         virtualParent.translateZ(speed*airplane.rotation.x);
     if(airplane.rotation.y != 0)
