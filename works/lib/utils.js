@@ -589,7 +589,7 @@ export function createTrees(scene) {
   const mountainRadius = 1500;
   const totalRadius = 11000;
 
-  const numTrees = 1000;
+  const numTrees = 200;
   const trunkHeight = 25;
   const subTrunkHeight = 13;
 

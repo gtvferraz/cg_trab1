@@ -69,7 +69,7 @@ var maxUD =  degreesToRadians(45/2);//ângulo máximo rotação cima/baixo
 var maxLR = degreesToRadians(45); //ângulo máximo rotação esquerda/direita
 var angle = degreesToRadians(90/100);
 var maxSpeed = 20.0; //velocidade máxima de translação
-var minSpeed = 5; //velocidade mínima de translação
+var minSpeed = 2.5; //velocidade mínima de translação
 var speed = 0; //velocidade de translação
 var turbineSpeed = 1; //velocidade de rotação da turbina
 var aceleracao = 0.1;//0.05; //aceleração de translação em z
@@ -90,7 +90,7 @@ var torusus = []; //arraylist para guardar os torus
 var contador = document.getElementById("contador");
 var posInicialCircuito = new THREE.Vector3(0,-3000,0); //marca a posição inicial do circuito
 var caminho; //caminho do percurso
-var caminhoOn = true; //se o caminho está ativou ou não
+var caminhoOn = false; //se o caminho está ativou ou não
 var timer = new THREE.Clock();
 timer.autoStart = false;
 var timerDiv = document.getElementById("timer")
@@ -274,7 +274,7 @@ function destroyTorus(){
             }, 3000)
         }
     }
-
+    return;
 }
 
 function moveAirPlane(){
@@ -304,9 +304,12 @@ function trocaCamera1() {
         trees.forEach(tree => {
             scene.add(tree);
         })
-        torusus.forEach(torus => {
-            scene.add(torus)
-        })
+        if(caminhoOn) {
+            torusus.forEach(torus => {
+                scene.add(torus)
+            })
+            scene.add(caminho);
+        }
         infoBox();
     }
 }
@@ -317,7 +320,12 @@ function trocaCamera2() {
     trees.forEach(tree => {
         scene.remove(tree);
     })
-
+    if(caminhoOn) {
+        torusus.forEach(torus => {
+            scene.remove(torus);
+        })
+        scene.remove(caminho);
+    }
     cameraType = 2;
     if(sound.isPlaying)
         sound.stop();
@@ -348,7 +356,7 @@ function criaCaminho() {
     const material = new THREE.LineBasicMaterial( { color : 'rgb(255,0,0)' } );
     const curveObject = new THREE.Line( geometry, material );
     scene.add(curveObject);
-
+    caminhoOn = true;
     return curveObject;
 }
 
@@ -449,6 +457,14 @@ function infoBox() {
                 P => Sair do Percurso<br/>
                 C => Modo Cockpit`;
             }
+            else if(cameraType == 2) {
+                controls.infoBox.innerHTML =
+                `Controles:<br/>
+                Mouse Direito => Move o Avião<br/>
+                Mouse Esquerdo => Gira o Avião<br/>
+                Scroll => Zoom<br/>
+                ESPAÇO => Terceira Pessoa<br/>`;
+            }
             else {
                 controls.infoBox.innerHTML =
                 `Controles:<br/>
@@ -482,7 +498,7 @@ function keyboardUpdate() {
 
     //muda o modo de câmera
     if(cameraType == 1) {
-        if(keyboard.down('space') && !circuito) {
+        if(keyboard.down('space')) {
             trocaCamera2();
             return;
         }
@@ -528,10 +544,6 @@ function keyboardUpdate() {
         }
 
     }
-
-    //aceleração
-    if(speed >= minSpeed)
-        emTerra = false;
 
     if(!emTerra) {
         if(keyboard.pressed("Q")) {
@@ -608,6 +620,9 @@ function keyboardUpdate() {
         }
         if(decolando)
             speed += aceleracao/5; //acelera sozinho ate a velocidade mínima
+        //aceleração
+        if(speed >= minSpeed)
+            emTerra = false;
     }
     
 
