@@ -113,7 +113,6 @@ virtualParent.add(airplane);
 airplane.position.z += 1;
 virtualParent.translateY(-3000);
 scene.add(virtualParent);
-
 console.log(virtualParent.position);
 console.log(airplane.position);
 
@@ -147,6 +146,31 @@ cameraGod.up.set(0, 1, 0);
 god.add(cameraGod);
 scene.add(god);
 var godOn = false;
+
+//teste loading screen
+var scene2, camera4, box;
+var loadingScreen = {
+    scene2: new THREE.Scene(),
+    camera4: new THREE.PerspectiveCamera(90, 1280/720, 0.1, 100),
+    box: new THREE.Mesh(
+        new THREE.BoxGeometry(0.5, 0.5, 0.5),
+        new THREE.MeshBasicMaterial({color:0x4444ff})
+    )
+};
+var RESOURCES_LOADED = true;
+loadingScreen.box.position.set(0,0,5);
+loadingScreen.camera4.lookAt(loadingScreen.box.position);
+loadingScreen.scene2.add(loadingScreen.box);
+
+var LoadingManager = new THREE.LoadingManager();
+
+LoadingManager.onProgress = function(item, loaded, total) {
+    console.log(item, loaded,total);
+};
+LoadingManager.onLoad = function() {
+    console.log('loaded all resources');
+    RESOURCES_LOADED = true;
+};
 
 render();
 
@@ -684,6 +708,18 @@ function godView() {
 }
 
 function render() {
+
+    if(RESOURCES_LOADED == false) {
+        requestAnimationFrame(render);
+
+        loadingScreen.box.position.x -= 0.05;
+        if(loadingScreen.box.position.x <  -10) loadingScreen.box.position.x = 10;
+        loadingScreen.box.position.y = Math.sin(loadingScreen.box.position.x);
+
+        renderer.render(loadingScreen.scene2, loadingScreen.camera4);
+        return;
+    }
+
     stats.update(); // Update FPS
     trackballControls.update(); // Enable mouse movements
     requestAnimationFrame(render);
