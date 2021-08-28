@@ -4,8 +4,11 @@ import { TrackballControls } from '../build/jsm/controls/TrackballControls.js';
 import {
     initRenderer,
     degreesToRadians,
-    initDefaultBasicLight
+    createLightSphere
 } from "../libs/util/util.js";
+import {
+    initLight
+}from './lib/utils.js';
  
 var stats = new Stats(); // To show FPS information
 var scene = new THREE.Scene(); // Create main scene
@@ -13,35 +16,102 @@ var renderer = initRenderer(); // View function in util/utils
 var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000);
 camera.position.copy(new THREE.Vector3(0, -50, 25));
 
-var sunLight = initDefaultBasicLight(scene, new THREE.Vector3(-200,5000,1900));  
+var ambientLight = new THREE.AmbientLight("rgb(255, 255, 255)");
+scene.add(ambientLight);
+let sunLight = initLight(scene, new THREE.Vector3(-30,0,30)); 
 
-// Enable mouse rotation, pan, zoom etc.
-var trackballControls = new TrackballControls(camera, renderer.domElement);
-
-// Show axes (parameter is size of each axis)
-var axesHelper = new THREE.AxesHelper(12)
-scene.add(axesHelper);
-
+const textureLoader = new THREE.TextureLoader();
+//tiles_stone_001
+const tilesBaseColor = textureLoader.load('./assets/Tiles_Stone_001_basecolor.jpg');
+const tilesNormalMap = textureLoader.load('./assets/Tiles_Stone_001_normal.jpg');
+const tilesHeightMap = textureLoader.load('./assets/Tiles_Stone_001_height.png');
+const tilesRoughnessMap = textureLoader.load('./assets/Tiles_Stone_001_roughness.jpg');
+const tilesAmbientOcclusionMap = textureLoader.load('./assets/Tiles_Stone_001_ambientOcclusion.jpg');
+//wood_window_001
+/*
+const woodWindowBaseColor = textureLoader.load('./assets/Wood_Window_001_basecolor.jpg');
+const woodWindowNormalMap = textureLoader.load('./assets/Wood_Window_001_normal.jpg');
+const woodWindowHeightMap = textureLoader.load('./assets/Wood_Window_001_height.png');
+const woodWindowRoughnessMap = textureLoader.load('./assets/Wood_Window_001_roughness.jpg');
+const woodWindowAmbientOcclusionMap = textureLoader.load('./assets/Wood_Window_001_ambientOcclusion.jpg');
+const woodWindowMetallicMap = textureLoader.load('./assets/Wood_Window_001_metallic.jpg');
+const woodWindowOpacityMap = textureLoader.load('./assets/Wood_Window_001_opacity.jpg');*/
+//glass_window_003
+const glassBaseColor = textureLoader.load('./assets/Glass_Window_003_basecolor.jpg');
+const glassNormalMap = textureLoader.load('./assets/Glass_Window_003_normal.jpg');
+const glassHeightMap = textureLoader.load('./assets/Glass_Window_003_height.png');
+const glassRoughnessMap = textureLoader.load('./assets/Glass_Window_003_roughness.jpg');
+const glassAmbientOcclusionMap = textureLoader.load('./assets/Glass_Window_003_ambientOcclusion.jpg');
+const glassMetallicMap = textureLoader.load('./assets/Glass_Window_003_metallic.jpg');
+const glassOpacityMap = textureLoader.load('./assets/Glass_Window_003_opacity.jpg');
+//door_wood_001
+const doorWoodBaseColor = textureLoader.load('./assets/Door_Wood_001_basecolor.jpg');
+const doorWoodNormalMap = textureLoader.load('./assets/Door_Wood_001_normal.jpg');
+const doorWoodHeightMap = textureLoader.load('./assets/Door_Wood_001_height.png');
+const doorWoodRoughnessMap = textureLoader.load('./assets/Door_Wood_001_roughness.jpg');
+const doorWoodAmbientOcclusionMap = textureLoader.load('./assets/Door_Wood_001_ambientOcclusion.jpg');
+const doorWoodMetallicMap = textureLoader.load('./assets/Door_Wood_001_metallic.jpg');
+const doorWoodOpacityMap = textureLoader.load('./assets/Door_Wood_001_opacity.jpg');
+//door
+const portaMap = textureLoader.load('./assets/porta.png')
 //geometry
 var gradeFrenteGeometry = new THREE.BoxGeometry(9,0.1,0.1);
 var gradeLateralGeometry = new THREE.BoxGeometry(0.1,3,0.1);
 var pisoGeometry = new THREE.PlaneGeometry(9, 3);
 var portaVarandaGeometry = new THREE.PlaneGeometry(1,2.5);
-var predioGeometry = new THREE.BoxGeometry(20, 8, 20);
+var predioGeometry = new THREE.BoxGeometry(20, 8, 20, 512, 512);
 var pilarGeometry = new THREE.BoxGeometry(2,3,16);
-var janelaGeometry = new THREE.PlaneGeometry(1,1);
+var janelaGeometry = new THREE.PlaneGeometry(1,1, 512, 512);
 
 //material
 var pisoMaterial = new THREE.MeshBasicMaterial({
     color: "rgba(150, 150, 150)",
     side: THREE.DoubleSide,
 });
-var portaVarandaMaterial = new THREE.MeshBasicMaterial();
+var portaVarandaMaterial = new THREE.MeshLambertMaterial({color:"rgb(255,255,255)",side:THREE.DoubleSide});
+portaVarandaMaterial.map = portaMap
+/*var portaVarandaMaterial = new THREE.MeshPhysicalMaterial({
+    map: doorWoodBaseColor,
+    normalMap: doorWoodNormalMap,
+    displacementMap: doorWoodHeightMap,
+    displacementScale: 0.05,
+    roughnessMap: doorWoodRoughnessMap,
+    roughness: 0,
+    aoMap: doorWoodAmbientOcclusionMap,
+    metalnessMap: doorWoodMetallicMap,
+    metalness: 1,
+    alphaMap: doorWoodOpacityMap,
+});
+portaVarandaMaterial.alphaTest = 0.11;
+portaVarandaGeometry.attributes.uv2 = portaVarandaGeometry.attributes.uv;*/
 var gradeMaterial = new THREE.MeshBasicMaterial();
 var cubeMaterial = new THREE.MeshNormalMaterial();
-var janelaMaterial = new THREE.MeshBasicMaterial();
+var janelaMaterial = new THREE.MeshPhysicalMaterial({
+    map: glassBaseColor,
+    normalMap: glassNormalMap,
+    displacementMap: glassHeightMap,
+    displacementScale: 0.05,
+    roughnessMap: glassRoughnessMap,
+    roughness: 0,
+    aoMap: glassAmbientOcclusionMap,
+    metalnessMap: glassMetallicMap,
+    metalness: 1,
+    alphaMap: glassOpacityMap,
+});
+janelaMaterial.alphaTest = 0.11;
+janelaGeometry.attributes.uv2 = janelaGeometry.attributes.uv;
+var predioMaterial = new THREE.MeshStandardMaterial({
+    map: tilesBaseColor,
+    normalMap: tilesNormalMap,
+    displacementMap: tilesHeightMap,
+    displacementScale: 0.001,
+    roughnessMap: tilesRoughnessMap,
+    roughness: 0.1,
+    aoMap: tilesAmbientOcclusionMap
+});
+predioGeometry.attributes.uv2 = predioGeometry.attributes.uv;
 
-var predio = new THREE.Mesh(predioGeometry, cubeMaterial);
+var predio = new THREE.Mesh(predioGeometry, predioMaterial);
 predio.position.set(0,0,10);
 scene.add(predio);
 
@@ -97,7 +167,26 @@ predio.add(porta);
 porta.rotateOnAxis(new THREE.Vector3(1,0,0), degreesToRadians(90));
 porta.position.set(0,-4.01,-8)
 
+
+// Show axes (parameter is size of each axis)
+var axesHelper = new THREE.AxesHelper(12)
+scene.add(axesHelper);
+// Enable mouse rotation, pan, zoom etc.
+var trackballControls = new TrackballControls(camera, renderer.domElement);
 render();
+
+function setSpotLight(position,spotLight)
+{
+  spotLight.position.copy(position);
+  spotLight.shadow.mapSize.width = 512;
+  spotLight.shadow.mapSize.height = 512;
+  spotLight.angle = degreesToRadians(40);    
+  spotLight.castShadow = true;
+  spotLight.decay = 2;
+  spotLight.penumbra = 0.5;
+  spotLight.name = "Spot Light"
+  scene.add(spotLight);
+}
 
 function render() {
     stats.update(); // Update FPS
