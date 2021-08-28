@@ -1,14 +1,13 @@
-import * as THREE from '../build/three.module.js';
-import Stats from '../build/jsm/libs/stats.module.js';
-import { TrackballControls } from '../build/jsm/controls/TrackballControls.js';
+import * as THREE from '../../../build/three.module.js';
+import Stats from '../../../build/jsm/libs/stats.module.js';
+import { TrackballControls } from '../../../build/jsm/controls/TrackballControls.js';
 import {
     initRenderer,
-    degreesToRadians,
-    createLightSphere
-} from "../libs/util/util.js";
+    degreesToRadians
+} from "../../../libs/util/util.js";
 import {
     initLight
-}from './lib/utils.js';
+}from '../utils.js';
  
 var stats = new Stats(); // To show FPS information
 var scene = new THREE.Scene(); // Create main scene
@@ -45,35 +44,35 @@ function setSpotLight(position,spotLight)
 
 function predio01(position, textureLoader) {
     //tiles_stone_001
-    const tilesBaseColor = textureLoader.load('./assets/predio_01/Tiles_Stone_001_basecolor.jpg');
-    const tilesNormalMap = textureLoader.load('./assets/predio_01/Tiles_Stone_001_normal.jpg');
-    const tilesHeightMap = textureLoader.load('./assets/predio_01/Tiles_Stone_001_height.png');
-    const tilesRoughnessMap = textureLoader.load('./assets/predio_01/Tiles_Stone_001_roughness.jpg');
-    const tilesAmbientOcclusionMap = textureLoader.load('./assets/predio_01/Tiles_Stone_001_ambientOcclusion.jpg');
+    const tilesBaseColor = textureLoader.load('../../assets/predio_01/Tiles_Stone_001_basecolor.jpg');
+    const tilesNormalMap = textureLoader.load('../../assets/predio_01/Tiles_Stone_001_normal.jpg');
+    const tilesHeightMap = textureLoader.load('../../assets/predio_01/Tiles_Stone_001_height.png');
+    const tilesRoughnessMap = textureLoader.load('../../assets/predio_01/Tiles_Stone_001_roughness.jpg');
+    const tilesAmbientOcclusionMap = textureLoader.load('../../assets/predio_01/Tiles_Stone_001_ambientOcclusion.jpg');
     //brick_wall_015
-    const brickWallBaseColor = textureLoader.load('./assets/predio_01/Brick_Wall_015_COLOR.jpg');
-    const brickWallNormalMap = textureLoader.load('./assets/predio_01/Brick_Wall_015_NORM.jpg');
-    const brickWallHeightMap = textureLoader.load('./assets/predio_01/Brick_Wall_015_DISP.png');
-    const brickWallRoughnessMap = textureLoader.load('./assets/predio_01/Brick_Wall_015_ROUGH.jpg');
-    const brickWallAmbientOcclusionMap = textureLoader.load('./assets/predio_01/Brick_Wall_015_OCC.jpg');
+    const brickWallBaseColor = textureLoader.load('../../assets/predio_01/Brick_Wall_015_COLOR.jpg');
+    const brickWallNormalMap = textureLoader.load('../../assets/predio_01/Brick_Wall_015_NORM.jpg');
+    const brickWallHeightMap = textureLoader.load('../../assets/predio_01/Brick_Wall_015_DISP.png');
+    const brickWallRoughnessMap = textureLoader.load('../../assets/predio_01/Brick_Wall_015_ROUGH.jpg');
+    const brickWallAmbientOcclusionMap = textureLoader.load('../../assets/predio_01/Brick_Wall_015_OCC.jpg');
     //window_001
-    const WindowBaseColor = textureLoader.load('./assets/predio_01/Window_001_basecolor.jpg');
-    const WindowNormalMap = textureLoader.load('./assets/predio_01/Window_001_normal.jpg');
-    const WindowHeightMap = textureLoader.load('./assets/predio_01/Window_001_height.png');
-    const WindowRoughnessMap = textureLoader.load('./assets/predio_01/Window_001_roughness.jpg');
-    const WindowAmbientOcclusionMap = textureLoader.load('./assets/predio_01/Window_001_ambientOcclusion.jpg');
-    const WindowMetallicMap = textureLoader.load('./assets/predio_01/Window_001_metallic.jpg');
-    const WindowOpacityMap = textureLoader.load('./assets/predio_01/Window_001_opacity.jpg');
+    const WindowBaseColor = textureLoader.load('../../assets/predio_01/Window_001_basecolor.jpg');
+    const WindowNormalMap = textureLoader.load('../../assets/predio_01/Window_001_normal.jpg');
+    const WindowHeightMap = textureLoader.load('../../assets/predio_01/Window_001_height.png');
+    const WindowRoughnessMap = textureLoader.load('../../assets/predio_01/Window_001_roughness.jpg');
+    const WindowAmbientOcclusionMap = textureLoader.load('../../assets/predio_01/Window_001_ambientOcclusion.jpg');
+    const WindowMetallicMap = textureLoader.load('../../assets/predio_01/Window_001_metallic.jpg');
+    const WindowOpacityMap = textureLoader.load('../../assets/predio_01/Window_001_opacity.jpg');
 
     //porta varanda
-    const portaMap = textureLoader.load('./assets/predio_01/porta.png');
-    const portaMap2 = textureLoader.load('./assets/predio_01/porta.png');
+    const portaMap = textureLoader.load('../../assets/predio_01/porta.png');
+    const portaMap2 = textureLoader.load('../../assets/predio_01/porta.png');
     //chão varanda
-    const varandaMap = textureLoader.load('./assets/predio_01/Marble_Carrara_003_COLOR.jpg');
+    const varandaMap = textureLoader.load('../../assets/predio_01/Marble_Carrara_003_COLOR.jpg');
     //grade
-    const gradeMap = textureLoader.load('./assets/predio_01/Wood_Herringbone_Tiles_002_basecolor.jpg');
+    const gradeMap = textureLoader.load('../../assets/predio_01/Wood_Herringbone_Tiles_002_basecolor.jpg');
     //porta entrada
-    const portaEntradaMap = textureLoader.load('./assets/predio_01/porta2.jpg');
+    const portaEntradaMap = textureLoader.load('../../assets/predio_01/porta2.jpg');
 
     //geometry
     var gradeFrenteGeometry = new THREE.BoxGeometry(9, 0.1, 0.1);
