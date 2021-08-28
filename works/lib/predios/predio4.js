@@ -15,7 +15,7 @@ var stats = new Stats(); // To show FPS information
 var scene = new THREE.Scene(); // Create main scene
 var renderer = initRenderer(); // View function in util/utils
 var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000);
-camera.position.copy(new THREE.Vector3(0, -142, 69));
+camera.position.copy(new THREE.Vector3(0, -140, 44));
 
 var ambientLight = new THREE.AmbientLight("rgb(255, 255, 255)");
 scene.add(ambientLight);
@@ -33,6 +33,7 @@ var trackballControls = new TrackballControls(camera, renderer.domElement);
 var hospitalGeometry = new THREE.BoxGeometry(30, 10, 100);
 var divisoriaGeometry = new THREE.BoxGeometry(30, 0.1, 0.5);
 var divisoriaGeometry2 = new THREE.BoxGeometry(100, 0.1, 0.5);
+var divisoriaGeometry3 = new THREE.BoxBufferGeometry(70,0.1,0.5)
 var janelaGeometry1 = new THREE.PlaneGeometry(5,2);
 var janelaGeometry2 = new THREE.PlaneGeometry(2,2);
 var janelaGeometry3 = new THREE.PlaneGeometry(1,2);
@@ -134,9 +135,96 @@ hospital.add(tunel);
 //parte esquerda
 
 var ladoEsquerdo = new THREE.Mesh(ladoEsquerdoGeometry, ladoEsquerdoMaterial);
-ladoEsquerdo.translateOnAxis(x, -50)
+ladoEsquerdo.translateOnAxis(x, -80);
+ladoEsquerdo.translateOnAxis(z,-15);
 hospital.add(ladoEsquerdo);
 
+var janealInicial = 17;
+var divisorioaInicial = 19.8; 
+for(var i = 0; i < 12; i++){
+    var divisoria = new THREE.Mesh(divisoriaGeometry, divisoriaMaterial);
+    divisoria.translateOnAxis(y,-5.01);
+    divisoria.translateOnAxis(x, -80);
+    divisoria.translateOnAxis(z,divisorioaInicial - i*5);
+    hospital.add(divisoria);
+    var janela = new THREE.Mesh(janelaGeometry1, janelaMaterial);
+    janela.translateOnAxis(y,-5.1);
+    janela.translateOnAxis(x, -80);
+    janela.translateOnAxis(x,12);
+    janela.translateOnAxis(z,janealInicial - i*5);
+    janela.rotateOnAxis(x, degreesToRadians(-90))
+    hospital.add(janela);
+    var janela = new THREE.Mesh(janelaGeometry2, janelaMaterial);
+    janela.translateOnAxis(y,-5.1);
+    janela.translateOnAxis(x, -80);
+    janela.translateOnAxis(x,8);
+    janela.translateOnAxis(z,janealInicial - i*5);
+    janela.rotateOnAxis(x, degreesToRadians(-90))
+    hospital.add(janela);
+    var janela = new THREE.Mesh(janelaGeometry3, janelaMaterial);
+    janela.translateOnAxis(y,-5.1);    
+    janela.translateOnAxis(x, -80);
+    janela.translateOnAxis(x,6);
+    janela.translateOnAxis(z,janealInicial - i*5);
+    janela.rotateOnAxis(x, degreesToRadians(-90))
+    hospital.add(janela);
+    var janela = new THREE.Mesh(janelaGeometry4, janelaMaterial);
+    janela.translateOnAxis(y,-5.1);
+    janela.translateOnAxis(x, -80);
+    janela.translateOnAxis(x,2);
+    janela.translateOnAxis(z,janealInicial - i*5);
+    janela.rotateOnAxis(x, degreesToRadians(-90))
+    hospital.add(janela);
+    var janela = new THREE.Mesh(janelaGeometry2, janelaMaterial);
+    janela.translateOnAxis(y,-5.1);   
+    janela.translateOnAxis(x, -80);
+    janela.translateOnAxis(x,-3);
+    janela.translateOnAxis(z,janealInicial - i*5);
+    janela.rotateOnAxis(x, degreesToRadians(-90))
+    hospital.add(janela);
+    var janela = new THREE.Mesh(janelaGeometry4, janelaMaterial);
+    janela.translateOnAxis(y,-5.1);
+    janela.translateOnAxis(x, -80);
+    janela.translateOnAxis(x,-8);
+    janela.translateOnAxis(z,janealInicial - i*5);
+    janela.rotateOnAxis(x, degreesToRadians(-90))
+    hospital.add(janela);
+    var janela = new THREE.Mesh(janelaGeometry2, janelaMaterial);
+    janela.translateOnAxis(y,-5.1);
+    janela.translateOnAxis(x, -80);
+    janela.translateOnAxis(x,-13);
+    janela.translateOnAxis(z,janealInicial - i*5);
+    janela.rotateOnAxis(x, degreesToRadians(-90))
+    hospital.add(janela);
+}
+var divisoria = new THREE.Mesh(divisoriaGeometry, divisoriaMaterial);
+divisoria.translateOnAxis(y,-5.01);
+divisoria.translateOnAxis(x, -80);
+divisoria.translateOnAxis(z,-40);
+hospital.add(divisoria);
+
+var divisoria = new THREE.Mesh(divisoriaGeometry3, divisoriaMaterial);
+divisoria.translateOnAxis(y,-5.01);
+divisoria.translateOnAxis(x, -80);
+divisoria.translateOnAxis(x,-15);
+divisoria.translateOnAxis(z,-15);
+divisoria.rotateOnAxis(y,degreesToRadians(90));
+hospital.add(divisoria);
+
+var divisoria = new THREE.Mesh(divisoriaGeometry3, divisoriaMaterial);
+divisoria.translateOnAxis(y,-5.01);
+divisoria.translateOnAxis(x, -80);
+divisoria.translateOnAxis(x,15);
+divisoria.translateOnAxis(z,-15);
+divisoria.rotateOnAxis(y,degreesToRadians(90));
+hospital.add(divisoria);
+
+var porta = new THREE.Mesh(portaGeometry, portaMaterial);
+porta.translateOnAxis(y, -5.05);
+porta.translateOnAxis(x, -80);
+porta.translateOnAxis(z, -45.5);
+porta.rotateOnAxis(x, degreesToRadians(90))
+hospital.add(porta);
 
 render();
 
