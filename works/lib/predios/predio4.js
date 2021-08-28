@@ -39,12 +39,14 @@ var janelaGeometry3 = new THREE.PlaneGeometry(1,2);
 var janelaGeometry4 = new THREE.PlaneGeometry(6,2);
 var portaGeometry = new THREE.PlaneGeometry(15,9);
 var tunelGeometry = new THREE.BoxGeometry(50, 5, 5);
+var ladoEsquerdoGeometry = new THREE.BoxGeometry(30,10, 70);
 
 //Materiais
 var divisoriaMaterial = new THREE.MeshBasicMaterial();
 var janelaMaterial = new THREE.MeshBasicMaterial({side: THREE.DoubleSide});
 var portaMaterial = new THREE.MeshBasicMaterial({side: THREE.DoubleSide});
 var tunelMaterial = new THREE.MeshBasicMaterial();
+var ladoEsquerdoMaterial = new THREE.MeshBasicMaterial({color:'rgb(255,0,0)'});
 
 
 var hospitalMaterial = new THREE.MeshBasicMaterial({color: 'rgb(0,255,0)'});
@@ -131,8 +133,6 @@ hospital.add(tunel);
 
 //parte esquerda
 
-var ladoEsquerdoGeometry = new THREE.BoxGeometry(30,10, 70);
-var ladoEsquerdoMaterial = new THREE.MeshBasicMaterial({color:'rgb(255,0,0)'});
 var ladoEsquerdo = new THREE.Mesh(ladoEsquerdoGeometry, ladoEsquerdoMaterial);
 ladoEsquerdo.translateOnAxis(x, -50)
 hospital.add(ladoEsquerdo);
