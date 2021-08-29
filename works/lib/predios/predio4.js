@@ -83,7 +83,7 @@ var janelaGeometry1 = new THREE.PlaneGeometry(5,2);
 var janelaGeometry2 = new THREE.PlaneGeometry(2,2);
 var janelaGeometry3 = new THREE.PlaneGeometry(1,2);
 var portaGeometry = new THREE.PlaneGeometry(10,7);
-var tunelGeometry = new THREE.BoxGeometry(50, 5, 5);
+var tunelGeometry = new THREE.BoxGeometry(50, 5, 5, 512, 512);
 var ladoEsquerdoGeometry = new THREE.BoxGeometry(30,10, 70);
 
 //Materiais
