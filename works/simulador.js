@@ -747,7 +747,7 @@ function render() {
         }
 
         LoadingManager.onLoad = function() {
-            loader.innerHTML = 'Aperte espaço para continuar';
+            loader.innerHTML = loader.innerHTML + '<br>Aperte espaço para continuar';
 
             render2();
             requestAnimationFrame(render2);
