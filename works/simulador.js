@@ -99,10 +99,34 @@ var caminhoOn = false; //se o caminho está ativou ou não
 var timer = new THREE.Clock();
 timer.autoStart = false;
 var timerDiv = document.getElementById("timer")
-var contadorAneisPassados = 0; 
+var contadorAneisPassados = 0;
+
+//teste loading screen
+var loadingScreen = {
+    scene: new THREE.Scene(),
+    camera: new THREE.PerspectiveCamera(90, 1280/720, 0.1, 100),
+    box: new THREE.Mesh(
+        new THREE.BoxGeometry(0.5, 0.5, 0.5),
+        new THREE.MeshBasicMaterial({color:0x4444ff})
+    )
+};
+var RESOURCES_LOADED = false;
+loadingScreen.box.position.set(0,0,5);
+loadingScreen.camera.lookAt(loadingScreen.box.position);
+loadingScreen.scene.add(loadingScreen.box);
+
+var LoadingManager = new THREE.LoadingManager();
+
+LoadingManager.onProgress = function(item, loaded, total) {
+    console.log(item, loaded,total);
+};
+LoadingManager.onLoad = function() {
+    console.log('loaded all resources');
+    RESOURCES_LOADED = true;
+};
 
 //cria cenário
-var textureLoader = new THREE.TextureLoader();
+var textureLoader = new THREE.TextureLoader(LoadingManager);
 
 const terrain = createTerrain(textureLoader);
 scene.add(terrain);
@@ -113,7 +137,6 @@ trees.forEach(tree => {
 //addClouds();
 
 //Cria a cidade
-
 const predio1 = createBuilding1(new THREE.Vector3(0,0,0), textureLoader);
 predio1.scale.set(10,10,10);
 predio1.rotateOnAxis(z, degreesToRadians(180));
@@ -180,34 +203,9 @@ god.add(cameraGod);
 scene.add(god);
 var godOn = false;
 
-//teste loading screen
-var scene2, camera4, box;
-var loadingScreen = {
-    scene2: new THREE.Scene(),
-    camera4: new THREE.PerspectiveCamera(90, 1280/720, 0.1, 100),
-    box: new THREE.Mesh(
-        new THREE.BoxGeometry(0.5, 0.5, 0.5),
-        new THREE.MeshBasicMaterial({color:0x4444ff})
-    )
-};
-var RESOURCES_LOADED = true;
-loadingScreen.box.position.set(0,0,5);
-loadingScreen.camera4.lookAt(loadingScreen.box.position);
-loadingScreen.scene2.add(loadingScreen.box);
-
-var LoadingManager = new THREE.LoadingManager();
-
-LoadingManager.onProgress = function(item, loaded, total) {
-    console.log(item, loaded,total);
-};
-LoadingManager.onLoad = function() {
-    console.log('loaded all resources');
-    RESOURCES_LOADED = true;
-};
-
 render();
 
-buildSunInterface(sunLight, scene);
+//buildSunInterface(sunLight, scene);
 //buildAirpLightInterface(airplaneLight, scene);
 
 function addClouds() {
@@ -756,7 +754,7 @@ function render() {
         if(loadingScreen.box.position.x <  -10) loadingScreen.box.position.x = 10;
         loadingScreen.box.position.y = Math.sin(loadingScreen.box.position.x);
 
-        renderer.render(loadingScreen.scene2, loadingScreen.camera4);
+        renderer.render(loadingScreen.scene, loadingScreen.camera);
         return;
     }
 

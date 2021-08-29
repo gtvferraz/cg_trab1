@@ -99,24 +99,12 @@ export function createBuilding3(position, textureLoader) {
 
     //material
     var predioMaterial = new THREE.MeshStandardMaterial({
-        map: wallTilesBaseColor,
-        normalMap: wallTilesNormalMap,
-        displacementMap: wallTilesHeightMap,
-        displacementScale: 0.001,
-        roughnessMap: wallTilesRoughnessMap,
-        roughness: 0.1,
-        aoMap: wallTilesAmbientOcclusionMap
+        map: wallTilesBaseColor
     });
     predioBaseGeometry.attributes.uv2 = predioBaseGeometry.attributes.uv;
 
     var predioMaterialTopo = new THREE.MeshStandardMaterial({
-        map: stTilesBaseColor,
-        normalMap: stTilesNormalMap,
-        displacementMap: stTilesHeightMap,
-        displacementScale: 0.001,
-        roughnessMap: stTilesRoughnessMap,
-        roughness: 0.1,
-        aoMap: stTilesAmbientOcclusionMap
+        map: stTilesBaseColor
     });
     predioMaterialTopo.map.wrapS = THREE.RepeatWrapping;
     predioMaterialTopo.map.wrapT = THREE.RepeatWrapping;
@@ -224,7 +212,7 @@ export function createBuilding3(position, textureLoader) {
     var portaFrente = new THREE.Mesh(portaFrenteGeometry, portaFrenteMaterial);
     predio.add(portaFrente);
     portaFrente.rotateOnAxis(x, rot90);
-    portaFrente.position.set(0,-20.1,-47.5)
+    portaFrente.position.set(0,-20.5,-47.5)
 
     for(var i=0; i<9; i++) {
         var varanda = new THREE.Mesh(varandaGeometry,[janelaVarandaMaterial,janelaVarandaMaterial,janelaVarandaMaterial,janelaVarandaMaterial,varandaMaterial,varandaMaterial]);
@@ -234,16 +222,16 @@ export function createBuilding3(position, textureLoader) {
         var porta = new THREE.Mesh(portaGeometry, portaMaterial);
         predio.add(porta);
         porta.rotateOnAxis(x, rot90);
-        porta.position.set(20*Math.pow(-1,i), -20.1, -35.5 + i*10)
+        porta.position.set(20*Math.pow(-1,i), -20.5, -35.5 + i*10)
 
         var janela = new THREE.Mesh(janelaGeometry, janelaMaterial);
         predio.add(janela);
         janela.rotateOnAxis(y, rot90);
-        janela.position.set(25.1, 0,-35.5 + i*10)
+        janela.position.set(25.5, 0,-35.5 + i*10)
         var janela2 = new THREE.Mesh(janelaGeometry, janelaMaterial);
         predio.add(janela2);
         janela2.rotateOnAxis(y, rot90);
-        janela2.position.set(-25.1, 0,-35.5 + i*10)
+        janela2.position.set(-25.5, 0,-35.5 + i*10)
     }
 
     predio.castShadow = true;

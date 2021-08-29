@@ -45,16 +45,8 @@ function setSpotLight(position,spotLight)
 export function createBuilding1(position, textureLoader) {
     //tiles_stone_001
     const tilesBaseColor = textureLoader.load('/works/assets/predio_01/Tiles_Stone_001_basecolor.jpg');
-    const tilesNormalMap = textureLoader.load('/works/assets/predio_01/Tiles_Stone_001_normal.jpg');
-    const tilesHeightMap = textureLoader.load('/works/assets/predio_01/Tiles_Stone_001_height.png');
-    const tilesRoughnessMap = textureLoader.load('/works/assets/predio_01/Tiles_Stone_001_roughness.jpg');
-    const tilesAmbientOcclusionMap = textureLoader.load('/works/assets/predio_01/Tiles_Stone_001_ambientOcclusion.jpg');
     //brick_wall_015
-    const brickWallBaseColor = textureLoader.load('/works/assets/predio_01/Brick_Wall_015_COLOR.jpg');
-    const brickWallNormalMap = textureLoader.load('/works/assets/predio_01/Brick_Wall_015_NORM.jpg');
-    const brickWallHeightMap = textureLoader.load('/works/assets/predio_01/Brick_Wall_015_DISP.png');
-    const brickWallRoughnessMap = textureLoader.load('/works/assets/predio_01/Brick_Wall_015_ROUGH.jpg');
-    const brickWallAmbientOcclusionMap = textureLoader.load('/works/assets/predio_01/Brick_Wall_015_OCC.jpg');
+    const brickWallBaseColor = textureLoader.load('/works/assets/predio_01/Brick_Wall_015_COLOR.jpg')
     //window_001
     const WindowBaseColor = textureLoader.load('/works/assets/predio_01/Window_001_basecolor.jpg');
     const WindowNormalMap = textureLoader.load('/works/assets/predio_01/Window_001_normal.jpg');
@@ -114,25 +106,11 @@ export function createBuilding1(position, textureLoader) {
     janelaMaterial.alphaTest = 0.01;
     janelaGeometry.attributes.uv2 = janelaGeometry.attributes.uv;
     var predioMaterial = new THREE.MeshStandardMaterial({
-        map: tilesBaseColor,
-        normalMap: tilesNormalMap,
-        displacementMap: tilesHeightMap,
-        displacementScale: 0.001,
-        roughnessMap: tilesRoughnessMap,
-        roughness: 0.1,
-        aoMap: tilesAmbientOcclusionMap
+        map: tilesBaseColor
     });
-    predioGeometry.attributes.uv2 = predioGeometry.attributes.uv;
     var pilarMaterial = new THREE.MeshStandardMaterial({
-        map: brickWallBaseColor,
-        normalMap: brickWallNormalMap,
-        displacementMap: brickWallHeightMap,
-        displacementScale: 0.001,
-        roughnessMap: brickWallRoughnessMap,
-        roughness: 0.1,
-        aoMap: brickWallAmbientOcclusionMap
+        map: brickWallBaseColor
     });
-    pilarGeometry.attributes.uv2 = pilarGeometry.attributes.uv;
 
     var predio = new THREE.Mesh(predioGeometry, predioMaterial);
     predio.position.copy(position);
@@ -170,8 +148,8 @@ export function createBuilding1(position, textureLoader) {
         predio.add(portaVarandaDir);
         portaVarandaEsq.rotateOnAxis(new THREE.Vector3(1,0,0), degreesToRadians(90));
         portaVarandaDir.rotateOnAxis(new THREE.Vector3(1,0,0), degreesToRadians(90));
-        portaVarandaEsq.position.set(-1.5, -4.01, -6 + 2.5/2 + i*3.2)
-        portaVarandaDir.position.set(1.5, -4.01, -6 + 2.5/2 + i*3.2)
+        portaVarandaEsq.position.set(-1.5, -4.5, -6 + 2.5/2 + i*3.2)
+        portaVarandaDir.position.set(1.5, -4.5, -6 + 2.5/2 + i*3.2)
         portaVarandaEsq.material.map.wrapS = THREE.RepeatWrapping;
         portaVarandaEsq.material.map.repeat.x = -1;
 
@@ -190,8 +168,8 @@ export function createBuilding1(position, textureLoader) {
         predio.add(janelaFrenteDir);
         janelaFrenteEsq.rotateOnAxis(new THREE.Vector3(1,0,0), degreesToRadians(90));
         janelaFrenteDir.rotateOnAxis(new THREE.Vector3(1,0,0), degreesToRadians(90));
-        janelaFrenteEsq.position.set(-6, -4.01, -4 + i*3.2)
-        janelaFrenteDir.position.set(6, -4.01, -4 + i*3.2)
+        janelaFrenteEsq.position.set(-6, -4.5, -4 + i*3.2)
+        janelaFrenteDir.position.set(6, -4.5, -4 + i*3.2)
     }
 
     var porta = new THREE.Mesh(portaFrenteGeometry,portaFrenteMaterial);

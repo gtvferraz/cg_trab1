@@ -131,7 +131,7 @@ export function createBuilding2(position, textureLoader) {
     predio.add(divisoria);
 
     var porta = new THREE.Mesh(portaGeometry, portaMaterial);
-    porta.translateOnAxis(y, -5.01);
+    porta.translateOnAxis(y, -5.5);
     porta.translateOnAxis(z,-8);
     porta.rotateOnAxis(x,degreesToRadians(90));
     predio.add(porta);
@@ -166,25 +166,25 @@ export function createBuilding2(position, textureLoader) {
     }
     for(var i = 0; i < 4; i++){
         var janela = new THREE.Mesh(janelaGeometry, janelaMaterial);
-        janela.translateOnAxis(y,-10.1);
+        janela.translateOnAxis(y,-10.5);
         janela.translateOnAxis(x,10);
         janela.translateOnAxis(z,janealInicial - i*4);
         janela.rotateOnAxis(x, degreesToRadians(-90))
         predio.add(janela);
         var janela = new THREE.Mesh(janelaGeometry, janelaMaterial);
-        janela.translateOnAxis(y,-10.1);
+        janela.translateOnAxis(y,-10.5);
         janela.translateOnAxis(x,-10);
         janela.translateOnAxis(z,janealInicial - i*4);
         janela.rotateOnAxis(x, degreesToRadians(-90))
         predio.add(janela);
         var janela = new THREE.Mesh(janelaGeometry2, janelaMaterial);
-        janela.translateOnAxis(y,-5.1);
+        janela.translateOnAxis(y,-5.5);
         janela.translateOnAxis(x,4);
         janela.translateOnAxis(z,janelaInicial2 - i*4);
         janela.rotateOnAxis(x, degreesToRadians(-90))
         predio.add(janela);
         var janela = new THREE.Mesh(janelaGeometry2, janelaMaterial);
-        janela.translateOnAxis(y,-5.1);
+        janela.translateOnAxis(y,-5.5);
         janela.translateOnAxis(x,-4);
         janela.translateOnAxis(z,janelaInicial2 - i*4);
         janela.rotateOnAxis(x, degreesToRadians(-90))
@@ -206,31 +206,31 @@ export function createBuilding2(position, textureLoader) {
         divisoria.translateOnAxis(z,divisorioaInicial - i*4);
         predio.add(divisoria);
         var janela = new THREE.Mesh(janelaGeometry3, janelaMaterial);
-        janela.translateOnAxis(y,-5.01);
+        janela.translateOnAxis(y,-5.5);
         janela.translateOnAxis(x,8);
         janela.translateOnAxis(z,janealInicial - i*4);
         janela.rotateOnAxis(x, degreesToRadians(-90))
         predio.add(janela);
         var janela = new THREE.Mesh(janelaGeometry, janelaMaterial);
-        janela.translateOnAxis(y,-5.01);
+        janela.translateOnAxis(y,-5.5);
         janela.translateOnAxis(x,3);
         janela.translateOnAxis(z,janealInicial - i*4);
         janela.rotateOnAxis(x, degreesToRadians(-90))
         predio.add(janela);
         var janela = new THREE.Mesh(janelaGeometry2, janelaMaterial);
-        janela.translateOnAxis(y,-5.01);
+        janela.translateOnAxis(y,-5.5);
         janela.translateOnAxis(x,-4);
         janela.translateOnAxis(z,janealInicial - i*4);
         janela.rotateOnAxis(x, degreesToRadians(-90))
         predio.add(janela);
         var janela = new THREE.Mesh(janelaGeometry4, janelaMaterial);
-        janela.translateOnAxis(y,-5.01);
+        janela.translateOnAxis(y,-5.5);
         janela.translateOnAxis(x,-9);
         janela.translateOnAxis(z,janealInicial - i*4);
         janela.rotateOnAxis(x, degreesToRadians(-90))
         predio.add(janela);
         var janela = new THREE.Mesh(janelaGeometry5, janelaMaterial);
-        janela.translateOnAxis(y,-5.01);
+        janela.translateOnAxis(y,-5.5);
         janela.translateOnAxis(x,-18);
         janela.translateOnAxis(z,janealInicial - i*4);
         janela.rotateOnAxis(x, degreesToRadians(-90))
