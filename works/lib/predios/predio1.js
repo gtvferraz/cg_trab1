@@ -117,12 +117,15 @@ export function createBuilding1(position, textureLoader) {
     //scene.add(predio);
 
     var pilar = new THREE.Mesh(pilarGeometry, pilarMaterial);
+    pilar.castShadow = true;
     predio.add(pilar);
     pilar.position.set(0,-4 -1.5,2);
 
     for(var i = 0; i<5; i++) {
         var gradeFrenteEsq = new THREE.Mesh(gradeFrenteGeometry, gradeMaterial);
         var gradeFrenteDir = new THREE.Mesh(gradeFrenteGeometry, gradeMaterial);
+        gradeFrenteDir.castShadow = true;
+        gradeFrenteEsq.castShadow = true;
         predio.add(gradeFrenteEsq);
         predio.add(gradeFrenteDir);
         gradeFrenteEsq.position.set(-5.5, -4 -3, -5 + i*3.2);
@@ -130,6 +133,8 @@ export function createBuilding1(position, textureLoader) {
 
         var gradeLateral1 = new THREE.Mesh(gradeLateralGeometry, gradeMaterial);
         var gradeLateral2 = new THREE.Mesh(gradeLateralGeometry, gradeMaterial);
+        gradeLateral1.castShadow = true;
+        gradeLateral2.castShadow = true;
         predio.add(gradeLateral1);
         predio.add(gradeLateral2);
         gradeLateral1.position.set(-10 + 0.05, -4 - 1.5, -5 + i*3.2);
@@ -137,6 +142,8 @@ export function createBuilding1(position, textureLoader) {
 
         var pisoEsq = new THREE.Mesh(pisoGeometry, pisoMaterial);
         var pisoDir = new THREE.Mesh(pisoGeometry, pisoMaterial);
+        pisoEsq.castShadow = true;
+        pisoDir.castShadow = true;
         predio.add(pisoEsq);
         predio.add(pisoDir);
         pisoEsq.position.set(-5.5, -4 - 1.5, -6 + 0.1 + i*3.2)
@@ -144,6 +151,8 @@ export function createBuilding1(position, textureLoader) {
 
         var portaVarandaEsq = new THREE.Mesh(portaVarandaGeometry, portaVarandaMaterial);
         var portaVarandaDir = new THREE.Mesh(portaVarandaGeometry, portaVarandaMaterial2);
+        portaVarandaDir.castShadow = true;
+        portaVarandaEsq.castShadow = true;
         predio.add(portaVarandaEsq);
         predio.add(portaVarandaDir);
         portaVarandaEsq.rotateOnAxis(new THREE.Vector3(1,0,0), degreesToRadians(90));
@@ -155,6 +164,8 @@ export function createBuilding1(position, textureLoader) {
 
         var janelaEsq = new THREE.Mesh(janelaGeometry, janelaMaterial);
         var janelaDir = new THREE.Mesh(janelaGeometry, janelaMaterial);
+        janelaDir.castShadow = true;
+        janelaEsq.castShadow = true;
         predio.add(janelaEsq);
         predio.add(janelaDir);
         janelaEsq.rotateOnAxis(new THREE.Vector3(0,1,0), degreesToRadians(-90));
@@ -164,6 +175,8 @@ export function createBuilding1(position, textureLoader) {
 
         var janelaFrenteEsq = new THREE.Mesh(janelaFrenteGeometry, janelaMaterial);
         var janelaFrenteDir = new THREE.Mesh(janelaFrenteGeometry, janelaMaterial);
+        janelaFrenteDir.castShadow = true;
+        janelaFrenteEsq.castShadow = true;
         predio.add(janelaFrenteEsq);
         predio.add(janelaFrenteDir);
         janelaFrenteEsq.rotateOnAxis(new THREE.Vector3(1,0,0), degreesToRadians(90));
@@ -173,6 +186,7 @@ export function createBuilding1(position, textureLoader) {
     }
 
     var porta = new THREE.Mesh(portaFrenteGeometry,portaFrenteMaterial);
+    porta.castShadow = true;
     predio.add(porta);
     porta.rotateOnAxis(new THREE.Vector3(1,0,0), degreesToRadians(90));
     porta.position.set(0,-4.01,-8);
