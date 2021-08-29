@@ -50,6 +50,8 @@ const  listenerRing  = addSound("ringtone.mp3", false);
 camera.add(listenerRing.listener);
 const  listenerEnd  = addSound("gaules-naice.mp3", false);
 camera.add(listenerEnd.listener);
+const  listenerAmbiente = addSound("adventure-of-excitement-7469.mp3", true);
+camera.add(listenerAmbiente.listener);
 //câmera 2
 var camera2 = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000);
 camera2.position.copy(new THREE.Vector3(0, -50, 15));
@@ -107,7 +109,7 @@ var loadingScreen = {
         new THREE.MeshBasicMaterial({color:0x4444ff})
     )
 };
-var RESOURCES_LOADED = true;
+var RESOURCES_LOADED = false;
 loadingScreen.box.position.set(0,0,5);
 loadingScreen.camera.lookAt(loadingScreen.box.position);
 loadingScreen.scene.add(loadingScreen.box);
@@ -164,7 +166,6 @@ god.add(cameraGod);
 scene.add(god);
 var godOn = false;
 var loader = document.getElementById("loader");
-
 render();
 
 //buildSunInterface(sunLight, scene);
@@ -708,8 +709,7 @@ function render() {
         virtualParent.position.x-2.0,
         virtualParent.position.y+(sunLight.position.y/sunLight.position.z)*20,
         virtualParent.position.z+20
-    );
-
+    );  
     if(RESOURCES_LOADED == false) {
 
         loadingScreen.box.position.x -= 0.05;
@@ -757,6 +757,7 @@ function render2() {
     if(keyboard.down('space')) {
         RESOURCES_LOADED = true;
         loader.style.visibility = 'hidden';
+        listenerAmbiente.sound.play();
         requestAnimationFrame(render)
         return;
     }
