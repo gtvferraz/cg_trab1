@@ -222,7 +222,7 @@ function createStabilizer() {
   return stabilizer;
 }
 
-export function createTerrain() {
+export function createTerrain(textureLoader) {
   //plane.add(createMountain());
 
   const stepHeight = 3;
@@ -248,29 +248,27 @@ export function createTerrain() {
   var plane = createGroundPlane(99000, 99000, 10, 10, 'rgb(45,117,43)');
   plane.translateZ(-5*stepHeight);
 
-  var textureLoader = new THREE.TextureLoader();
-
-  var sand = textureLoader.load('../assets/textures/sand.jpg', function (texture) {
+  var sand = textureLoader.load('assets/sand.jpg', function (texture) {
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
     texture.offset.set(0,0);
     texture.repeat.set(100*0.115,100);
   });
-  var grass1 = textureLoader.load('../assets/textures/grass1.jpg', function (texture) {
+  var grass1 = textureLoader.load('assets/grass1.jpg', function (texture) {
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
     texture.offset.set(0,0);
     texture.repeat.set(100*0.158,100);
   });
-  var grass2 = textureLoader.load('../assets/textures/grass2.jpg', function (texture) {
+  var grass2 = textureLoader.load('assets/grass2.jpg', function (texture) {
       texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
       texture.offset.set(0,0);
       texture.repeat.set(100*0.21,100);
   });
-  var grass3 = textureLoader.load('../assets/textures/grass3.jpg', function (texture) {
+  var grass3 = textureLoader.load('assets/grass3.jpg', function (texture) {
       texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
       texture.offset.set(0,0);
       texture.repeat.set(100*0.218,100);
   });
-  var grass4 = textureLoader.load('../assets/textures/grass4.jpg', function (texture) {
+  var grass4 = textureLoader.load('assets/grass4.jpg', function (texture) {
       texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
       texture.offset.set(0,0);
       texture.repeat.set(400,400);
@@ -289,12 +287,12 @@ export function createTerrain() {
   grass4Plane.add(grass3Plane);
 
   const skyboxMaterials = [];
-  const skyboxTextureFt = new textureLoader.load('../assets/textures/meadow_ft.jpg');
-  const skyboxTextureBk = new textureLoader.load('../assets/textures/meadow_bk.jpg');
-  const skyboxTextureUp = new textureLoader.load('../assets/textures/meadow_up.jpg');
-  const skyboxTextureDn = new textureLoader.load('../assets/textures/meadow_dn.jpg');
-  const skyboxTextureRt = new textureLoader.load('../assets/textures/meadow_rt.jpg');
-  const skyboxTextureLf = new textureLoader.load('../assets/textures/meadow_lf.jpg');
+  const skyboxTextureFt = new textureLoader.load('assets/meadow_ft.jpg');
+  const skyboxTextureBk = new textureLoader.load('assets/meadow_bk.jpg');
+  const skyboxTextureUp = new textureLoader.load('assets/meadow_up.jpg');
+  const skyboxTextureDn = new textureLoader.load('assets/meadow_dn.jpg');
+  const skyboxTextureRt = new textureLoader.load('assets/meadow_rt.jpg');
+  const skyboxTextureLf = new textureLoader.load('assets/meadow_lf.jpg');
 
   skyboxMaterials.push(new THREE.MeshBasicMaterial({map: skyboxTextureFt, side: THREE.BackSide}));
   skyboxMaterials.push(new THREE.MeshBasicMaterial({map: skyboxTextureBk, side: THREE.BackSide}));
@@ -309,25 +307,23 @@ export function createTerrain() {
   skybox.translateY(-0);
   grass4Plane.add(skybox);
 
-  grass4Plane.add(createCity());
+  grass4Plane.add(createCity(textureLoader));
 
   return grass4Plane;
 }
 
-function createCity() {
-  var city = createStreet(4000);
+function createCity(textureLoader) {
+  var city = createStreet(4000, textureLoader);
   city.translateZ(3);
 
   return city;
 }
 
-function createStreet(width) {
+function createStreet(width, textureLoader) {
   var street = createGroundPlane(100, width, 10, 10);
   street.translateZ(3);
 
-  var textureLoader = new THREE.TextureLoader();
-
-  var streetTexture = textureLoader.load('../assets/textures/street.jpg', function (texture) {
+  var streetTexture = textureLoader.load('assets/street.jpg', function (texture) {
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
     texture.offset.set(0,0);
     texture.repeat.set(width/20,width/20);
@@ -339,7 +335,7 @@ function createStreet(width) {
   centerLine.translateZ(0.1);
 
   const sideWalkMaterials = [];
-  const sideWalkTexture = new textureLoader.load('../assets/textures/sidewalk.jpg', function (texture) {
+  const sideWalkTexture = new textureLoader.load('assets/sidewalk.jpg', function (texture) {
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
     texture.offset.set(0,0);
     texture.repeat.set(width/1000,width/10);

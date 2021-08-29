@@ -9,7 +9,7 @@ import {
     initLight
 }from '../utils.js';
  
-var stats = new Stats(); // To show FPS information
+/*var stats = new Stats(); // To show FPS information
 var scene = new THREE.Scene(); // Create main scene
 var renderer = initRenderer(); // View function in util/utils
 var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000);
@@ -40,53 +40,53 @@ function setSpotLight(position,spotLight)
   spotLight.penumbra = 0.5;
   spotLight.name = "Spot Light"
   scene.add(spotLight);
-}
+}*/
 
-function predio03(position, textureLoader, scene) {
+export function createBuilding3(position, textureLoader) {
     const x = new THREE.Vector3(1,0,0);
     const y = new THREE.Vector3(0,1,0);
     const z = new THREE.Vector3(0,0,1);
     const rot90 = degreesToRadians(90);
 
     //wall_tiles_stone_001
-    const wallTilesBaseColor = textureLoader.load('../../assets/predio_03/Wall_Tiles_Stone_001_basecolor.jpg');
-    const wallTilesNormalMap = textureLoader.load('../../assets/predio_03/Wall_Tiles_Stone_001_normal.jpg');
-    const wallTilesHeightMap = textureLoader.load('../../assets/predio_03/Wall_Tiles_Stone_001_height.png');
-    const wallTilesRoughnessMap = textureLoader.load('../../assets/predio_03/Wall_Tiles_Stone_001_roughness.jpg');
-    const wallTilesAmbientOcclusionMap = textureLoader.load('../../assets/predio_03/Wall_Tiles_Stone_001_ambientOcclusion.jpg');
+    const wallTilesBaseColor = textureLoader.load('/works/assets/predio_03/Wall_Tiles_Stone_001_basecolor.jpg');
+    const wallTilesNormalMap = textureLoader.load('/works/assets/predio_03/Wall_Tiles_Stone_001_normal.jpg');
+    const wallTilesHeightMap = textureLoader.load('/works/assets/predio_03/Wall_Tiles_Stone_001_height.png');
+    const wallTilesRoughnessMap = textureLoader.load('/works/assets/predio_03/Wall_Tiles_Stone_001_roughness.jpg');
+    const wallTilesAmbientOcclusionMap = textureLoader.load('/works/assets/predio_03/Wall_Tiles_Stone_001_ambientOcclusion.jpg');
     //stylized_tiles_001
-    const stTilesBaseColor = textureLoader.load('../../assets/predio_03/Stylized_Tiles_001_basecolor.jpg');
-    const stTilesNormalMap = textureLoader.load('../../assets/predio_03/Stylized_Tiles_001_normal.jpg');
-    const stTilesHeightMap = textureLoader.load('../../assets/predio_03/Stylized_Tiles_001_height.png');
-    const stTilesRoughnessMap = textureLoader.load('../../assets/predio_03/Stylized_Tiles_001_roughness.jpg');
-    const stTilesAmbientOcclusionMap = textureLoader.load('../../assets/predio_03/Stylized_Tiles_001_ambientOcclusion.jpg');
+    const stTilesBaseColor = textureLoader.load('/works/assets/predio_03/Stylized_Tiles_001_basecolor.jpg');
+    const stTilesNormalMap = textureLoader.load('/works/assets/predio_03/Stylized_Tiles_001_normal.jpg');
+    const stTilesHeightMap = textureLoader.load('/works/assets/predio_03/Stylized_Tiles_001_height.png');
+    const stTilesRoughnessMap = textureLoader.load('/works/assets/predio_03/Stylized_Tiles_001_roughness.jpg');
+    const stTilesAmbientOcclusionMap = textureLoader.load('/works/assets/predio_03/Stylized_Tiles_001_ambientOcclusion.jpg');
     //roof
-    const roofBaseColor = textureLoader.load('../../assets/predio_03/Roof_Tiles_Terracotta_006_basecolor.jpg');
+    const roofBaseColor = textureLoader.load('/works/assets/predio_03/Roof_Tiles_Terracotta_006_basecolor.jpg');
     //papel de parede
-    var topoMap = textureLoader.load('../../assets/predio_03/Stylized_Wall_001_basecolor.jpg');
+    var topoMap = textureLoader.load('/works/assets/predio_03/Stylized_Wall_001_basecolor.jpg');
     //pilar
-    var pilarMap = textureLoader.load('../../assets/predio_03/Wall_Stone_020_basecolor.jpg')
+    var pilarMap = textureLoader.load('/works/assets/predio_03/Wall_Stone_020_basecolor.jpg')
     //varanda
-    var varandaMap = textureLoader.load('../../assets/predio_03/Wood_Herringbone_Tiles_002_basecolor.jpg')
+    var varandaMap = textureLoader.load('/works/assets/predio_03/Wood_Herringbone_Tiles_002_basecolor.jpg')
     //vidro
-    const woodWindowBaseColor = textureLoader.load('../../assets/predio_03/Wood_Window_001_basecolor.jpg');
-    const woodWindowNormalMap = textureLoader.load('../../assets/predio_03/Wood_Window_001_normal.jpg');
-    const woodWindowHeightMap = textureLoader.load('../../assets/predio_03/Wood_Window_001_height.png');
-    const woodWindowRoughnessMap = textureLoader.load('../../assets/predio_03/Wood_Window_001_roughness.jpg');
-    const woodWindowAmbientOcclusionMap = textureLoader.load('../../assets/predio_03/Wood_Window_001_ambientOcclusion.jpg');
-    const woodWindowMetallicMap = textureLoader.load('../../assets/predio_03/Wood_Window_001_metallic.jpg');
-    const woodWindowOpacityMap = textureLoader.load('../../assets/predio_03/Wood_Window_001_opacity.jpg');
+    const woodWindowBaseColor = textureLoader.load('/works/assets/predio_03/Wood_Window_001_basecolor.jpg');
+    const woodWindowNormalMap = textureLoader.load('/works/assets/predio_03/Wood_Window_001_normal.jpg');
+    const woodWindowHeightMap = textureLoader.load('/works/assets/predio_03/Wood_Window_001_height.png');
+    const woodWindowRoughnessMap = textureLoader.load('/works/assets/predio_03/Wood_Window_001_roughness.jpg');
+    const woodWindowAmbientOcclusionMap = textureLoader.load('/works/assets/predio_03/Wood_Window_001_ambientOcclusion.jpg');
+    const woodWindowMetallicMap = textureLoader.load('/works/assets/predio_03/Wood_Window_001_metallic.jpg');
+    const woodWindowOpacityMap = textureLoader.load('/works/assets/predio_03/Wood_Window_001_opacity.jpg');
     //vidro lateral
-    const windowBaseColor = textureLoader.load('../../assets/predio_03/Glass_Window_001_basecolor.jpg');
-    const windowNormalMap = textureLoader.load('../../assets/predio_03/Glass_Window_001_normal.jpg');
-    const windowHeightMap = textureLoader.load('../../assets/predio_03/Glass_Window_001_height.png');
-    const windowRoughnessMap = textureLoader.load('../../assets/predio_03/Glass_Window_001_roughness.jpg');
-    const windowAmbientOcclusionMap = textureLoader.load('../../assets/predio_03/Glass_Window_001_ambientOcclusion.jpg');
-    const windowOpacityMap = textureLoader.load('../../assets/predio_03/Glass_Window_001_glass.jpg');
+    const windowBaseColor = textureLoader.load('/works/assets/predio_03/Glass_Window_001_basecolor.jpg');
+    const windowNormalMap = textureLoader.load('/works/assets/predio_03/Glass_Window_001_normal.jpg');
+    const windowHeightMap = textureLoader.load('/works/assets/predio_03/Glass_Window_001_height.png');
+    const windowRoughnessMap = textureLoader.load('/works/assets/predio_03/Glass_Window_001_roughness.jpg');
+    const windowAmbientOcclusionMap = textureLoader.load('/works/assets/predio_03/Glass_Window_001_ambientOcclusion.jpg');
+    const windowOpacityMap = textureLoader.load('/works/assets/predio_03/Glass_Window_001_glass.jpg');
     //porta andar
-    const portaMap = textureLoader.load('../../assets/predio_03/portaAP.jpg');
+    const portaMap = textureLoader.load('/works/assets/predio_03/portaAP.jpg');
     //porta frente
-    const portaFrenteMap = textureLoader.load('../../assets/predio_03/portaFrente.png');
+    const portaFrenteMap = textureLoader.load('/works/assets/predio_03/portaFrente.png');
 
     //geometry
     var predioBaseGeometry = new THREE.BoxGeometry(50,40,100,512,512);
@@ -173,7 +173,7 @@ function predio03(position, textureLoader, scene) {
 
     //construção
     var predio = new THREE.Mesh(predioBaseGeometry,[predioMaterial,predioMaterial,predioMaterial,predioMaterial,predioMaterialTopo,predioMaterial]);
-    scene.add(predio);
+    //scene.add(predio);
     predio.position.copy(position);
 
     var topo1 = new THREE.Mesh(topoGeometry,topoMaterial);
@@ -246,13 +246,15 @@ function predio03(position, textureLoader, scene) {
         janela2.position.set(-25.1, 0,-35.5 + i*10)
     }
 
+    predio.castShadow = true;
+
     predio.position.copy(position);
     return predio;
 }
 
-function render() {
+/*function render() {
     stats.update(); // Update FPS
     trackballControls.update(); // Enable mouse movements
     requestAnimationFrame(render);
     renderer.render(scene, camera) // Render scene
-}
+}*/
