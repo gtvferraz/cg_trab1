@@ -105,19 +105,12 @@ var loadingScreen = {
         new THREE.MeshBasicMaterial({color:0x4444ff})
     )
 };
-var RESOURCES_LOADED = false;
+var RESOURCES_LOADED = true;
 loadingScreen.box.position.set(0,0,5);
 loadingScreen.camera.lookAt(loadingScreen.box.position);
 loadingScreen.scene.add(loadingScreen.box);
 
 var LoadingManager = new THREE.LoadingManager();
-
-LoadingManager.onProgress = function(item, loaded, total) {
-};
-LoadingManager.onLoad = function() {
-    console.log('loaded all resources');
-    RESOURCES_LOADED = true;
-};
 
 //cria cenário
 var textureLoader = new THREE.TextureLoader(LoadingManager);
@@ -704,8 +697,6 @@ function godView() {
         god.rotateOnAxis(new THREE.Vector3(0,0,1),-angle);
 }
 
-var firstRendering = true;
-
 function render() {
     airplaneLight.position.set(
         virtualParent.position.x-2.0,
@@ -714,12 +705,22 @@ function render() {
     );
 
     if(RESOURCES_LOADED == false) {
-        requestAnimationFrame(render);
 
         loadingScreen.box.position.x -= 0.05;
         if(loadingScreen.box.position.x <  -10) loadingScreen.box.position.x = 10;
         loadingScreen.box.position.y = Math.sin(loadingScreen.box.position.x);
+        
+        LoadingManager.onProgress = function(item, loaded, total) {
+            console.log(parseInt(loaded)*100/total)
+        }
 
+        LoadingManager.onLoad = function() {
+            console.log('aperte espaço para continuar')
+            render2();
+            requestAnimationFrame(render2);
+            return;
+        }
+        requestAnimationFrame(render);
         renderer.render(loadingScreen.scene, loadingScreen.camera);
         return;
     }
@@ -742,4 +743,14 @@ function render() {
 
         renderer.render(scene, cameras[cameraType-1]);
     }
+}
+
+function render2() {
+    keyboard.update();
+    if(keyboard.down('space')) {
+        RESOURCES_LOADED = true;
+        requestAnimationFrame(render)
+        return;
+    }
+    requestAnimationFrame(render2);
 }

@@ -38,23 +38,28 @@ const grayMaterial = new THREE.MeshPhongMaterial({color: 'rgb(40,40,50)'});
 export function createAirplane() {
   var airplane = new THREE.Object3D();
 
+  var textureLoader = new THREE.TextureLoader();
+  const aviaoPrincipal = textureLoader.load('/works/assets/Metal_Panels_009_basecolor.jpg');
+
   var geometry = new THREE.CylinderGeometry(1, 1, 9, 50);
-  var mainBody = new THREE.Mesh(geometry, blackMaterial);
+  var mainBody = new THREE.Mesh(geometry);
   airplane.add(mainBody);
 
   geometry = new THREE.CylinderGeometry(0.5, 1, 3, 50);
-  var backBody = new THREE.Mesh(geometry, blackMaterial);
+  var backBody = new THREE.Mesh(geometry);
   backBody.translateY(-6);
   backBody.rotateOnAxis(z, degreesToRadians(180));
   mainBody.add(backBody);
 
   geometry = new THREE.CylinderGeometry(0.5, 1, 2, 50);
-  var frontBody = new THREE.Mesh(geometry, blackMaterial);
+  var frontBody = new THREE.Mesh(geometry);
   frontBody.translateY(5.5);
   mainBody.add(frontBody);
 
   geometry = new THREE.CylinderGeometry(0.1, 0.5, 1, 50);
-  var turbineBase = new THREE.Mesh(geometry, redMaterial);
+  var turbineBaseMaterial = new THREE.MeshBasicMaterial();
+  var turbineBase = new THREE.Mesh(geometry, turbineBaseMaterial);
+  turbineBase.material.map = aviaoPrincipal;
   turbineBase.translateY(1.5);
   frontBody.add(turbineBase);
 
@@ -104,10 +109,14 @@ export function createAirplane() {
   backBody.add(rightStabilizer);
 
   geometry = new THREE.SphereGeometry(2, 32, 32);
-  var cabin = new THREE.Mesh(geometry, grayMaterial);
+  var cabin = new THREE.Mesh(geometry);
   cabin.translateZ(0.5);
   cabin.scale.set(0.5, 1, 0.5);
   mainBody.add(cabin);
+
+  mainBody.material.map = aviaoPrincipal;
+  backBody.material.map = aviaoPrincipal;
+  frontBody.material.map = aviaoPrincipal;
 
   mainBody.castShadow = true;
   backBody.castShadow = true;
@@ -186,8 +195,12 @@ export function initAirplaneLight(scene, position = new THREE.Vector3(1, 1, 1), 
 }
 
 function createWing() {
+  var textureLoader = new THREE.TextureLoader();
+  const asa = textureLoader.load('/works/assets/Wood_Floor_010_basecolor.jpg');
   var geometry = new THREE.BoxGeometry(4, 2, 0.2);
-  var baseWing = new THREE.Mesh(geometry, redMaterial);
+  var material = new THREE.MeshBasicMaterial();
+  var baseWing = new THREE.Mesh(geometry);
+  baseWing.material.map = asa;
 
   const edgeWing = createStabilizer();
   edgeWing.translateX(-6);
@@ -197,6 +210,7 @@ function createWing() {
   baseWing.add(edgeWing);
 
   edgeWing.castShadow = true;
+  
 
   return baseWing;
 }
@@ -204,6 +218,9 @@ function createWing() {
 function createStabilizer() {
   var geometry = new THREE.BoxGeometry(4, 2, 0.2);
 
+  var textureLoader = new THREE.TextureLoader();
+  const asa = textureLoader.load('/works/assets/Wood_Floor_010_basecolor.jpg');
+  
   const shape = new THREE.Shape();
   shape.moveTo( 0, 0 );
   shape.lineTo( 0, 1 );
@@ -222,8 +239,9 @@ function createStabilizer() {
   };
 
   geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-  const stabilizer = new THREE.Mesh(geometry, redMaterial);
-
+  var material = new THREE.MeshBasicMaterial();
+  const stabilizer = new THREE.Mesh(geometry, material);
+  stabilizer.material.map = asa;
   return stabilizer;
 }
 
