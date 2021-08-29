@@ -107,7 +107,7 @@ var loadingScreen = {
         new THREE.MeshBasicMaterial({color:0x4444ff})
     )
 };
-var RESOURCES_LOADED = false;
+var RESOURCES_LOADED = true;
 loadingScreen.box.position.set(0,0,5);
 loadingScreen.camera.lookAt(loadingScreen.box.position);
 loadingScreen.scene.add(loadingScreen.box);
@@ -122,7 +122,7 @@ trees.forEach(tree => {
 //addClouds();
 
 //cria avião
-var {airplane, turbine, cabin} = createAirplane();
+var {airplane, turbine, cabin} = createAirplane(LoadingManager);
 var virtualParent = new THREE.Object3D();
 virtualParent.add(airplane);
 airplane.position.z += 1;
