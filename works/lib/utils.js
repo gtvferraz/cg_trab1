@@ -1189,7 +1189,7 @@ export function createClouds() {
   return clouds;
 }
 
-export function createTrees(planSize, plansInfo, scene) {
+function createTrees(planSize, plansInfo, scene) {
   const trees = [];
 
   //offsetX = 225*escala(montanha)

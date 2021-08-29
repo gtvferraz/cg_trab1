@@ -16,7 +16,6 @@ import {
     createTerrain,
     createAirplane,
     createClouds,
-    createTrees,
     initLight,
     buildSunInterface,
     initAirplaneLight,
@@ -49,6 +48,7 @@ var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHei
 camera.position.copy(new THREE.Vector3(0, -50, 15));
 camera.lookAt(0, 0, 0);
 camera.up.set(0, 1, 0);
+//sons
 const { listener, sound } = addSound("turbine_sound.mp3", true);
 camera.add(listener);
 const  listenerRing  = addSound("ringtone.mp3", false);
@@ -63,7 +63,6 @@ camera2.position.copy(new THREE.Vector3(0, -50, 15));
 camera2.lookAt(0, 0, 0);
 camera2.up.set(0, 1.1, 0);
 var axesHelper = new THREE.AxesHelper(20);
-var inspecionaLight = initLight(camera2,new THREE.Vector3(0,-50,15));
 //câmera 3
 var camera3 = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000);
 camera3.position.copy(new THREE.Vector3(0, -50, 15));
@@ -177,6 +176,7 @@ mtlLoader.load('./assets/Cat/Cats_obj.mtl', function(materials){
     objLloader.load('./assets/Cat/Cats_obj.obj',function(object) {
         object.scale.set(0.1,0.1,0.1)
         object.rotateOnAxis(x,degreesToRadians(90))
+        object.translateOnAxis(y, 5000);
         scene.add(object);
     });
 });
@@ -372,6 +372,8 @@ function trocaCamera2() {
     infoBox();
     timer.stop();
     tempoAtual = timer.getElapsedTime(); 
+    var inspecionaLight = initLight(camera2,new THREE.Vector3(0,-50,15));
+    camera2.add(inspecionaLight);
 }
 
 function criaCaminho() {
