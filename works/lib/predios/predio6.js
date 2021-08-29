@@ -277,6 +277,9 @@ function predio(position, textureLoader, scene) {
     portaPredio.translateOnAxis(z, -46);
     portaPredio.rotateOnAxis(x,degreesToRadians(90));
     parteFrontal.add(portaPredio);
+
+    predio.position.copy(position);
+    return predio;
 }
 
 function render() {

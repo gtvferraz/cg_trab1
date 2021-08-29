@@ -48,7 +48,6 @@ function predio03(position, textureLoader, scene) {
     const z = new THREE.Vector3(0,0,1);
     const rot90 = degreesToRadians(90);
 
-
     //wall_tiles_stone_001
     const wallTilesBaseColor = textureLoader.load('../../assets/predio_03/Wall_Tiles_Stone_001_basecolor.jpg');
     const wallTilesNormalMap = textureLoader.load('../../assets/predio_03/Wall_Tiles_Stone_001_normal.jpg');
@@ -246,6 +245,8 @@ function predio03(position, textureLoader, scene) {
         janela2.rotateOnAxis(y, rot90);
         janela2.position.set(-25.1, 0,-35.5 + i*10)
     }
+
+    predio.position.copy(position);
     return predio;
 }
 
