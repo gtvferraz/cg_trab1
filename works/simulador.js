@@ -180,7 +180,7 @@ mtlLoader.load('./assets/Cat/Cats_obj.mtl', function(materials){
         scene.add(object);
     });
 });
-
+var tempoAtual = 0;
 render();
 
 //buildSunInterface(sunLight, scene);
@@ -304,10 +304,6 @@ function destroyTorus(){
         if(torusus.length == 0) {
             destroiPercurso(true);
             timer.stop();
-            setTimeout(() => {
-                contador.style.visibility = "hidden";
-                timerDiv.style.visibility = "hidden";
-            }, 3000)
         }
     }
     return;
@@ -345,6 +341,8 @@ function trocaCamera1() {
         }
         infoBox();
     }
+    timer.start();
+    timer.elapsedTime = tempoAtual;
 }
 
 function trocaCamera2() {
@@ -372,6 +370,8 @@ function trocaCamera2() {
     trackballControls.reset();
     virtualParent.add(axesHelper);
     infoBox();
+    timer.stop();
+    tempoAtual = timer.getElapsedTime(); 
 }
 
 function criaCaminho() {
