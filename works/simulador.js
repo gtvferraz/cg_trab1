@@ -64,8 +64,6 @@ camera2.lookAt(0, 0, 0);
 camera2.up.set(0, 1.1, 0);
 var axesHelper = new THREE.AxesHelper(20);
 var inspecionaLight = initLight(camera2,new THREE.Vector3(0,-50,15));
-camera2.add(inspecionaLight);
-console.log(camera2, inspecionaLight);
 //câmera 3
 var camera3 = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000);
 camera3.position.copy(new THREE.Vector3(0, -50, 15));
