@@ -19,9 +19,6 @@ var ambientLight = new THREE.AmbientLight("rgb(255, 255, 255)");
 scene.add(ambientLight);
 let sunLight = initLight(scene, new THREE.Vector3(-30,0,30)); 
 
-<<<<<<< HEAD
-const textureLoader = new THREE.TextureLoader();
-=======
 var TamanhoPredio = 10;
 //Geometrias
 var predioPrincipal = new THREE.BoxGeometry(TamanhoPredio+5, TamanhoPredio, TamanhoPredio+10);
@@ -218,7 +215,6 @@ var cylinder = new THREE.Mesh(pilarGeometry, pilarMaterial);
 cylinder.translateOnAxis(x,-18.5);
 cylinder.rotateOnAxis(x, degreesToRadians(90));
 predio.add(cylinder);
->>>>>>> 4b68c3d01d0c94c8c244e78eb4bffa975aa9026c
 
 // Show axes (parameter is size of each axis)
 var axesHelper = new THREE.AxesHelper(12)
