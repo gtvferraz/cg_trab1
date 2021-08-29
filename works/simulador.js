@@ -748,7 +748,6 @@ function render() {
 
     if(firstRendering) {
         sunLight.shadow.autoUpdate = false;
-        scene.add( dynamicLight );    
         firstRendering = false;
     }
 }

@@ -303,12 +303,69 @@ export function createTerrain() {
   skyboxMaterials.push(new THREE.MeshBasicMaterial({map: skyboxTextureRt, side: THREE.BackSide}));
   skyboxMaterials.push(new THREE.MeshBasicMaterial({map: skyboxTextureLf, side: THREE.BackSide}));
 
-  const skyboxGeo = new THREE.BoxGeometry(99000, 99000, 99000);
+  const skyboxGeo = new THREE.BoxGeometry(99000, 40000, 99000);
   const skybox = new THREE.Mesh(skyboxGeo, skyboxMaterials);
   skybox.rotateOnAxis(x, degreesToRadians(90));
+  skybox.translateY(-0);
   grass4Plane.add(skybox);
 
+  grass4Plane.add(createCity());
+
   return grass4Plane;
+}
+
+function createCity() {
+  var city = createStreet(4000);
+  city.translateZ(3);
+
+  return city;
+}
+
+function createStreet(width) {
+  var street = createGroundPlane(100, width, 10, 10);
+  street.translateZ(3);
+
+  var textureLoader = new THREE.TextureLoader();
+
+  var streetTexture = textureLoader.load('../assets/textures/street.jpg', function (texture) {
+    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+    texture.offset.set(0,0);
+    texture.repeat.set(width/20,width/20);
+  });
+
+  street.material.map = streetTexture;
+
+  var centerLine = createGroundPlane(1, width, 10, 10, 'rgb(255,255,255)');
+  centerLine.translateZ(0.1);
+
+  const sideWalkMaterials = [];
+  const sideWalkTexture = new textureLoader.load('../assets/textures/sidewalk.jpg', function (texture) {
+    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+    texture.offset.set(0,0);
+    texture.repeat.set(width/1000,width/10);
+  });
+
+  sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
+  sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
+  sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
+  sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
+  sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
+  sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
+
+  const sidewalkGeo = new THREE.BoxGeometry(10, width, 1);
+  const leftSidewalk = new THREE.Mesh(sidewalkGeo, sideWalkMaterials);
+  leftSidewalk.translateZ(0.5);
+  leftSidewalk.translateX(-45);
+
+  const rightSidewalk = new THREE.Mesh(sidewalkGeo, sideWalkMaterials);
+  rightSidewalk.translateZ(0.5);
+  rightSidewalk.translateX(45);
+
+  street.add(centerLine);
+  street.add(leftSidewalk);
+  street.add(rightSidewalk);
+
+  return street;
 }
 
 function createMountain() {
