@@ -223,10 +223,92 @@ function createStabilizer() {
 }
 
 export function createTerrain() {
-  var plane = createGroundPlane(11000, 11000,10,10,"rgb(60,163,60)");
-  plane.add(createMountain());
+  //plane.add(createMountain());
 
-  return plane;
+  const stepHeight = 3;
+
+  var sandPlane = createGroundPlane(1000, 8700, 10, 10);
+  sandPlane.translateZ(5*stepHeight);
+  sandPlane.translateX(5000);
+
+  var grass1Plane = createGroundPlane(1500, 9500, 10, 10);
+  grass1Plane.translateZ(4*stepHeight);
+  grass1Plane.translateX(4750);
+
+  var grass2Plane = createGroundPlane(2100, 10000, 10, 10);
+  grass2Plane.translateZ(3*stepHeight);
+  grass2Plane.translateX(4450);
+
+  var grass3Plane = createGroundPlane(2400, 11000, 10, 10);
+  grass3Plane.translateZ(2*stepHeight);
+  grass3Plane.translateX(4300);
+
+  var grass4Plane = createGroundPlane(11000, 11000, 10, 10);
+
+  var plane = createGroundPlane(99000, 99000, 10, 10, 'rgb(45,117,43)');
+  plane.translateZ(-5*stepHeight);
+
+  var textureLoader = new THREE.TextureLoader();
+
+  var sand = textureLoader.load('../assets/textures/sand.jpg', function (texture) {
+    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+    texture.offset.set(0,0);
+    texture.repeat.set(100*0.115,100);
+  });
+  var grass1 = textureLoader.load('../assets/textures/grass1.jpg', function (texture) {
+    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+    texture.offset.set(0,0);
+    texture.repeat.set(100*0.158,100);
+  });
+  var grass2 = textureLoader.load('../assets/textures/grass2.jpg', function (texture) {
+      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+      texture.offset.set(0,0);
+      texture.repeat.set(100*0.21,100);
+  });
+  var grass3 = textureLoader.load('../assets/textures/grass3.jpg', function (texture) {
+      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+      texture.offset.set(0,0);
+      texture.repeat.set(100*0.218,100);
+  });
+  var grass4 = textureLoader.load('../assets/textures/grass4.jpg', function (texture) {
+      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+      texture.offset.set(0,0);
+      texture.repeat.set(400,400);
+  });
+  
+  sandPlane.material.map = sand;
+  grass1Plane.material.map = grass1;
+  grass2Plane.material.map = grass2;
+  grass3Plane.material.map = grass3;
+  grass4Plane.material.map = grass4;
+
+  grass4Plane.add(plane);
+  grass4Plane.add(sandPlane);
+  grass4Plane.add(grass1Plane);
+  grass4Plane.add(grass2Plane);
+  grass4Plane.add(grass3Plane);
+
+  const skyboxMaterials = [];
+  const skyboxTextureFt = new textureLoader.load('../assets/textures/meadow_ft.jpg');
+  const skyboxTextureBk = new textureLoader.load('../assets/textures/meadow_bk.jpg');
+  const skyboxTextureUp = new textureLoader.load('../assets/textures/meadow_up.jpg');
+  const skyboxTextureDn = new textureLoader.load('../assets/textures/meadow_dn.jpg');
+  const skyboxTextureRt = new textureLoader.load('../assets/textures/meadow_rt.jpg');
+  const skyboxTextureLf = new textureLoader.load('../assets/textures/meadow_lf.jpg');
+
+  skyboxMaterials.push(new THREE.MeshBasicMaterial({map: skyboxTextureFt, side: THREE.BackSide}));
+  skyboxMaterials.push(new THREE.MeshBasicMaterial({map: skyboxTextureBk, side: THREE.BackSide}));
+  skyboxMaterials.push(new THREE.MeshBasicMaterial({map: skyboxTextureUp, side: THREE.BackSide}));
+  skyboxMaterials.push(new THREE.MeshBasicMaterial({map: skyboxTextureDn, side: THREE.BackSide}));
+  skyboxMaterials.push(new THREE.MeshBasicMaterial({map: skyboxTextureRt, side: THREE.BackSide}));
+  skyboxMaterials.push(new THREE.MeshBasicMaterial({map: skyboxTextureLf, side: THREE.BackSide}));
+
+  const skyboxGeo = new THREE.BoxGeometry(99000, 99000, 99000);
+  const skybox = new THREE.Mesh(skyboxGeo, skyboxMaterials);
+  skybox.rotateOnAxis(x, degreesToRadians(90));
+  grass4Plane.add(skybox);
+
+  return grass4Plane;
 }
 
 function createMountain() {
@@ -596,10 +678,23 @@ export function createTrees(scene) {
   const treesPos = [];
   const treeRadius = 100;
 
-  const trackLeft = -50;
-  const trackRight = 50;
-  const trackFront = -1500;
-  const trackBack = -3000;
+  const trackRegion = {
+    x: 0,
+    y: -1800,
+    width: 100,
+    height: 2500,
+    color: 'rgb(255,0,255)'
+  }
+
+  const soilRegion = {
+    x: 4450,
+    y: 0,
+    width: 2100,
+    height: 10000,
+    color: 'rgb(50,0,0)'
+  }
+
+  const avoidRegions = [trackRegion, soilRegion];
 
   let randomX;
   let randomY;
@@ -673,11 +768,13 @@ export function createTrees(scene) {
         }
       }
 
-      if(!redo) {
-        if(randomX >= trackLeft && randomX <= trackRight && randomY >= trackBack && randomY <= trackFront) {
-          redo = true;
+      avoidRegions.forEach(region => {
+        if(!redo) {
+          if(randomX >= region.x - region.width/2 && randomX <= region.x + region.width/2 && randomY >= region.y - region.height/2 && randomY <= region.y + region.height/2) {
+            redo = true;
+          }
         }
-      }
+      });
     }
 
     treesPos.push({
@@ -710,22 +807,24 @@ export function createTrees(scene) {
   }
 
   
-  /*var geometry = new THREE.BoxGeometry(totalRadius, 10, totalRadius, 1, 10);
+  /*var geometry = new THREE.BoxGeometry(totalRadius, 2, totalRadius, 1, 10);
   var mark = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color: 'rgb(139,69,19)'}));
   mark.rotateOnAxis(x, degreesToRadians(90));
-  scene.add(mark)
+  scene.add(mark)*/
 
-  var geometry = new THREE.BoxGeometry(mountainRadius, 20, mountainRadius, 2, 10);
+  /*var geometry = new THREE.BoxGeometry(mountainRadius, 20, mountainRadius, 2, 10);
   var mark = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color: 'rgb(255,255,255)'}));
   mark.position.copy(new THREE.Vector3(offsetX, 0, 0));
   mark.rotateOnAxis(x, degreesToRadians(90));
-  scene.add(mark)
-  
-  var geometry = new THREE.BoxGeometry(Math.abs(trackRight-trackLeft), 100, Math.abs(trackBack-trackFront), 2, 10);
-  var mark = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color: 'rgb(255,0,255)'}));
-  mark.position.copy(new THREE.Vector3(0, -2250, 0));
-  mark.rotateOnAxis(x, degreesToRadians(90));
   scene.add(mark)*/
+
+  /*avoidRegions.forEach((region, index) => {
+    var geometry = new THREE.BoxGeometry(region.width, 10*(index+1), region.height, 2, 10);
+    var mark = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color: region.color}));
+    mark.position.copy(new THREE.Vector3(region.x, region.y, 0));
+    mark.rotateOnAxis(x, degreesToRadians(90));
+    scene.add(mark)
+  });*/
 
   return trees;
 }
