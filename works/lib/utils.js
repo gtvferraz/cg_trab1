@@ -35,11 +35,22 @@ const blackMaterial = new THREE.MeshPhongMaterial({color: 'rgb(0,0,0)'});
 const redMaterial = new THREE.MeshPhongMaterial({color: 'rgb(110,0,0)'});
 const grayMaterial = new THREE.MeshPhongMaterial({color: 'rgb(40,40,50)'});
 
-export function createAirplane() {
+export function createAirplane(LoadingManager) {
   var airplane = new THREE.Object3D();
 
-  var textureLoader = new THREE.TextureLoader();
+  var textureLoader = new THREE.TextureLoader(LoadingManager);
   const aviaoPrincipal = textureLoader.load('/works/assets/Metal_Panels_009_basecolor.jpg');
+  var heliceMap =  textureLoader.load('/works/assets/Wood_Panel_003_basecolor.jpg')
+  heliceMap.wrapS = THREE.RepeatWrapping;
+  heliceMap.wrapT = THREE.RepeatWrapping;
+  heliceMap.repeat.set( 1, 2 );
+  //cabine material
+  const windowBaseColor = textureLoader.load('/works/assets/Glass_Frosted_001_basecolor.jpg');
+  const windowNormalMap = textureLoader.load('/works/assets/Glass_Frosted_001_normal.jpg');
+  const windowHeightMap = textureLoader.load('/works/assets/Glass_Frosted_001_height.png');
+  const windowRoughnessMap = textureLoader.load('/works/assets/Glass_Frosted_001_roughness.jpg');
+  const windowAmbientOcclusionMap = textureLoader.load('/works/assets/Glass_Frosted_001_ambientOcclusion.jpg');
+  
 
   var geometry = new THREE.CylinderGeometry(1, 1, 9, 50);
   var mainBody = new THREE.Mesh(geometry);
@@ -57,9 +68,8 @@ export function createAirplane() {
   mainBody.add(frontBody);
 
   geometry = new THREE.CylinderGeometry(0.1, 0.5, 1, 50);
-  var turbineBaseMaterial = new THREE.MeshBasicMaterial();
+  var turbineBaseMaterial = new THREE.MeshBasicMaterial({map: aviaoPrincipal});
   var turbineBase = new THREE.Mesh(geometry, turbineBaseMaterial);
-  turbineBase.material.map = aviaoPrincipal;
   turbineBase.translateY(1.5);
   frontBody.add(turbineBase);
 
@@ -72,7 +82,7 @@ export function createAirplane() {
     0                 // aRotation
   );
   geometry = new THREE.ShapeBufferGeometry( path );
-  const ellipseMaterial = new THREE.MeshBasicMaterial({color:'rgb(56,56,56)'});
+  const ellipseMaterial = new THREE.MeshBasicMaterial({map: heliceMap, side: THREE.DoubleSide});
   const turbine = new THREE.Mesh( geometry, ellipseMaterial );
   turbine.rotateOnAxis(x, degreesToRadians(90));
   turbineBase.add(turbine);
@@ -109,7 +119,18 @@ export function createAirplane() {
   backBody.add(rightStabilizer);
 
   geometry = new THREE.SphereGeometry(2, 32, 32);
-  var cabin = new THREE.Mesh(geometry);
+  var cabineMaterial = new THREE.MeshPhysicalMaterial({
+    map: windowBaseColor,
+    normalMap: windowNormalMap,
+    displacementMap: windowHeightMap,
+    displacementScale: 0.0001,
+    roughnessMap: windowRoughnessMap,
+    roughness: 0.01,
+    aoMap: windowAmbientOcclusionMap,
+  });
+  geometry.attributes.uv2 = geometry.attributes.uv;
+
+  var cabin = new THREE.Mesh(geometry,cabineMaterial);
   cabin.translateZ(0.5);
   cabin.scale.set(0.5, 1, 0.5);
   mainBody.add(cabin);
@@ -194,13 +215,15 @@ export function initAirplaneLight(scene, position = new THREE.Vector3(1, 1, 1), 
   return directionalLight;
 }
 
-function createWing() {
-  var textureLoader = new THREE.TextureLoader();
+function createWing(LoadingManager) {
+  var textureLoader = new THREE.TextureLoader(LoadingManager);
   const asa = textureLoader.load('/works/assets/Wood_Floor_010_basecolor.jpg');
+  asa.wrapS = THREE.RepeatWrapping;
+  asa.wrapT = THREE.RepeatWrapping;
+  asa.repeat.set( 2, 1 );
   var geometry = new THREE.BoxGeometry(4, 2, 0.2);
-  var material = new THREE.MeshBasicMaterial();
-  var baseWing = new THREE.Mesh(geometry);
-  baseWing.material.map = asa;
+  var material = new THREE.MeshBasicMaterial({map: asa});
+  var baseWing = new THREE.Mesh(geometry,material);
 
   const edgeWing = createStabilizer();
   edgeWing.translateX(-6);
@@ -208,10 +231,8 @@ function createWing() {
   edgeWing.translateZ(0.1);
   edgeWing.rotateOnAxis(x, degreesToRadians(180));
   baseWing.add(edgeWing);
-
   edgeWing.castShadow = true;
   
-
   return baseWing;
 }
 
@@ -219,7 +240,10 @@ function createStabilizer() {
   var geometry = new THREE.BoxGeometry(4, 2, 0.2);
 
   var textureLoader = new THREE.TextureLoader();
-  const asa = textureLoader.load('/works/assets/Wood_Floor_010_basecolor.jpg');
+  var asa = textureLoader.load('/works/assets/Wood_Floor_010_basecolor.jpg');
+  asa.wrapS = THREE.RepeatWrapping;
+  asa.wrapT = THREE.RepeatWrapping;
+  asa.repeat.set( 1, 0.5 );
   
   const shape = new THREE.Shape();
   shape.moveTo( 0, 0 );
@@ -239,9 +263,9 @@ function createStabilizer() {
   };
 
   geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-  var material = new THREE.MeshBasicMaterial();
+  var material = new THREE.MeshBasicMaterial({map: asa});
   const stabilizer = new THREE.Mesh(geometry, material);
-  stabilizer.material.map = asa;
+  
   return stabilizer;
 }
 
@@ -364,9 +388,31 @@ function createCity(textureLoader) {
 
   const city = new THREE.Object3D();
 
-  const block1 = createFirstBlock(streetWidth, sidewalkWidth, buildingGap, textureLoader);
+  const block1 = createFirstBlock(streetWidth, sidewalkWidth, buildingGap, textureLoader, {}, {
+    backRight: {
+      right: true,
+      back: true
+    },
+    backLeft: {
+      back: true
+    },
+    frontRight: {
+      right: true
+    }
+  });
 
-  const block2 = createFirstBlock(streetWidth, sidewalkWidth, buildingGap, textureLoader, {rightStreet: false});
+  const block2 = createFirstBlock(streetWidth, sidewalkWidth, buildingGap, textureLoader, {rightStreet: false}, {
+    backLeft: {
+      left: true,
+      back: true
+    },
+    backRight: {
+      back: true
+    },
+    frontLeft: {
+      left: true
+    }
+  });
   block2.translateX(-firstBlockWidth + streetWidth + 2*sidewalkWidth);
 
   city.add(block1);
@@ -419,22 +465,36 @@ function createStreet(width, distance, sidewalkWidth, textureLoader) {
   return street;
 }
 
-function createIntersection(width, sidewalkWidth, textureLoader) {
-  var intersection = createGroundPlane(width+2*sidewalkWidth, width+2*sidewalkWidth, 10, 10);
+function createIntersection(streetWidth, sidewalkWidth, textureLoader, intersectionOptions) {
+  var intersection = createGroundPlane(streetWidth+2*sidewalkWidth, streetWidth+2*sidewalkWidth, 10, 10);
 
   var streetTexture = textureLoader.load('assets/street.jpg', function (texture) {
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
     texture.offset.set(0,0);
-    texture.repeat.set(width/2,width/2);
+    texture.repeat.set(streetWidth/2,streetWidth/2);
   });
 
   intersection.material.map = streetTexture;
 
+  const cornerSideWalkMaterials = [];
   const sideWalkMaterials = [];
-  const sideWalkTexture = new textureLoader.load('assets/sidewalk.jpg', function (texture) {
+  const cornerSideWalkTexture = new textureLoader.load('assets/sidewalk.jpg', function (texture) {
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
     texture.offset.set(0,0);
   });
+
+  const sideWalkTexture = new textureLoader.load('assets/sidewalk.jpg', function (texture) {
+    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+    texture.offset.set(0,0);
+    texture.repeat.set(1,3);
+  });
+
+  cornerSideWalkMaterials.push(new THREE.MeshBasicMaterial({map: cornerSideWalkTexture}));
+  cornerSideWalkMaterials.push(new THREE.MeshBasicMaterial({map: cornerSideWalkTexture}));
+  cornerSideWalkMaterials.push(new THREE.MeshBasicMaterial({map: cornerSideWalkTexture}));
+  cornerSideWalkMaterials.push(new THREE.MeshBasicMaterial({map: cornerSideWalkTexture}));
+  cornerSideWalkMaterials.push(new THREE.MeshBasicMaterial({map: cornerSideWalkTexture}));
+  cornerSideWalkMaterials.push(new THREE.MeshBasicMaterial({map: cornerSideWalkTexture}));
 
   sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
   sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
@@ -444,21 +504,65 @@ function createIntersection(width, sidewalkWidth, textureLoader) {
   sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
 
   const cornerSidewalkGeo = new THREE.BoxGeometry(sidewalkWidth, sidewalkWidth, 1);
-  const cornerSidewalk = new THREE.Mesh(cornerSidewalkGeo, sideWalkMaterials);
-  cornerSidewalk.translateX((width+2*sidewalkWidth)/2 - sidewalkWidth/2);
-  cornerSidewalk.translateY(-(width+2*sidewalkWidth)/2 + sidewalkWidth/2);
+  var cornerSidewalk = new THREE.Mesh(cornerSidewalkGeo, cornerSideWalkMaterials);
+  cornerSidewalk.translateX((streetWidth+2*sidewalkWidth)/2 - sidewalkWidth/2);
+  cornerSidewalk.translateY(-(streetWidth+2*sidewalkWidth)/2 + sidewalkWidth/2);
   cornerSidewalk.translateZ(1/2);
-
-  //cornerSidewalk.translateZ(0.5);
-  //cornerSidewalk.translateX(-width/2 - sidewalkWidth/2);
-
-  /*const sidewalkGeo = new THREE.BoxGeometry(sidewalkWidth, sidewalkWidth, 1);
-  const sidewalk = new THREE.Mesh(sidewalkGeo, sideWalkMaterials);
-  sidewalk.translateZ(0.5);
-  sidewalk.translateX(width/2 + sidewalkWidth/2);*/
-
   intersection.add(cornerSidewalk);
-  //intersection.add(sidewalk);
+
+  cornerSidewalk = new THREE.Mesh(cornerSidewalkGeo, cornerSideWalkMaterials);
+  cornerSidewalk.translateX((streetWidth+2*sidewalkWidth)/2 - sidewalkWidth/2);
+  cornerSidewalk.translateY((streetWidth+2*sidewalkWidth)/2 - sidewalkWidth/2);
+  cornerSidewalk.translateZ(1/2);
+  intersection.add(cornerSidewalk);
+
+  cornerSidewalk = new THREE.Mesh(cornerSidewalkGeo, cornerSideWalkMaterials);
+  cornerSidewalk.translateX(-(streetWidth+2*sidewalkWidth)/2 + sidewalkWidth/2);
+  cornerSidewalk.translateY(-(streetWidth+2*sidewalkWidth)/2 + sidewalkWidth/2);
+  cornerSidewalk.translateZ(1/2);
+  intersection.add(cornerSidewalk);
+
+  cornerSidewalk = new THREE.Mesh(cornerSidewalkGeo, cornerSideWalkMaterials);
+  cornerSidewalk.translateX(-(streetWidth+2*sidewalkWidth)/2 + sidewalkWidth/2);
+  cornerSidewalk.translateY((streetWidth+2*sidewalkWidth)/2 - sidewalkWidth/2);
+  cornerSidewalk.translateZ(1/2);
+  intersection.add(cornerSidewalk);
+
+  if(intersectionOptions && intersectionOptions.right) {
+    const sidewalkGeo = new THREE.BoxGeometry(sidewalkWidth, streetWidth+sidewalkWidth, 1);
+    const sidewalk = new THREE.Mesh(sidewalkGeo, sideWalkMaterials);
+    sidewalk.translateX(streetWidth/2 + sidewalkWidth/2);
+    sidewalk.translateY(sidewalkWidth/2);
+    sidewalk.translateZ(1/2);
+    intersection.add(sidewalk);
+  }
+
+  if(intersectionOptions && intersectionOptions.left) {
+    const sidewalkGeo = new THREE.BoxGeometry(sidewalkWidth, streetWidth+sidewalkWidth, 1);
+    const sidewalk = new THREE.Mesh(sidewalkGeo, sideWalkMaterials);
+    sidewalk.translateX(-streetWidth/2 - sidewalkWidth/2);
+    sidewalk.translateY(sidewalkWidth/2);
+    sidewalk.translateZ(1/2);
+    intersection.add(sidewalk);
+  }
+
+  if(intersectionOptions && intersectionOptions.front) {
+    const sidewalkGeo = new THREE.BoxGeometry(sidewalkWidth, streetWidth+sidewalkWidth, 1);
+    const sidewalk = new THREE.Mesh(sidewalkGeo, sideWalkMaterials);
+    sidewalk.translateY(-streetWidth/2 - sidewalkWidth/2);
+    sidewalk.translateZ(1/2);
+    sidewalk.rotateOnAxis(z, degreesToRadians(90));
+    intersection.add(sidewalk);
+  }
+
+  if(intersectionOptions && intersectionOptions.back) {
+    const sidewalkGeo = new THREE.BoxGeometry(sidewalkWidth, streetWidth+sidewalkWidth, 1);
+    const sidewalk = new THREE.Mesh(sidewalkGeo, sideWalkMaterials);
+    sidewalk.translateY(streetWidth/2 + sidewalkWidth/2);
+    sidewalk.translateZ(1/2);
+    sidewalk.rotateOnAxis(z, degreesToRadians(90));
+    intersection.add(sidewalk);
+  }
 
   return intersection;
 }
@@ -473,12 +577,47 @@ function createFirstBlock(
       rightStreet: true,
       frontStreet: true,
       backStreet: true
+    },
+    intersectionOptions = {
+      backLeft: {
+        left: false,
+        right: false,
+        front: false,
+        back: false
+      },
+      backRight: {
+        left: false,
+        right: false,
+        front: false,
+        back: false
+      },
+      frontLeft: {
+        left: false,
+        right: false,
+        front: false,
+        back: false
+      },
+      frontRight: {
+        left: false,
+        right: false,
+        front: false,
+        back: false
+      }
     }
   ) {
   if(streetOptions.leftStreet === undefined) streetOptions.leftStreet = true; 
   if(streetOptions.rightStreet === undefined) streetOptions.rightStreet = true; 
   if(streetOptions.frontStreet === undefined) streetOptions.frontStreet = true; 
   if(streetOptions.backStreet === undefined) streetOptions.backStreet = true; 
+
+  Object.entries(intersectionOptions).map(intersectionOption => {
+    if(intersectionOption.left === undefined) intersectionOption.left = true; 
+    if(intersectionOption.right === undefined) intersectionOption.right = true; 
+    if(intersectionOption.front === undefined) intersectionOption.front = true; 
+    if(intersectionOption.back === undefined) intersectionOption.back = true; 
+  })
+
+  console.log(intersectionOptions);
 
   var block = new THREE.Object3D();
   block.translateZ(1);
@@ -661,17 +800,39 @@ function createFirstBlock(
     block.add(backStreet);
   }
 
-  const backLeftInter = createIntersection(streetWidth, sidewalkWidth, textureLoader);
+  const backLeftInter = createIntersection(streetWidth, sidewalkWidth, textureLoader, intersectionOptions.backLeft);
   backLeftInter.translateY(
     buildingsInfo[0].offsetWidth*buildingsInfo[0].scale + buildingsInfo[0].width*buildingsInfo[0].scale/2 +
     streetWidth/2 + 5.5 + sidewalkWidth/2
   );
   backLeftInter.translateY(sidewalkWidth/2);
-
   block.add(backLeftInter);
 
-  console.log((planeWidth + 2*streetWidth + 4*sidewalkWidth));
-  console.log((planeHeight + 2*streetWidth + 4*sidewalkWidth));
+  const backrightInter = createIntersection(streetWidth, sidewalkWidth, textureLoader, intersectionOptions.backRight);
+  backrightInter.translateY(
+    buildingsInfo[0].offsetWidth*buildingsInfo[0].scale + buildingsInfo[0].width*buildingsInfo[0].scale/2 +
+    streetWidth/2 + 5.5 + sidewalkWidth/2
+  );
+  backrightInter.translateY(sidewalkWidth/2);
+  backrightInter.translateX(planeWidth + streetWidth + 2*sidewalkWidth);
+  block.add(backrightInter);
+
+  const frontLeftInter = createIntersection(streetWidth, sidewalkWidth, textureLoader, intersectionOptions.frontLeft);
+  frontLeftInter.translateY(
+    buildingsInfo[0].offsetWidth*buildingsInfo[0].scale + buildingsInfo[0].width*buildingsInfo[0].scale/2 +
+    streetWidth/2 + 5.5 + sidewalkWidth/2
+  );
+  frontLeftInter.translateY(-planeHeight - streetWidth - 2*sidewalkWidth + sidewalkWidth/2 + 0.1);
+  block.add(frontLeftInter);
+
+  const frontRightInter = createIntersection(streetWidth, sidewalkWidth, textureLoader, intersectionOptions.frontRight);
+  frontRightInter.translateY(
+    buildingsInfo[0].offsetWidth*buildingsInfo[0].scale + buildingsInfo[0].width*buildingsInfo[0].scale/2 +
+    streetWidth/2 + 5.5 + sidewalkWidth/2
+  );
+  frontRightInter.translateY(-planeHeight - streetWidth - 2*sidewalkWidth + sidewalkWidth/2 + 0.1);
+  frontRightInter.translateX(planeWidth + streetWidth + 2*sidewalkWidth);
+  block.add(frontRightInter);
 
   block.add(plane);
   buildings.forEach(building => block.add(building));

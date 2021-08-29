@@ -45,6 +45,20 @@
         align-items: center;
         justify-content: center;
       }
+      .loader{
+        position: absolute;
+        text-align: center;
+        z-index: 100;
+        left: 30px;
+        display:block;
+        font-size: 30px;
+        color:white;
+        padding: 10px;
+        margin: 10px;
+        margin-top: 45%;
+        margin-left: 35%;
+        visibility: visible;
+      }
     </style> 
 </head>
 
@@ -54,6 +68,7 @@
     <div class="outer">
       <div id="timer" class="info"></div>
       <div id="contador" class="timer"></div>
+      <div id="loader" class="loader">Gerando Texturas: </div>
     </div>
   </div>
 </body>

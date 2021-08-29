@@ -23,6 +23,9 @@ import {
     buildAirpLightInterface
 } from './lib/utils.js';
 
+import {OBJLoader} from '../build/jsm/loaders/OBJLoader.js'
+import {MTLLoader} from '../build/jsm/loaders/MTLLoader.js'
+
 var stats = new Stats(); // To show FPS information
 var scene = new THREE.Scene(); // Create main scene
 scene.background = new THREE.Color('rgb(150,150,200)');
@@ -37,6 +40,8 @@ controls.infoBox.innerHTML =
     ESPAÇO => Modo de Inspeção<br/>
     C => Modo Cockpit`
 controls.show();
+var LoadingManager = new THREE.LoadingManager();
+var textureLoader = new THREE.TextureLoader(LoadingManager);
 
 //câmeras
 //câmera padrão
@@ -48,12 +53,19 @@ const { listener, sound } = addSound("turbine_sound.mp3", true);
 camera.add(listener);
 const  listenerRing  = addSound("ringtone.mp3", false);
 camera.add(listenerRing.listener);
+const  listenerEnd  = addSound("gaules-naice.mp3", false);
+camera.add(listenerEnd.listener);
+const  listenerAmbiente = addSound("adventure-of-excitement-7469.mp3", true);
+camera.add(listenerAmbiente.listener);
 //câmera 2
 var camera2 = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000);
 camera2.position.copy(new THREE.Vector3(0, -50, 15));
 camera2.lookAt(0, 0, 0);
 camera2.up.set(0, 1.1, 0);
-var axesHelper = new THREE.AxesHelper(20)
+var axesHelper = new THREE.AxesHelper(20);
+var inspecionaLight = initLight(camera2,new THREE.Vector3(0,-50,15));
+camera2.add(inspecionaLight);
+console.log(camera2, inspecionaLight);
 //câmera 3
 var camera3 = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000);
 camera3.position.copy(new THREE.Vector3(0, -50, 15));
@@ -105,12 +117,10 @@ var loadingScreen = {
         new THREE.MeshBasicMaterial({color:0x4444ff})
     )
 };
-var RESOURCES_LOADED = true;
+var RESOURCES_LOADED = false;
 loadingScreen.box.position.set(0,0,5);
 loadingScreen.camera.lookAt(loadingScreen.box.position);
 loadingScreen.scene.add(loadingScreen.box);
-
-var LoadingManager = new THREE.LoadingManager();
 
 //cria cenário
 var textureLoader = new THREE.TextureLoader(LoadingManager);
@@ -120,7 +130,7 @@ scene.add(terrain);
 //addClouds();
 
 //cria avião
-var {airplane, turbine, cabin} = createAirplane();
+var {airplane, turbine, cabin} = createAirplane(LoadingManager);
 var virtualParent = new THREE.Object3D();
 virtualParent.add(airplane);
 airplane.position.z += 1;
@@ -157,6 +167,21 @@ cameraGod.up.set(0, 1, 0);
 god.add(cameraGod);
 scene.add(god);
 var godOn = false;
+var loader = document.getElementById("loader");
+var infoBoxShow = true;
+
+const mtlLoader = new MTLLoader(LoadingManager);
+
+mtlLoader.load('./assets/Cat/Cats_obj.mtl', function(materials){
+
+    var objLloader = new OBJLoader(LoadingManager);
+    objLloader.setMaterials(materials);
+    objLloader.load('./assets/Cat/Cats_obj.obj',function(object) {
+        object.scale.set(0.1,0.1,0.1)
+        object.rotateOnAxis(x,degreesToRadians(90))
+        scene.add(object);
+    });
+});
 
 render();
 
@@ -262,6 +287,9 @@ function destroyTorus(){
         if(estaDentro(virtualParent, torusus[i], 35)){
             if(!timer.running && estaDentro(virtualParent, torusus[14], 35))
                 timer.start();
+
+            if(estaDentro(virtualParent, torusus[0], 35))
+                listenerEnd.sound.play();
 
             //destroi torus passado
             torusus[i].geometry.dispose();
@@ -525,7 +553,16 @@ function keyboardUpdate() {
         cabin.material.transparent = false;
         cabin.material.opacity = 1;
     }
-
+    if(keyboard.down('H')) {
+        if(infoBoxShow){
+            controls.changeVisibility('hidden');
+            infoBoxShow = !infoBoxShow;
+        }
+        else{
+            controls.changeVisibility('visible');
+            infoBoxShow = !infoBoxShow;
+        }
+    }
     //entra no modo do percurso
     if(keyboard.down('P')) {
         if(circuito) {
@@ -673,19 +710,19 @@ function godView() {
     }
     
     if(keyboard.pressed('W'))
-        god.translateY(maxSpeed);
+        god.translateY(1);
     else if(keyboard.pressed('S'))
-        god.translateY(-maxSpeed);
+        god.translateY(-1);
     
     if(keyboard.pressed('A'))
-        god.translateX(-maxSpeed);
+        god.translateX(-1);
     else if(keyboard.pressed('D'))
-        god.translateX(maxSpeed);
+        god.translateX(1);
 
     if(keyboard.pressed('up'))
-        god.translateZ(maxSpeed);
+        god.translateZ(0.5);
     else if(keyboard.pressed('down'))
-        god.translateZ(-maxSpeed);
+        god.translateZ(-0.5);
     
     if(keyboard.pressed('left'))
         god.rotateOnAxis(new THREE.Vector3(0,0,1),angle);
@@ -698,8 +735,7 @@ function render() {
         virtualParent.position.x-2.0,
         virtualParent.position.y+(sunLight.position.y/sunLight.position.z)*20,
         virtualParent.position.z+20
-    );
-
+    );  
     if(RESOURCES_LOADED == false) {
 
         loadingScreen.box.position.x -= 0.05;
@@ -707,11 +743,12 @@ function render() {
         loadingScreen.box.position.y = Math.sin(loadingScreen.box.position.x);
         
         LoadingManager.onProgress = function(item, loaded, total) {
-            console.log(parseInt(loaded)*100/total)
+            loader.innerHTML = "Gerando Texturas: " + (parseInt(loaded)*100/total).toFixed(2) + "%";
         }
 
         LoadingManager.onLoad = function() {
-            console.log('aperte espaço para continuar')
+            loader.innerHTML = 'Aperte espaço para continuar';
+
             render2();
             requestAnimationFrame(render2);
             return;
@@ -745,6 +782,8 @@ function render2() {
     keyboard.update();
     if(keyboard.down('space')) {
         RESOURCES_LOADED = true;
+        loader.style.visibility = 'hidden';
+        listenerAmbiente.sound.play();
         requestAnimationFrame(render)
         return;
     }
