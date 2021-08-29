@@ -125,8 +125,8 @@ camera3.position.z += 1
 camera3.position.y -= 1
 
 //adiciona luz
-let airplaneLight = initAirplaneLight(scene, new THREE.Vector3(0,20,20), airplane);
-virtualParent.add(airplaneLight);
+let airplaneLight = initAirplaneLight(scene, new THREE.Vector3(-2.0,-2948,20), airplane);
+scene.add(airplaneLight);
 let sunLight = initLight(scene, new THREE.Vector3(-200,5000,1900));      
 
 //trackballControls
@@ -707,7 +707,14 @@ function godView() {
         god.rotateOnAxis(new THREE.Vector3(0,0,1),-angle);
 }
 
+var firstRendering = true;
+
 function render() {
+    airplaneLight.position.set(
+        virtualParent.position.x-2.0,
+        virtualParent.position.y+52,
+        virtualParent.position.z+20
+    );
 
     if(RESOURCES_LOADED == false) {
         requestAnimationFrame(render);
@@ -737,5 +744,11 @@ function render() {
             keyboardUpdate();
 
         renderer.render(scene, cameras[cameraType-1]);
+    }
+
+    if(firstRendering) {
+        sunLight.shadow.autoUpdate = false;
+        scene.add( dynamicLight );    
+        firstRendering = false;
     }
 }
