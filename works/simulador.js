@@ -110,7 +110,7 @@ var loadingScreen = {
         new THREE.MeshBasicMaterial({color:0x4444ff})
     )
 };
-var RESOURCES_LOADED = false;
+var RESOURCES_LOADED = true;
 loadingScreen.box.position.set(0,0,5);
 loadingScreen.camera.lookAt(loadingScreen.box.position);
 loadingScreen.scene.add(loadingScreen.box);
@@ -137,32 +137,32 @@ trees.forEach(tree => {
 //addClouds();
 
 //Cria a cidade
-const predio1 = createBuilding1(new THREE.Vector3(0,0,0), textureLoader);
-predio1.scale.set(10,10,10);
-predio1.rotateOnAxis(z, degreesToRadians(180));
-predio1.translateZ(100);
-scene.add(predio1);
+// const predio1 = createBuilding1(new THREE.Vector3(0,0,0), textureLoader);
+// predio1.scale.set(10,10,10);
+// predio1.rotateOnAxis(z, degreesToRadians(180));
+// predio1.translateZ(100);
+// scene.add(predio1);
 
-const predio2 = createBuilding2(new THREE.Vector3(0,0,0), textureLoader);
-predio2.scale.set(10,10,10);
-predio2.rotateOnAxis(z, degreesToRadians(180));
-predio2.translateZ(100);
-predio2.translateX(500);
-scene.add(predio2);
+// const predio2 = createBuilding2(new THREE.Vector3(0,0,0), textureLoader);
+// predio2.scale.set(10,10,10);
+// predio2.rotateOnAxis(z, degreesToRadians(180));
+// predio2.translateZ(100);
+// predio2.translateX(500);
+// scene.add(predio2);
 
-const predio3 = createBuilding6(new THREE.Vector3(0,0,0), textureLoader);
-predio3.scale.set(10,10,10);
-predio3.rotateOnAxis(z, degreesToRadians(180));
-predio3.translateZ(500);
-predio3.translateY(1500);
-scene.add(predio3);
+// const predio3 = createBuilding6(new THREE.Vector3(0,0,0), textureLoader);
+// predio3.scale.set(10,10,10);
+// predio3.rotateOnAxis(z, degreesToRadians(180));
+// predio3.translateZ(500);
+// predio3.translateY(1500);
+// scene.add(predio3);
 
-const predio6 = createBuilding3(new THREE.Vector3(0,0,0), textureLoader);
-predio6.scale.set(5,5,5);
-predio6.rotateOnAxis(z, degreesToRadians(180));
-predio6.translateZ(250);
-predio6.translateX(-500);
-scene.add(predio6);
+// const predio6 = createBuilding3(new THREE.Vector3(0,0,0), textureLoader);
+// predio6.scale.set(5,5,5);
+// predio6.rotateOnAxis(z, degreesToRadians(180));
+// predio6.translateZ(250);
+// predio6.translateX(-500);
+// scene.add(predio6);
 
 //cria avião
 var {airplane, turbine, cabin} = createAirplane();
