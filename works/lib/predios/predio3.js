@@ -161,6 +161,7 @@ export function createBuilding3(position, textureLoader) {
 
     //construção
     var predio = new THREE.Mesh(predioBaseGeometry,[predioMaterial,predioMaterial,predioMaterial,predioMaterial,predioMaterialTopo,predioMaterial]);
+    predio.castShadow = true;
     //scene.add(predio);
     predio.position.copy(position);
 
@@ -168,6 +169,10 @@ export function createBuilding3(position, textureLoader) {
     var topo2 = new THREE.Mesh(topoGeometry,topoMaterial);
     var topo3 = new THREE.Mesh(topoGeometry,topoMaterial);
     var topo4 = new THREE.Mesh(topoGeometry,topoMaterial);
+    topo1.castShadow = true;
+    topo2.castShadow = true;
+    topo3.castShadow = true;
+    topo4.castShadow = true;
     predio.add(topo1)
     predio.add(topo2)
     predio.add(topo3)
@@ -184,6 +189,7 @@ export function createBuilding3(position, textureLoader) {
     topo4.position.set(0,15,50 + 2.5)
 
     var teto = new THREE.Mesh(tetoPredioGeometry, tetoPredioMaterial);
+    teto.castShadow = true;
     predio.add(teto);
     teto.position.set(0,0,55.01);
 
@@ -191,6 +197,10 @@ export function createBuilding3(position, textureLoader) {
     var pilar2 = new THREE.Mesh(pilarGeometry, pilarMaterial);
     var pilar3 = new THREE.Mesh(pilarGeometry, pilarMaterial);
     var pilar4 = new THREE.Mesh(pilarGeometry, pilarMaterial);
+    pilar1.castShadow = true;
+    pilar2.castShadow = true;
+    pilar3.castShadow = true;
+    pilar4.castShadow = true;
     predio.add(pilar1);
     predio.add(pilar2);
     predio.add(pilar3);
@@ -210,25 +220,30 @@ export function createBuilding3(position, textureLoader) {
     var portaFrenteMaterial =  new THREE.MeshStandardMaterial({map: portaFrenteMap});
 
     var portaFrente = new THREE.Mesh(portaFrenteGeometry, portaFrenteMaterial);
+    portaFrente.castShadow = true;
     predio.add(portaFrente);
     portaFrente.rotateOnAxis(x, rot90);
     portaFrente.position.set(0,-20.5,-47.5)
 
     for(var i=0; i<9; i++) {
         var varanda = new THREE.Mesh(varandaGeometry,[janelaVarandaMaterial,janelaVarandaMaterial,janelaVarandaMaterial,janelaVarandaMaterial,varandaMaterial,varandaMaterial]);
+        varanda.castShadow = true;
         predio.add(varanda)
         varanda.position.set(25/2*Math.pow(-1,i), -20-2, -35+0.1/2 + i*10)
 
         var porta = new THREE.Mesh(portaGeometry, portaMaterial);
+        porta.castShadow = true;
         predio.add(porta);
         porta.rotateOnAxis(x, rot90);
         porta.position.set(20*Math.pow(-1,i), -20.5, -35.5 + i*10)
 
         var janela = new THREE.Mesh(janelaGeometry, janelaMaterial);
+        janela.castShadow = true;
         predio.add(janela);
         janela.rotateOnAxis(y, rot90);
         janela.position.set(25.5, 0,-35.5 + i*10)
         var janela2 = new THREE.Mesh(janelaGeometry, janelaMaterial);
+        janela.castShadow = true;
         predio.add(janela2);
         janela2.rotateOnAxis(y, rot90);
         janela2.position.set(-25.5, 0,-35.5 + i*10)
