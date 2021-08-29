@@ -337,9 +337,6 @@ function trocaCamera1() {
         
         //coloca tudo de volta na cena
         scene.add(terrain);
-        trees.forEach(tree => {
-            scene.add(tree);
-        })
         if(caminhoOn) {
             torusus.forEach(torus => {
                 scene.add(torus)
@@ -353,9 +350,6 @@ function trocaCamera1() {
 function trocaCamera2() {
     //remove tudo da cena
     scene.remove(terrain);
-    trees.forEach(tree => {
-        scene.remove(tree);
-    })
     if(caminhoOn) {
         torusus.forEach(torus => {
             scene.remove(torus);
