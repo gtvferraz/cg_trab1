@@ -245,69 +245,83 @@ function createStabilizer() {
   return stabilizer;
 }
 
-export function createTerrain(textureLoader) {
+export function createTerrain(textureLoader, scene) {
   //plane.add(createMountain());
 
+  const planSize = 4000;
   const stepHeight = 3;
 
-  var sandPlane = createGroundPlane(1000, 8700, 10, 10);
-  sandPlane.translateZ(5*stepHeight);
-  sandPlane.translateX(5000);
-
-  var grass1Plane = createGroundPlane(1500, 9500, 10, 10);
-  grass1Plane.translateZ(4*stepHeight);
-  grass1Plane.translateX(4750);
-
-  var grass2Plane = createGroundPlane(2100, 10000, 10, 10);
-  grass2Plane.translateZ(3*stepHeight);
-  grass2Plane.translateX(4450);
-
-  var grass3Plane = createGroundPlane(2400, 11000, 10, 10);
-  grass3Plane.translateZ(2*stepHeight);
-  grass3Plane.translateX(4300);
-
-  var grass4Plane = createGroundPlane(11000, 11000, 10, 10);
-
-  var plane = createGroundPlane(99000, 99000, 10, 10, 'rgb(45,117,43)');
-  plane.translateZ(-5*stepHeight);
-
-  var sand = textureLoader.load('assets/sand.jpg', function (texture) {
+  var sandTexture = textureLoader.load('assets/sand.jpg', function (texture) {
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
     texture.offset.set(0,0);
     texture.repeat.set(100*0.115,100);
   });
-  var grass1 = textureLoader.load('assets/grass1.jpg', function (texture) {
+  var grassTexture1 = textureLoader.load('assets/grass1.jpg', function (texture) {
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
     texture.offset.set(0,0);
     texture.repeat.set(100*0.158,100);
   });
-  var grass2 = textureLoader.load('assets/grass2.jpg', function (texture) {
+  var grassTexture2 = textureLoader.load('assets/grass2.jpg', function (texture) {
       texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
       texture.offset.set(0,0);
       texture.repeat.set(100*0.21,100);
   });
-  var grass3 = textureLoader.load('assets/grass3.jpg', function (texture) {
+  var grassTexture3 = textureLoader.load('assets/grass3.jpg', function (texture) {
       texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
       texture.offset.set(0,0);
       texture.repeat.set(100*0.218,100);
   });
-  var grass4 = textureLoader.load('assets/grass4.jpg', function (texture) {
+  var grassTexture4 = textureLoader.load('assets/grass4.jpg', function (texture) {
       texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
       texture.offset.set(0,0);
       texture.repeat.set(400,400);
   });
-  
-  sandPlane.material.map = sand;
-  grass1Plane.material.map = grass1;
-  grass2Plane.material.map = grass2;
-  grass3Plane.material.map = grass3;
-  grass4Plane.material.map = grass4;
 
-  grass4Plane.add(plane);
-  grass4Plane.add(sandPlane);
-  grass4Plane.add(grass1Plane);
-  grass4Plane.add(grass2Plane);
-  grass4Plane.add(grass3Plane);
+  const plansInfo = [
+    {
+      widthScale: 1,
+      heightScale: 1,
+      texture: grassTexture4
+    },
+    {
+      widthScale: 0.25,
+      heightScale: 1,
+      texture: grassTexture3
+    },
+    {
+      widthScale: 0.2,
+      heightScale: 0.9,
+      texture: grassTexture2
+    },
+    {
+      widthScale: 0.17,
+      heightScale: 0.88,
+      texture: grassTexture1
+    },
+    {
+      widthScale: 0.1,
+      heightScale: 0.81,
+      texture: sandTexture
+    }
+  ];
+
+  var mainPlane;
+  plansInfo.forEach((plane, index) => {
+    const newPlane = createGroundPlane(plane.widthScale*planSize, plane.heightScale*planSize, 10, 10);
+    newPlane.translateZ(index*stepHeight);
+    newPlane.material.map = plane.texture;
+
+    if(index == 0) mainPlane = newPlane
+    else {
+      newPlane.translateX(planSize/2 - plane.widthScale*planSize/2);
+      mainPlane.add(newPlane);
+    }
+  })
+
+  var plane = createGroundPlane(9*planSize, 9*planSize, 10, 10, 'rgb(45,117,43)');
+  plane.translateZ(-5*stepHeight);
+  
+  mainPlane.add(plane);
 
   const skyboxMaterials = [];
   const skyboxTextureFt = new textureLoader.load('assets/meadow_ft.jpg');
@@ -324,15 +338,20 @@ export function createTerrain(textureLoader) {
   skyboxMaterials.push(new THREE.MeshBasicMaterial({map: skyboxTextureRt, side: THREE.BackSide}));
   skyboxMaterials.push(new THREE.MeshBasicMaterial({map: skyboxTextureLf, side: THREE.BackSide}));
 
-  const skyboxGeo = new THREE.BoxGeometry(99000, 40000, 99000);
+  const skyboxGeo = new THREE.BoxGeometry(9*planSize, 40000, 9*planSize);
   const skybox = new THREE.Mesh(skyboxGeo, skyboxMaterials);
   skybox.rotateOnAxis(x, degreesToRadians(90));
   skybox.translateY(-0);
-  grass4Plane.add(skybox);
+  mainPlane.add(skybox);
 
-  grass4Plane.add(createCity(textureLoader));
+  mainPlane.add(createCity(textureLoader));
 
-  return grass4Plane;
+  const trees = createTrees(planSize, plansInfo, scene);
+  trees.forEach(tree => {
+    mainPlane.add(tree);
+  })
+
+  return mainPlane;
 }
 
 function createCity(textureLoader) {
@@ -340,87 +359,29 @@ function createCity(textureLoader) {
   const sidewalkWidth = 2;
   const buildingGap = 10;
 
-  var city = createStreet(streetWidth, 4000, sidewalkWidth, textureLoader);
-  city.translateZ(3);
+  const firstBlockWidth = 138;
+  const firstBlockHeight = 194.4;
 
-  const buildingsInfo = [
-    {
-      offsetWidth: 5,
-      offsetDeph: 5,
-      width: 35,
-      deph: 10,
-      height: 20,
-      scale: 2,
-      create: createBuilding2
-    },
-    { 
-      offsetWidth: 0,
-      offsetDeph: 0,
-      width: 20,
-      deph: 8,
-      height: 20,
-      scale: 2,
-      create: createBuilding1
-    }
-  ];
+  const city = new THREE.Object3D();
 
-  const buildings = [];
+  const block1 = createFirstBlock(streetWidth, sidewalkWidth, buildingGap, textureLoader);
 
-  for(let i=0; i<2; i++) {
-    const scaledOffsetWidth = buildingsInfo[i].offsetWidth*buildingsInfo[i].scale;
-    const scaledOffsetDeph = buildingsInfo[i].offsetDeph*buildingsInfo[i].scale;
-    const scaledWidth = buildingsInfo[i].width*buildingsInfo[i].scale;
-    const scaledDeph = buildingsInfo[i].deph*buildingsInfo[i].scale;
-    const scaledHeight = buildingsInfo[i].height*buildingsInfo[i].scale;
+  const block2 = createFirstBlock(streetWidth, sidewalkWidth, buildingGap, textureLoader, {rightStreet: false});
+  block2.translateX(-firstBlockWidth + streetWidth + 2*sidewalkWidth);
 
-    buildings.push(buildingsInfo[i].create(new THREE.Vector3(i,i,i), textureLoader));
-    buildings[i].scale.set(buildingsInfo[i].scale,buildingsInfo[i].scale,buildingsInfo[i].scale);
-    buildings[i].rotateOnAxis(z, degreesToRadians(-90));
-    buildings[i].translateZ(scaledHeight/2);
-    buildings[i].translateY(streetWidth/2 + sidewalkWidth + scaledOffsetDeph + scaledDeph/2);
-    if(i > 0)
-      buildings[i].translateX(
-        scaledOffsetWidth + 
-        scaledWidth/2 - 
-        buildingsInfo[i-1].offsetWidth*buildingsInfo[i-1].scale +
-        buildingsInfo[i-1].width*buildingsInfo[i-1].scale/2 + 
-        buildingGap);
-  }
-  //buildings[0].translateX(200);
-  //buildings[0].translateY(streetWidth);
+  city.add(block1);
+  city.add(block2);
 
-  /*const scale = 10;
-  buildings.push(createBuilding2(new THREE.Vector3(0,0,0), textureLoader));
-  buildings[0].scale.set(scale,scale,scale);
-  buildings[0].rotateOnAxis(z, degreesToRadians(-90));
-  buildings[0].translateZ(20*scale / 2);*/
-
-  /*scale = 8;
-  buildings.push(createBuilding6(new THREE.Vector3(0,0,0), textureLoader));
-  buildings[2].scale.set(scale,scale,scale);
-  buildings[2].rotateOnAxis(z, degreesToRadians(180));
-  buildings[2].translateZ(100*scale / 2);
-  buildings[2].translateX(1500);
-
-  scale = 5;
-  buildings.push(createBuilding3(new THREE.Vector3(0,0,0), textureLoader));
-  buildings[3].scale.set(scale,scale,scale);
-  buildings[3].rotateOnAxis(z, degreesToRadians(-90));
-  buildings[3].translateZ(100*scale / 2);*/
-  //buildings[3].translateY(streetWidth);
-
-  buildings.forEach(building => city.add(building));
   return city;
 }
 
 function createStreet(width, distance, sidewalkWidth, textureLoader) {
   var street = createGroundPlane(width, distance, 10, 10);
-  street.translateZ(3);
 
   var streetTexture = textureLoader.load('assets/street.jpg', function (texture) {
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
     texture.offset.set(0,0);
-    texture.repeat.set(distance/20,distance/20);
+    texture.repeat.set(width/2,distance/20);
   });
 
   street.material.map = streetTexture;
@@ -456,6 +417,265 @@ function createStreet(width, distance, sidewalkWidth, textureLoader) {
   street.add(rightSidewalk);
 
   return street;
+}
+
+function createIntersection(width, sidewalkWidth, textureLoader) {
+  var intersection = createGroundPlane(width+2*sidewalkWidth, width+2*sidewalkWidth, 10, 10);
+
+  var streetTexture = textureLoader.load('assets/street.jpg', function (texture) {
+    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+    texture.offset.set(0,0);
+    texture.repeat.set(width/2,width/2);
+  });
+
+  intersection.material.map = streetTexture;
+
+  const sideWalkMaterials = [];
+  const sideWalkTexture = new textureLoader.load('assets/sidewalk.jpg', function (texture) {
+    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+    texture.offset.set(0,0);
+  });
+
+  sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
+  sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
+  sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
+  sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
+  sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
+  sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
+
+  const cornerSidewalkGeo = new THREE.BoxGeometry(sidewalkWidth, sidewalkWidth, 1);
+  const cornerSidewalk = new THREE.Mesh(cornerSidewalkGeo, sideWalkMaterials);
+  cornerSidewalk.translateX((width+2*sidewalkWidth)/2 - sidewalkWidth/2);
+  cornerSidewalk.translateY(-(width+2*sidewalkWidth)/2 + sidewalkWidth/2);
+  cornerSidewalk.translateZ(1/2);
+
+  //cornerSidewalk.translateZ(0.5);
+  //cornerSidewalk.translateX(-width/2 - sidewalkWidth/2);
+
+  /*const sidewalkGeo = new THREE.BoxGeometry(sidewalkWidth, sidewalkWidth, 1);
+  const sidewalk = new THREE.Mesh(sidewalkGeo, sideWalkMaterials);
+  sidewalk.translateZ(0.5);
+  sidewalk.translateX(width/2 + sidewalkWidth/2);*/
+
+  intersection.add(cornerSidewalk);
+  //intersection.add(sidewalk);
+
+  return intersection;
+}
+
+function createFirstBlock(
+    streetWidth,
+    sidewalkWidth,
+    buildingGap,
+    textureLoader,
+    streetOptions = {
+      leftStreet: true,
+      rightStreet: true,
+      frontStreet: true,
+      backStreet: true
+    }
+  ) {
+  if(streetOptions.leftStreet === undefined) streetOptions.leftStreet = true; 
+  if(streetOptions.rightStreet === undefined) streetOptions.rightStreet = true; 
+  if(streetOptions.frontStreet === undefined) streetOptions.frontStreet = true; 
+  if(streetOptions.backStreet === undefined) streetOptions.backStreet = true; 
+
+  var block = new THREE.Object3D();
+  block.translateZ(1);
+
+  const buildingsInfo = [
+    { 
+      offsetWidth: 5,
+      offsetDeph: 0,
+      width: 80,
+      deph: 40,
+      height: 100,
+      scale: 0.8,
+      create: createBuilding6
+    },
+    {
+      offsetWidth: 5,
+      offsetDeph: 5,
+      width: 35,
+      deph: 10,
+      height: 20,
+      scale: 2,
+      create: createBuilding2
+    },
+    { 
+      offsetWidth: 0,
+      offsetDeph: 0,
+      width: 20,
+      deph: 8,
+      height: 20,
+      scale: 2,
+      create: createBuilding1
+    },
+    { 
+      offsetWidth: 0,
+      offsetDeph: 0,
+      width: 50,
+      deph: 40,
+      height: 100,
+      scale: 1,
+      create: createBuilding3
+    }
+  ];
+
+  const buildings = [];
+
+  var scaledOffsetWidth = buildingsInfo[0].offsetWidth*buildingsInfo[0].scale;
+  var scaledOffsetDeph = buildingsInfo[0].offsetDeph*buildingsInfo[0].scale;
+  var scaledWidth = buildingsInfo[0].width*buildingsInfo[0].scale;
+  var scaledDeph = buildingsInfo[0].deph*buildingsInfo[0].scale;
+  var scaledHeight = buildingsInfo[0].height*buildingsInfo[0].scale;
+
+  /*buildings.push(buildingsInfo[0].create(new THREE.Vector3(0,0,0), textureLoader));
+  buildings[0].scale.set(buildingsInfo[0].scale,buildingsInfo[0].scale,buildingsInfo[0].scale);
+  buildings[0].translateZ(scaledHeight/2);
+  buildings[0].translateX(
+    streetWidth/2 + sidewalkWidth + 
+    scaledOffsetWidth + scaledWidth/2
+  );
+  buildings[0].translateY(-0.85*(
+    buildingsInfo[1].width*buildingsInfo[1].scale + 
+    buildingsInfo[2].width*buildingsInfo[2].scale)
+  );
+
+  for(let i=1; i<3; i++) {
+    scaledOffsetWidth = buildingsInfo[i].offsetWidth*buildingsInfo[i].scale;
+    scaledOffsetDeph = buildingsInfo[i].offsetDeph*buildingsInfo[i].scale;
+    scaledWidth = buildingsInfo[i].width*buildingsInfo[i].scale;
+    scaledDeph = buildingsInfo[i].deph*buildingsInfo[i].scale;
+    scaledHeight = buildingsInfo[i].height*buildingsInfo[i].scale;
+
+    buildings.push(buildingsInfo[i].create(new THREE.Vector3(0,0,0), textureLoader));
+    buildings[i].scale.set(buildingsInfo[i].scale,buildingsInfo[i].scale,buildingsInfo[i].scale);
+    buildings[i].translateZ(scaledHeight/2);
+    buildings[i].translateX(streetWidth/2 + sidewalkWidth + scaledOffsetDeph + scaledDeph/2);
+
+    if(i > 1)
+      buildings[i].translateY(-1*(
+        scaledOffsetWidth + 
+        scaledWidth/2 - 
+        buildingsInfo[i-1].offsetWidth*buildingsInfo[i-1].scale +
+        buildingsInfo[i-1].width*buildingsInfo[i-1].scale/2 + 
+        buildingGap)
+      );
+    
+    buildings[i].rotateOnAxis(z, degreesToRadians(-90));
+  }
+
+  scaledOffsetWidth = buildingsInfo[3].offsetWidth*buildingsInfo[3].scale;
+  scaledOffsetDeph = buildingsInfo[3].offsetDeph*buildingsInfo[3].scale;
+  scaledWidth = buildingsInfo[3].width*buildingsInfo[3].scale;
+  scaledDeph = buildingsInfo[3].deph*buildingsInfo[3].scale;
+  scaledHeight = buildingsInfo[3].height*buildingsInfo[3].scale;
+
+  buildings.push(buildingsInfo[3].create(new THREE.Vector3(0,0,0), textureLoader));
+  buildings[3].scale.set(buildingsInfo[3].scale,buildingsInfo[3].scale,buildingsInfo[3].scale);
+  buildings[3].translateZ(scaledHeight/2);
+  buildings[3].translateX(
+    streetWidth/2 +
+    sidewalkWidth +
+    buildingsInfo[0].deph*buildingsInfo[0].scale +
+    buildingGap + scaledOffsetDeph +
+    scaledDeph/2
+  );
+
+  buildings[3].rotateOnAxis(z, degreesToRadians(90));
+
+  scaledOffsetWidth = buildingsInfo[2].offsetWidth*buildingsInfo[2].scale;
+  scaledOffsetDeph = buildingsInfo[2].offsetDeph*buildingsInfo[2].scale;
+  scaledWidth = buildingsInfo[2].width*buildingsInfo[2].scale;
+  scaledDeph = buildingsInfo[2].deph*buildingsInfo[2].scale;
+  scaledHeight = buildingsInfo[2].height*buildingsInfo[2].scale;
+
+  buildings.push(buildingsInfo[2].create(new THREE.Vector3(0,0,0), textureLoader));
+  buildings[4].scale.set(buildingsInfo[2].scale,buildingsInfo[2].scale,buildingsInfo[2].scale);
+  buildings[4].translateZ(scaledHeight/2);
+  buildings[4].translateX(
+    streetWidth/2 +
+    sidewalkWidth +
+    buildingsInfo[0].deph*buildingsInfo[0].scale +
+    buildingGap + buildingsInfo[3].offsetDeph*buildingsInfo[3].scale +
+    buildingsInfo[3].deph*buildingsInfo[3].scale/2
+  );
+
+  buildings[4].translateY(-1*(
+    scaledOffsetWidth + 
+    scaledWidth/2 - 
+    buildingsInfo[3].offsetWidth*buildingsInfo[3].scale +
+    buildingsInfo[3].width*buildingsInfo[3].scale/2 + 
+    buildingGap)
+  );
+
+  buildings[4].rotateOnAxis(z, degreesToRadians(90));*/
+
+  const planeWidth = 
+    buildingsInfo[1].offsetDeph*buildingsInfo[1].scale + buildingsInfo[1].deph*buildingsInfo[1].scale +
+    buildingsInfo[3].offsetDeph*buildingsInfo[3].scale + buildingsInfo[3].deph*buildingsInfo[3].scale +
+    buildingGap*2;
+  const planeHeight = 
+    buildingsInfo[1].width*buildingsInfo[1].scale + buildingsInfo[1].offsetWidth*buildingsInfo[1].scale +
+    buildingsInfo[2].width*buildingsInfo[2].scale + buildingsInfo[2].offsetWidth*buildingsInfo[2].scale + 
+    buildingsInfo[2].deph*buildingsInfo[0].scale + buildingsInfo[2].offsetDeph*buildingsInfo[0].scale +
+    buildingGap*2;
+  const plane = createGroundPlane(
+    planeWidth, 
+    planeHeight, 
+    10, 10);
+
+  plane.translateX(planeWidth/2 + streetWidth/2 + sidewalkWidth);
+  plane.translateY(-planeHeight/4 + 5);
+
+  if(streetOptions.leftStreet) {
+    const leftStreet = createStreet(streetWidth, planeHeight, sidewalkWidth, textureLoader);
+    leftStreet.translateY(-planeHeight/4 + 5);
+    block.add(leftStreet);
+  }
+
+  if(streetOptions.rightStreet) {
+    const rightStreet = createStreet(streetWidth, planeHeight, sidewalkWidth, textureLoader);
+    rightStreet.translateY(-planeHeight/4 + 5);
+    rightStreet.translateX(planeWidth + 2*(streetWidth/2 + sidewalkWidth));
+    block.add(rightStreet);
+  }
+
+  if(streetOptions.frontStreet) {
+    const frontStreet = createStreet(streetWidth, planeWidth, sidewalkWidth, textureLoader);
+    frontStreet.translateY(-planeHeight/4 - planeHeight/2 - streetWidth/2 - sidewalkWidth + 5);
+    frontStreet.translateX(streetWidth/2 + sidewalkWidth + planeWidth/2);
+    frontStreet.rotateOnAxis(z, degreesToRadians(90));
+    block.add(frontStreet);
+  }
+
+  if(streetOptions.backStreet) {
+    const backStreet = createStreet(streetWidth, planeWidth, sidewalkWidth, textureLoader);
+    backStreet.translateY(
+      buildingsInfo[0].offsetWidth*buildingsInfo[0].scale + buildingsInfo[0].width*buildingsInfo[0].scale/2 +
+      sidewalkWidth + streetWidth/2 + 5.5
+    );
+    backStreet.translateX(streetWidth/2 + sidewalkWidth + planeWidth/2);
+    backStreet.rotateOnAxis(z, degreesToRadians(90));
+    block.add(backStreet);
+  }
+
+  const backLeftInter = createIntersection(streetWidth, sidewalkWidth, textureLoader);
+  backLeftInter.translateY(
+    buildingsInfo[0].offsetWidth*buildingsInfo[0].scale + buildingsInfo[0].width*buildingsInfo[0].scale/2 +
+    streetWidth/2 + 5.5 + sidewalkWidth/2
+  );
+  backLeftInter.translateY(sidewalkWidth/2);
+
+  block.add(backLeftInter);
+
+  console.log((planeWidth + 2*streetWidth + 4*sidewalkWidth));
+  console.log((planeHeight + 2*streetWidth + 4*sidewalkWidth));
+
+  block.add(plane);
+  buildings.forEach(building => block.add(building));
+  return block;
 }
 
 function createMountain() {
@@ -808,12 +1028,11 @@ export function createClouds() {
   return clouds;
 }
 
-export function createTrees() {
+export function createTrees(planSize, plansInfo, scene) {
   const trees = [];
 
   //offsetX = 225*escala(montanha)
   //mountainRadius = 400*escala(montanha)
-  const totalRadius = 11000;
 
   const numTrees = 200;
   const trunkHeight = 25;
@@ -824,17 +1043,17 @@ export function createTrees() {
 
   const trackRegion = {
     x: 0,
-    y: -1800,
+    y: -(planSize/2 - 1000/2),
     width: 100,
-    height: 2500,
+    height: 1000,
     color: 'rgb(255,0,255)'
   }
 
   const soilRegion = {
-    x: 4450,
+    x: planSize/2 - plansInfo[2].widthScale*planSize/2,
     y: 0,
-    width: 2100,
-    height: 10000,
+    width: plansInfo[2].widthScale*planSize,
+    height: plansInfo[2].heightScale*planSize,
     color: 'rgb(50,0,0)'
   }
 
@@ -880,8 +1099,8 @@ export function createTrees() {
 
     let redo = true;
     while(redo) {
-      randomX = Math.random() * totalRadius - totalRadius/2;
-      randomY = Math.random() * totalRadius - totalRadius/2;
+      randomX = Math.random() * planSize - planSize/2;
+      randomY = Math.random() * planSize - planSize/2;
 
       redo = false;
       for(let j=0; j<treesPos.length; j++) {
@@ -933,20 +1152,13 @@ export function createTrees() {
 
     trees.push(tree);
   }
-
   
-  /*var geometry = new THREE.BoxGeometry(totalRadius, 2, totalRadius, 1, 10);
+  /*var geometry = new THREE.BoxGeometry(planSize, 2, planSize, 1, 10);
   var mark = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color: 'rgb(139,69,19)'}));
   mark.rotateOnAxis(x, degreesToRadians(90));
-  scene.add(mark)*/
+  scene.add(mark)
 
-  /*var geometry = new THREE.BoxGeometry(mountainRadius, 20, mountainRadius, 2, 10);
-  var mark = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color: 'rgb(255,255,255)'}));
-  mark.position.copy(new THREE.Vector3(offsetX, 0, 0));
-  mark.rotateOnAxis(x, degreesToRadians(90));
-  scene.add(mark)*/
-
-  /*avoidRegions.forEach((region, index) => {
+  avoidRegions.forEach((region, index) => {
     var geometry = new THREE.BoxGeometry(region.width, 10*(index+1), region.height, 2, 10);
     var mark = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color: region.color}));
     mark.position.copy(new THREE.Vector3(region.x, region.y, 0));

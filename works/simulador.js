@@ -68,11 +68,11 @@ var z = new THREE.Vector3(0, 0, 1); // Set Z axis
 var maxUD =  degreesToRadians(45/2);//ângulo máximo rotação cima/baixo
 var maxLR = degreesToRadians(45); //ângulo máximo rotação esquerda/direita
 var angle = degreesToRadians(90/100);
-var maxSpeed = 20.0; //velocidade máxima de translação
+var maxSpeed = 10.0; //velocidade máxima de translação
 var minSpeed = 2.5; //velocidade mínima de translação
 var speed = 0; //velocidade de translação
 var turbineSpeed = 1; //velocidade de rotação da turbina
-var aceleracao = 0.1;//0.05; //aceleração de translação em z
+var aceleracao = 0.05;//0.05; //aceleração de translação em z
 var numTrocasX = 0; //número de trocas de direção em x realizadas no retorno ao equilíbrio
 var numTrocasY = 0; //número de trocas de direção em y realizadas no retorno ao equilíbrio
 //váriaveis decolagem
@@ -115,12 +115,8 @@ var LoadingManager = new THREE.LoadingManager();
 //cria cenário
 var textureLoader = new THREE.TextureLoader(LoadingManager);
 
-const terrain = createTerrain(textureLoader);
+const terrain = createTerrain(textureLoader, scene);
 scene.add(terrain);
-const trees = createTrees(scene);
-trees.forEach(tree => {
-    scene.add(tree);
-})
 //addClouds();
 
 //cria avião
@@ -128,7 +124,7 @@ var {airplane, turbine, cabin} = createAirplane();
 var virtualParent = new THREE.Object3D();
 virtualParent.add(airplane);
 airplane.position.z += 1;
-virtualParent.translateY(-3000);
+virtualParent.translateY(-1900);
 scene.add(virtualParent);
 
 //adiciona as câmeras
