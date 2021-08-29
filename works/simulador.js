@@ -23,11 +23,6 @@ import {
     buildAirpLightInterface
 } from './lib/utils.js';
 
-import { createBuilding1 } from './lib/predios/predio1.js'
-import { createBuilding2 } from './lib/predios/predio2.js'
-import { createBuilding3 } from './lib/predios/predio3.js'
-import { createBuilding6 } from './lib/predios/predio6.js'
-
 var stats = new Stats(); // To show FPS information
 var scene = new THREE.Scene(); // Create main scene
 scene.background = new THREE.Color('rgb(150,150,200)');
@@ -118,7 +113,6 @@ loadingScreen.scene.add(loadingScreen.box);
 var LoadingManager = new THREE.LoadingManager();
 
 LoadingManager.onProgress = function(item, loaded, total) {
-    console.log(item, loaded,total);
 };
 LoadingManager.onLoad = function() {
     console.log('loaded all resources');
@@ -135,34 +129,6 @@ trees.forEach(tree => {
     scene.add(tree);
 })
 //addClouds();
-
-//Cria a cidade
-const predio1 = createBuilding1(new THREE.Vector3(0,0,0), textureLoader);
-predio1.scale.set(10,10,10);
-predio1.rotateOnAxis(z, degreesToRadians(180));
-predio1.translateZ(100);
-scene.add(predio1);
-
-const predio2 = createBuilding2(new THREE.Vector3(0,0,0), textureLoader);
-predio2.scale.set(10,10,10);
-predio2.rotateOnAxis(z, degreesToRadians(180));
-predio2.translateZ(100);
-predio2.translateX(500);
-scene.add(predio2);
-
-const predio3 = createBuilding6(new THREE.Vector3(0,0,0), textureLoader);
-predio3.scale.set(10,10,10);
-predio3.rotateOnAxis(z, degreesToRadians(180));
-predio3.translateZ(500);
-predio3.translateY(1500);
-scene.add(predio3);
-
-const predio6 = createBuilding3(new THREE.Vector3(0,0,0), textureLoader);
-predio6.scale.set(5,5,5);
-predio6.rotateOnAxis(z, degreesToRadians(180));
-predio6.translateZ(250);
-predio6.translateX(-500);
-scene.add(predio6);
 
 //cria avião
 var {airplane, turbine, cabin} = createAirplane();
@@ -181,9 +147,9 @@ camera3.position.z += 1
 camera3.position.y -= 1
 
 //adiciona luz
+let sunLight = initLight(scene, new THREE.Vector3(-200,1450,1900));      
 let airplaneLight = initAirplaneLight(scene, new THREE.Vector3(-2.0,-2948,20), airplane);
 scene.add(airplaneLight);
-let sunLight = initLight(scene, new THREE.Vector3(-200,5000,1900));      
 
 //trackballControls
 var trackballControls = new TrackballControls(camera2, renderer.domElement);
@@ -743,7 +709,7 @@ var firstRendering = true;
 function render() {
     airplaneLight.position.set(
         virtualParent.position.x-2.0,
-        virtualParent.position.y+52,
+        virtualParent.position.y+(sunLight.position.y/sunLight.position.z)*20,
         virtualParent.position.z+20
     );
 
@@ -775,10 +741,5 @@ function render() {
             keyboardUpdate();
 
         renderer.render(scene, cameras[cameraType-1]);
-    }
-
-    if(firstRendering) {
-        sunLight.shadow.autoUpdate = false;
-        firstRendering = false;
     }
 }

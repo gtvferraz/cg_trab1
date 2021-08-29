@@ -3,6 +3,11 @@ import {GUI} from       '../../build/jsm/libs/dat.gui.module.js';
 import { degreesToRadians, createGroundPlane, radiansToDegrees} from "../../../libs/util/util.js";
 import { ConvexGeometry } from '../../../build/jsm/geometries/ConvexGeometry.js';
 
+import { createBuilding1 } from '/works/lib/predios/predio1.js'
+import { createBuilding2 } from '/works/lib/predios/predio2.js'
+import { createBuilding3 } from '/works/lib/predios/predio3.js'
+import { createBuilding6 } from '/works/lib/predios/predio6.js'
+
 export function addSound(som, loop) {
   // create an AudioListener and add it to the camera
   const listener = new THREE.AudioListener();
@@ -133,7 +138,7 @@ export function initLight(scene, position = new THREE.Vector3(1, 1, 1))
 
   directionalLight.shadow.mapSize.width = 5000;
   directionalLight.shadow.mapSize.height = 5000;
-  directionalLight.shadow.autoUpdate = true;
+  directionalLight.shadow.autoUpdate = false;
   directionalLight.shadow.needsUpdate = true;
   directionalLight.shadow.camera.near = 0.5;
   directionalLight.shadow.camera.far = 40000;
@@ -313,32 +318,103 @@ export function createTerrain(textureLoader) {
 }
 
 function createCity(textureLoader) {
-  var city = createStreet(4000, textureLoader);
+  const streetWidth = 20;
+  const sidewalkWidth = 2;
+  const buildingGap = 10;
+
+  var city = createStreet(streetWidth, 4000, sidewalkWidth, textureLoader);
   city.translateZ(3);
 
+  const buildingsInfo = [
+    {
+      offsetWidth: 5,
+      offsetDeph: 5,
+      width: 35,
+      deph: 10,
+      height: 20,
+      scale: 2,
+      create: createBuilding2
+    },
+    { 
+      offsetWidth: 0,
+      offsetDeph: 0,
+      width: 20,
+      deph: 8,
+      height: 20,
+      scale: 2,
+      create: createBuilding1
+    }
+  ];
+
+  const buildings = [];
+
+  for(let i=0; i<2; i++) {
+    const scaledOffsetWidth = buildingsInfo[i].offsetWidth*buildingsInfo[i].scale;
+    const scaledOffsetDeph = buildingsInfo[i].offsetDeph*buildingsInfo[i].scale;
+    const scaledWidth = buildingsInfo[i].width*buildingsInfo[i].scale;
+    const scaledDeph = buildingsInfo[i].deph*buildingsInfo[i].scale;
+    const scaledHeight = buildingsInfo[i].height*buildingsInfo[i].scale;
+
+    buildings.push(buildingsInfo[i].create(new THREE.Vector3(i,i,i), textureLoader));
+    buildings[i].scale.set(buildingsInfo[i].scale,buildingsInfo[i].scale,buildingsInfo[i].scale);
+    buildings[i].rotateOnAxis(z, degreesToRadians(-90));
+    buildings[i].translateZ(scaledHeight/2);
+    buildings[i].translateY(streetWidth/2 + sidewalkWidth + scaledOffsetDeph + scaledDeph/2);
+    if(i > 0)
+      buildings[i].translateX(
+        scaledOffsetWidth + 
+        scaledWidth/2 - 
+        buildingsInfo[i-1].offsetWidth*buildingsInfo[i-1].scale +
+        buildingsInfo[i-1].width*buildingsInfo[i-1].scale/2 + 
+        buildingGap);
+  }
+  //buildings[0].translateX(200);
+  //buildings[0].translateY(streetWidth);
+
+  /*const scale = 10;
+  buildings.push(createBuilding2(new THREE.Vector3(0,0,0), textureLoader));
+  buildings[0].scale.set(scale,scale,scale);
+  buildings[0].rotateOnAxis(z, degreesToRadians(-90));
+  buildings[0].translateZ(20*scale / 2);*/
+
+  /*scale = 8;
+  buildings.push(createBuilding6(new THREE.Vector3(0,0,0), textureLoader));
+  buildings[2].scale.set(scale,scale,scale);
+  buildings[2].rotateOnAxis(z, degreesToRadians(180));
+  buildings[2].translateZ(100*scale / 2);
+  buildings[2].translateX(1500);
+
+  scale = 5;
+  buildings.push(createBuilding3(new THREE.Vector3(0,0,0), textureLoader));
+  buildings[3].scale.set(scale,scale,scale);
+  buildings[3].rotateOnAxis(z, degreesToRadians(-90));
+  buildings[3].translateZ(100*scale / 2);*/
+  //buildings[3].translateY(streetWidth);
+
+  buildings.forEach(building => city.add(building));
   return city;
 }
 
-function createStreet(width, textureLoader) {
-  var street = createGroundPlane(100, width, 10, 10);
+function createStreet(width, distance, sidewalkWidth, textureLoader) {
+  var street = createGroundPlane(width, distance, 10, 10);
   street.translateZ(3);
 
   var streetTexture = textureLoader.load('assets/street.jpg', function (texture) {
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
     texture.offset.set(0,0);
-    texture.repeat.set(width/20,width/20);
+    texture.repeat.set(distance/20,distance/20);
   });
 
   street.material.map = streetTexture;
 
-  var centerLine = createGroundPlane(1, width, 10, 10, 'rgb(255,255,255)');
+  var centerLine = createGroundPlane(width/100, distance, 10, 10, 'rgb(255,255,255)');
   centerLine.translateZ(0.1);
 
   const sideWalkMaterials = [];
   const sideWalkTexture = new textureLoader.load('assets/sidewalk.jpg', function (texture) {
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
     texture.offset.set(0,0);
-    texture.repeat.set(width/1000,width/10);
+    texture.repeat.set(distance/1000,distance/10);
   });
 
   sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
@@ -348,14 +424,14 @@ function createStreet(width, textureLoader) {
   sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
   sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
 
-  const sidewalkGeo = new THREE.BoxGeometry(10, width, 1);
+  const sidewalkGeo = new THREE.BoxGeometry(sidewalkWidth, distance, 1);
   const leftSidewalk = new THREE.Mesh(sidewalkGeo, sideWalkMaterials);
   leftSidewalk.translateZ(0.5);
-  leftSidewalk.translateX(-45);
+  leftSidewalk.translateX(-width/2 - sidewalkWidth/2);
 
   const rightSidewalk = new THREE.Mesh(sidewalkGeo, sideWalkMaterials);
   rightSidewalk.translateZ(0.5);
-  rightSidewalk.translateX(45);
+  rightSidewalk.translateX(width/2 + sidewalkWidth/2);
 
   street.add(centerLine);
   street.add(leftSidewalk);
@@ -714,14 +790,11 @@ export function createClouds() {
   return clouds;
 }
 
-export function createTrees(scene) {
+export function createTrees() {
   const trees = [];
 
   //offsetX = 225*escala(montanha)
   //mountainRadius = 400*escala(montanha)
-
-  const offsetX = 550;
-  const mountainRadius = 1500;
   const totalRadius = 11000;
 
   const numTrees = 200;
@@ -792,22 +865,6 @@ export function createTrees(scene) {
       randomX = Math.random() * totalRadius - totalRadius/2;
       randomY = Math.random() * totalRadius - totalRadius/2;
 
-      if(randomX >= -(mountainRadius/2)+offsetX && randomX <= (mountainRadius/2)+offsetX) {
-        if(randomY >= -(mountainRadius/2) && randomY <= (mountainRadius/2)) {
-          if(randomX < offsetX) {
-            randomX -= ((mountainRadius/2)+offsetX)+randomX;
-          } else {
-            randomX += ((mountainRadius/2)+offsetX)-randomX;
-          }
-
-          if(randomY < 0) {
-            randomY -= (mountainRadius/2)+randomY;
-          } else {
-            randomY += (mountainRadius/2)-randomY;
-          }
-        }
-      }
-
       redo = false;
       for(let j=0; j<treesPos.length; j++) {
         const dist = Math.sqrt(
@@ -841,7 +898,7 @@ export function createTrees(scene) {
     tree.add(leaf1);
     tree.add(leaf2);
     
-    let randomScale = Math.random() * (2.0 - 1.0) + 1.0;
+    let randomScale = Math.random() * (0.5 - 0.1) + 0.1;
     let randomDegree = Math.random() * 360.0;
     
     tree.scale.set(randomScale,randomScale,randomScale);
@@ -955,6 +1012,7 @@ makeXYZGUISun(spotFolder, directionalLight.target.position, 'target', () => upda
 
 var shadowFolder = gui.addFolder("Shadow");
 shadowFolder.open();    
+shadowFolder.add(directionalLight.shadow, 'autoUpdate', true);
 shadowFolder.add(shadowHelper, 'visible', true);
 shadowFolder.add(directionalLight.shadow.camera, 'left', -10000, 0)
   .onChange(function() { updateLight(directionalLight, spotHelper, shadowHelper) });
