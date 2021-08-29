@@ -86,6 +86,7 @@ export function getMaxSize(obj)
     this.infoBox.style.fontFamily = "sans-serif";
     this.infoBox.style.userSelect = "none";
     this.infoBox.style.textAlign = "left";
+    this.infoBox.style.visibility = "visible";
   }
 
   addParagraph() {
@@ -101,6 +102,10 @@ export function getMaxSize(obj)
 
   show() {
     document.body.appendChild(this.infoBox);
+  }
+
+  changeVisibility(visivel){
+    this.infoBox.style.visibility = visivel;
   }
 }
 

@@ -167,6 +167,7 @@ god.add(cameraGod);
 scene.add(god);
 var godOn = false;
 var loader = document.getElementById("loader");
+var infoBoxShow = true;
 render();
 
 //buildSunInterface(sunLight, scene);
@@ -537,7 +538,16 @@ function keyboardUpdate() {
         cabin.material.transparent = false;
         cabin.material.opacity = 1;
     }
-
+    if(keyboard.down('H')) {
+        if(infoBoxShow){
+            controls.changeVisibility('hidden');
+            infoBoxShow = !infoBoxShow;
+        }
+        else{
+            controls.changeVisibility('visible');
+            infoBoxShow = !infoBoxShow;
+        }
+    }
     //entra no modo do percurso
     if(keyboard.down('P')) {
         if(circuito) {
