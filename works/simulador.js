@@ -23,6 +23,9 @@ import {
     buildAirpLightInterface
 } from './lib/utils.js';
 
+import {OBJLoader} from '../build/jsm/loaders/OBJLoader.js'
+import {MTLLoader} from '../build/jsm/loaders/MTLLoader.js'
+
 var stats = new Stats(); // To show FPS information
 var scene = new THREE.Scene(); // Create main scene
 scene.background = new THREE.Color('rgb(150,150,200)');
@@ -168,6 +171,20 @@ scene.add(god);
 var godOn = false;
 var loader = document.getElementById("loader");
 var infoBoxShow = true;
+
+const mtlLoader = new MTLLoader(LoadingManager);
+
+mtlLoader.load('./assets/Cat/Cats_obj.mtl', function(materials){
+
+    var objLloader = new OBJLoader(LoadingManager);
+    objLloader.setMaterials(materials);
+    objLloader.load('./assets/Cat/Cats_obj.obj',function(object) {
+        object.scale.set(0.1,0.1,0.1)
+        object.rotateOnAxis(x,degreesToRadians(90))
+        scene.add(object);
+    });
+});
+
 render();
 
 //buildSunInterface(sunLight, scene);

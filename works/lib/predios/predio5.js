@@ -29,6 +29,10 @@ scene.add(axesHelper);
 // Enable mouse rotation, pan, zoom etc.
 var trackballControls = new TrackballControls(camera, renderer.domElement);
 
+//predios
+const predioMap1 = textureLoader.load('/works/assets/predio_05/tijolo.png')
+const predioMap1 = textureLoader.load('/works/assets/predio_05/tijolo2.png')
+
 //Geometrias
 var colunaHorizontalGeometry = new THREE.BoxGeometry(60,15,60);
 var colunaVerticalGeometry = new THREE.BoxGeometry(60,15,60);
