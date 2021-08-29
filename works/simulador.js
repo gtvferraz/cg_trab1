@@ -37,6 +37,8 @@ controls.infoBox.innerHTML =
     ESPAÇO => Modo de Inspeção<br/>
     C => Modo Cockpit`
 controls.show();
+var LoadingManager = new THREE.LoadingManager();
+var textureLoader = new THREE.TextureLoader(LoadingManager);
 
 //câmeras
 //câmera padrão
@@ -110,11 +112,7 @@ loadingScreen.box.position.set(0,0,5);
 loadingScreen.camera.lookAt(loadingScreen.box.position);
 loadingScreen.scene.add(loadingScreen.box);
 
-var LoadingManager = new THREE.LoadingManager();
-
 //cria cenário
-var textureLoader = new THREE.TextureLoader(LoadingManager);
-
 const terrain = createTerrain(textureLoader);
 scene.add(terrain);
 const trees = createTrees(scene);
