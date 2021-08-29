@@ -8,7 +8,7 @@ import {
 } from "../../../libs/util/util.js";
 import {
     initLight
-} from '../../lib/utils.js';
+} from '../utils.js';
 var x = new THREE.Vector3(1, 0, 0); // Set x axis
 var y = new THREE.Vector3(0, 1, 0); // Set y axis
 var z = new THREE.Vector3(0, 0, 1); // Set Z axis

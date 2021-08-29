@@ -246,8 +246,6 @@ function predio03(position, textureLoader, scene) {
         janela2.rotateOnAxis(y, rot90);
         janela2.position.set(-25.1, 0,-35.5 + i*10)
     }
-
-
     return predio;
 }
 
