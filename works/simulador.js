@@ -48,6 +48,8 @@ const { listener, sound } = addSound("turbine_sound.mp3", true);
 camera.add(listener);
 const  listenerRing  = addSound("ringtone.mp3", false);
 camera.add(listenerRing.listener);
+const  listenerEnd  = addSound("gaules-naice.mp3", false);
+camera.add(listenerEnd.listener);
 //câmera 2
 var camera2 = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000);
 camera2.position.copy(new THREE.Vector3(0, -50, 15));
@@ -105,7 +107,7 @@ var loadingScreen = {
         new THREE.MeshBasicMaterial({color:0x4444ff})
     )
 };
-var RESOURCES_LOADED = false;
+var RESOURCES_LOADED = true;
 loadingScreen.box.position.set(0,0,5);
 loadingScreen.camera.lookAt(loadingScreen.box.position);
 loadingScreen.scene.add(loadingScreen.box);
@@ -267,6 +269,9 @@ function destroyTorus(){
         if(estaDentro(virtualParent, torusus[i], 35)){
             if(!timer.running && estaDentro(virtualParent, torusus[14], 35))
                 timer.start();
+
+            if(estaDentro(virtualParent, torusus[0], 35))
+                listenerEnd.sound.play();
 
             //destroi torus passado
             torusus[i].geometry.dispose();
