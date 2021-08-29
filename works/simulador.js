@@ -117,14 +117,6 @@ loadingScreen.scene.add(loadingScreen.box);
 
 var LoadingManager = new THREE.LoadingManager();
 
-LoadingManager.onProgress = function(item, loaded, total) {
-    console.log(item, loaded,total);
-};
-LoadingManager.onLoad = function() {
-    console.log('loaded all resources');
-    RESOURCES_LOADED = true;
-};
-
 //cria cenário
 var textureLoader = new THREE.TextureLoader(LoadingManager);
 
@@ -748,12 +740,22 @@ function render() {
     );
 
     if(RESOURCES_LOADED == false) {
-        requestAnimationFrame(render);
 
         loadingScreen.box.position.x -= 0.05;
         if(loadingScreen.box.position.x <  -10) loadingScreen.box.position.x = 10;
         loadingScreen.box.position.y = Math.sin(loadingScreen.box.position.x);
+        
+        LoadingManager.onProgress = function(item, loaded, total) {
+            console.log(parseInt(loaded)*100/total)
+        }
 
+        LoadingManager.onLoad = function() {
+            console.log('aperte espaço para continuar')
+            render2();
+            requestAnimationFrame(render2);
+            return;
+        }
+        requestAnimationFrame(render);
         renderer.render(loadingScreen.scene, loadingScreen.camera);
         return;
     }
@@ -781,4 +783,14 @@ function render() {
         sunLight.shadow.autoUpdate = false;
         firstRendering = false;
     }
+}
+
+function render2() {
+    keyboard.update();
+    if(keyboard.down('space')) {
+        RESOURCES_LOADED = true;
+        requestAnimationFrame(render)
+        return;
+    }
+    requestAnimationFrame(render2);
 }
