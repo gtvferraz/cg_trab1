@@ -105,7 +105,7 @@ var loadingScreen = {
         new THREE.MeshBasicMaterial({color:0x4444ff})
     )
 };
-var RESOURCES_LOADED = true;
+var RESOURCES_LOADED = false;
 loadingScreen.box.position.set(0,0,5);
 loadingScreen.camera.lookAt(loadingScreen.box.position);
 loadingScreen.scene.add(loadingScreen.box);
@@ -161,6 +161,7 @@ cameraGod.up.set(0, 1, 0);
 god.add(cameraGod);
 scene.add(god);
 var godOn = false;
+var loader = document.getElementById("loader");
 
 render();
 
@@ -711,11 +712,12 @@ function render() {
         loadingScreen.box.position.y = Math.sin(loadingScreen.box.position.x);
         
         LoadingManager.onProgress = function(item, loaded, total) {
-            console.log(parseInt(loaded)*100/total)
+            loader.innerHTML = "Gerando Texturas: " + (parseInt(loaded)*100/total).toFixed(2) + "%";
         }
 
         LoadingManager.onLoad = function() {
-            console.log('aperte espaço para continuar')
+            loader.innerHTML = 'Aperte espaço para continuar';
+
             render2();
             requestAnimationFrame(render2);
             return;
@@ -749,6 +751,7 @@ function render2() {
     keyboard.update();
     if(keyboard.down('space')) {
         RESOURCES_LOADED = true;
+        loader.style.visibility = 'hidden';
         requestAnimationFrame(render)
         return;
     }
