@@ -224,7 +224,6 @@ function generateTorus(){
 
     torusus[12].translateOnAxis(y,10)
     torusus[12].translateOnAxis(z,distance*2)
-    torusus[12].translateOnAxis(x,-65)
 
     torusus[11].translateOnAxis(y,90)
     torusus[11].translateOnAxis(z,distance*3)
@@ -232,11 +231,9 @@ function generateTorus(){
 
     torusus[10].translateOnAxis(y,150)
     torusus[10].translateOnAxis(z,distance*4)
-    torusus[10].translateOnAxis(x,-100)
 
     torusus[9].translateOnAxis(y,10)
     torusus[9].translateOnAxis(z,distance*5)
-    torusus[9].translateOnAxis(x,-70)
 
     torusus[8].translateOnAxis(y,70)
     torusus[8].translateOnAxis(z,distance*6)
@@ -253,34 +250,34 @@ function generateTorus(){
     torusus[6].rotateOnAxis(y,degreesToRadians(120))
 
     torusus[5].translateOnAxis(y,200)
-    torusus[5].translateOnAxis(z,(distance*9))
-    torusus[5].translateOnAxis(x,1200)
-    torusus[5].rotateOnAxis(y,degreesToRadians(120))
+    torusus[5].translateOnAxis(z,(distance*8))
+    torusus[5].translateOnAxis(x,1900)
+    torusus[5].rotateOnAxis(y,degreesToRadians(90))
 
-    torusus[4].translateOnAxis(y,400)
-    torusus[4].translateOnAxis(z,(distance*10))
-    torusus[4].translateOnAxis(x,1400)
+    torusus[4].translateOnAxis(y,20)
+    torusus[4].translateOnAxis(z,(distance*7))
+    torusus[4].translateOnAxis(x,2700)
     torusus[4].rotateOnAxis(y,degreesToRadians(0))
 
     torusus[3].translateOnAxis(y,100)
-    torusus[3].translateOnAxis(z,(distance*12))
-    torusus[3].translateOnAxis(x,1300)
+    torusus[3].translateOnAxis(z,(distance*5))
+    torusus[3].translateOnAxis(x,3000)
     torusus[3].rotateOnAxis(y,degreesToRadians(0))
 
-    torusus[2].translateOnAxis(y,10)
-    torusus[2].translateOnAxis(z,(distance*14)+400)
-    torusus[2].translateOnAxis(x,800)
-    torusus[2].rotateOnAxis(y,degreesToRadians(90))
+    torusus[2].translateOnAxis(y,200)
+    torusus[2].translateOnAxis(z,(distance*3))
+    torusus[2].translateOnAxis(x,2700)
+    torusus[2].rotateOnAxis(y,degreesToRadians(0))
 
     torusus[1].translateOnAxis(y,200)
-    torusus[1].translateOnAxis(z,(distance*14)+200)
-    torusus[1].translateOnAxis(x,0)
-    torusus[1].rotateOnAxis(y,degreesToRadians(90))
+    torusus[1].translateOnAxis(z,(distance*2))
+    torusus[1].translateOnAxis(x,2600)
+    torusus[1].rotateOnAxis(y,degreesToRadians(0))
 
     torusus[0].translateOnAxis(y,10)
-    torusus[0].translateOnAxis(z,(distance*14)+200)
-    torusus[0].translateOnAxis(x,-500)
-    torusus[0].rotateOnAxis(y,degreesToRadians(60))
+    torusus[0].translateOnAxis(z,(distance))
+    torusus[0].translateOnAxis(x,2500)
+    torusus[0].rotateOnAxis(y,degreesToRadians(0))
 }
 
 function destroyTorus(){
@@ -345,8 +342,10 @@ function trocaCamera1() {
         }
         infoBox();
     }
-    timer.start();
-    timer.elapsedTime = tempoAtual;
+    if(timer.isPlaying){
+        timer.start();
+        timer.elapsedTime = tempoAtual;
+    }
 }
 
 function trocaCamera2() {
