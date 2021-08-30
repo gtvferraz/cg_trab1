@@ -16,7 +16,6 @@ import {
     createTerrain,
     createAirplane,
     createClouds,
-    createTrees,
     initLight,
     buildSunInterface,
     initAirplaneLight,
@@ -49,6 +48,7 @@ var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHei
 camera.position.copy(new THREE.Vector3(0, -50, 15));
 camera.lookAt(0, 0, 0);
 camera.up.set(0, 1, 0);
+//sons
 const { listener, sound } = addSound("turbine_sound.mp3", true);
 camera.add(listener);
 const  listenerRing  = addSound("ringtone.mp3", false);
@@ -63,7 +63,6 @@ camera2.position.copy(new THREE.Vector3(0, -50, 15));
 camera2.lookAt(0, 0, 0);
 camera2.up.set(0, 1.1, 0);
 var axesHelper = new THREE.AxesHelper(20);
-var inspecionaLight = initLight(camera2,new THREE.Vector3(0,-50,15));
 //câmera 3
 var camera3 = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000);
 camera3.position.copy(new THREE.Vector3(0, -50, 15));
@@ -115,7 +114,7 @@ var loadingScreen = {
         new THREE.MeshBasicMaterial({color:0x4444ff})
     )
 };
-var RESOURCES_LOADED = false;
+var RESOURCES_LOADED = true;
 loadingScreen.box.position.set(0,0,5);
 loadingScreen.camera.lookAt(loadingScreen.box.position);
 loadingScreen.scene.add(loadingScreen.box);
@@ -167,20 +166,20 @@ scene.add(god);
 var godOn = false;
 var loader = document.getElementById("loader");
 var infoBoxShow = true;
+window.addEventListener('resize', function() { onWindowResize(cameraGod, renderer) }, false);
 
 const mtlLoader = new MTLLoader(LoadingManager);
 
 mtlLoader.load('./assets/Cat/Cats_obj.mtl', function(materials){
-
     var objLloader = new OBJLoader(LoadingManager);
     objLloader.setMaterials(materials);
     objLloader.load('./assets/Cat/Cats_obj.obj',function(object) {
         object.scale.set(0.1,0.1,0.1)
         object.rotateOnAxis(x,degreesToRadians(90))
+        object.castShadow = true;
         scene.add(object);
     });
 });
-
 render();
 
 //buildSunInterface(sunLight, scene);
@@ -304,10 +303,6 @@ function destroyTorus(){
         if(torusus.length == 0) {
             destroiPercurso(true);
             timer.stop();
-            setTimeout(() => {
-                contador.style.visibility = "hidden";
-                timerDiv.style.visibility = "hidden";
-            }, 3000)
         }
     }
     return;
@@ -337,9 +332,6 @@ function trocaCamera1() {
         
         //coloca tudo de volta na cena
         scene.add(terrain);
-        trees.forEach(tree => {
-            scene.add(tree);
-        })
         if(caminhoOn) {
             torusus.forEach(torus => {
                 scene.add(torus)
@@ -348,14 +340,13 @@ function trocaCamera1() {
         }
         infoBox();
     }
+    timer.start();
+    timer.elapsedTime = tempoAtual;
 }
 
 function trocaCamera2() {
     //remove tudo da cena
     scene.remove(terrain);
-    trees.forEach(tree => {
-        scene.remove(tree);
-    })
     if(caminhoOn) {
         torusus.forEach(torus => {
             scene.remove(torus);
@@ -378,6 +369,10 @@ function trocaCamera2() {
     trackballControls.reset();
     virtualParent.add(axesHelper);
     infoBox();
+    timer.stop();
+    tempoAtual = timer.getElapsedTime(); 
+    var inspecionaLight = initLight(camera2,new THREE.Vector3(0,-50,15));
+    camera2.add(inspecionaLight);
 }
 
 function criaCaminho() {
