@@ -435,19 +435,13 @@ function createStreet(width, distance, sidewalkWidth, textureLoader) {
   var centerLine = createGroundPlane(width/100, distance, 10, 10, 'rgb(255,255,255)');
   centerLine.translateZ(0.1);
 
-  const sideWalkMaterials = [];
   const sideWalkTexture = new textureLoader.load('assets/sidewalk.jpg', function (texture) {
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-    texture.offset.set(0,0);
-    texture.repeat.set(distance/1000,distance/10);
+    texture.repeat.set(sidewalkWidth/10,distance/10);
   });
 
-  sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
-  sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
-  sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
-  sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
-  sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
-  sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
+  var sideWalkMaterials = new THREE.MeshBasicMaterial({map: sideWalkTexture});
+
 
   const sidewalkGeo = new THREE.BoxGeometry(sidewalkWidth, distance, 1);
   const leftSidewalk = new THREE.Mesh(sidewalkGeo, sideWalkMaterials);
@@ -476,34 +470,21 @@ function createIntersection(streetWidth, sidewalkWidth, textureLoader, intersect
 
   intersection.material.map = streetTexture;
 
-  const cornerSideWalkMaterials = [];
-  const sideWalkMaterials = [];
-  const cornerSideWalkTexture = new textureLoader.load('assets/sidewalk.jpg', function (texture) {
+  var cornerSideWalkTexture = new textureLoader.load('assets/sidewalk.jpg', function (texture) {
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-    texture.offset.set(0,0);
+    texture.repeat.set(sidewalkWidth/10,sidewalkWidth/10);
   });
 
   const sideWalkTexture = new textureLoader.load('assets/sidewalk.jpg', function (texture) {
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-    texture.offset.set(0,0);
-    texture.repeat.set(1,3);
+    texture.repeat.set(sidewalkWidth/10,(streetWidth+sidewalkWidth)/10);
   });
 
-  cornerSideWalkMaterials.push(new THREE.MeshBasicMaterial({map: cornerSideWalkTexture}));
-  cornerSideWalkMaterials.push(new THREE.MeshBasicMaterial({map: cornerSideWalkTexture}));
-  cornerSideWalkMaterials.push(new THREE.MeshBasicMaterial({map: cornerSideWalkTexture}));
-  cornerSideWalkMaterials.push(new THREE.MeshBasicMaterial({map: cornerSideWalkTexture}));
-  cornerSideWalkMaterials.push(new THREE.MeshBasicMaterial({map: cornerSideWalkTexture}));
-  cornerSideWalkMaterials.push(new THREE.MeshBasicMaterial({map: cornerSideWalkTexture}));
+  var cornerSideWalkMaterials = new THREE.MeshBasicMaterial({map: cornerSideWalkTexture});
 
-  sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
-  sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
-  sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
-  sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
-  sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
-  sideWalkMaterials.push(new THREE.MeshBasicMaterial({map: sideWalkTexture}));
+  var sideWalkMaterials = new THREE.MeshBasicMaterial({map: sideWalkTexture});
 
-  const cornerSidewalkGeo = new THREE.BoxGeometry(sidewalkWidth, sidewalkWidth, 1);
+  var cornerSidewalkGeo = new THREE.BoxGeometry(sidewalkWidth, sidewalkWidth, 1);
   var cornerSidewalk = new THREE.Mesh(cornerSidewalkGeo, cornerSideWalkMaterials);
   cornerSidewalk.translateX((streetWidth+2*sidewalkWidth)/2 - sidewalkWidth/2);
   cornerSidewalk.translateY(-(streetWidth+2*sidewalkWidth)/2 + sidewalkWidth/2);

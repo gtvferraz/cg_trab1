@@ -115,7 +115,7 @@ var loadingScreen = {
         new THREE.MeshBasicMaterial({color:0x4444ff})
     )
 };
-var RESOURCES_LOADED = false;
+var RESOURCES_LOADED = true;
 loadingScreen.box.position.set(0,0,5);
 loadingScreen.camera.lookAt(loadingScreen.box.position);
 loadingScreen.scene.add(loadingScreen.box);
@@ -167,20 +167,20 @@ scene.add(god);
 var godOn = false;
 var loader = document.getElementById("loader");
 var infoBoxShow = true;
+window.addEventListener('resize', function() { onWindowResize(cameraGod, renderer) }, false);
 
 const mtlLoader = new MTLLoader(LoadingManager);
 
 mtlLoader.load('./assets/Cat/Cats_obj.mtl', function(materials){
-
     var objLloader = new OBJLoader(LoadingManager);
     objLloader.setMaterials(materials);
     objLloader.load('./assets/Cat/Cats_obj.obj',function(object) {
         object.scale.set(0.1,0.1,0.1)
         object.rotateOnAxis(x,degreesToRadians(90))
+        object.castShadow = true;
         scene.add(object);
     });
 });
-
 render();
 
 //buildSunInterface(sunLight, scene);
