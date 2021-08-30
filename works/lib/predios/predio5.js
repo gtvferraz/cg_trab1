@@ -11,7 +11,7 @@ import {
 var x = new THREE.Vector3(1, 0, 0); // Set x axis
 var y = new THREE.Vector3(0, 1, 0); // Set y axis
 var z = new THREE.Vector3(0, 0, 1); // Set Z axis 
-var stats = new Stats(); // To show FPS information
+/*var stats = new Stats(); // To show FPS information
 var scene = new THREE.Scene(); // Create main scene
 var renderer = initRenderer(); // View function in util/utils
 var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000);
@@ -29,12 +29,9 @@ scene.add(axesHelper);
 // Enable mouse rotation, pan, zoom etc.
 var trackballControls = new TrackballControls(camera, renderer.domElement);
 
-createBuilding5(textureLoader)
+createBuilding5(textureLoader)*/
 
-function createBuilding5() {
-
-    var textureLoader = new THREE.TextureLoader();
-
+export function createBuilding5(position, textureLoader) {
     //predios
     const predioMap1 = textureLoader.load('/works/assets/predio_05/tijolo.png')
     predioMap1.wrapS = THREE.RepeatWrapping;
@@ -95,7 +92,7 @@ function createBuilding5() {
     var colunaHorizontal = new THREE.Mesh(colunaHorizontalGeometry, [colunaHorizontalMaterial,colunaHorizontalMaterial,colunaVericalMaterial,colunaVericalMaterial,colunaHorizontalMaterial]);
     var colunaVertical = new THREE.Mesh(colunaVerticalGeometry, [colunaHorizontalMaterial,colunaHorizontalMaterial,colunaVericalMaterial,colunaVericalMaterial,colunaHorizontalMaterial]);
     colunaVertical.rotateOnAxis(z, degreesToRadians(90));
-    scene.add(colunaHorizontal);
+    //scene.add(colunaHorizontal);
     colunaHorizontal.add(colunaVertical);
 
     for(var i = 0; i < 8; i++){
@@ -360,7 +357,7 @@ function createBuilding5() {
     colunaHorizontal.castShadow = true;
     return colunaHorizontal;
 }
-
+/*
 render();
 
 function render() {
@@ -368,4 +365,4 @@ function render() {
     trackballControls.update(); // Enable mouse movements
     requestAnimationFrame(render);
     renderer.render(scene, camera) // Render scene
-}
+}*/
