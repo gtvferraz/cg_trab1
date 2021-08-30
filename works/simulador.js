@@ -105,6 +105,8 @@ timer.autoStart = false;
 var timerDiv = document.getElementById("timer")
 var contadorAneisPassados = 0;
 
+var tempoAtual = 0;
+
 //teste loading screen
 var loadingScreen = {
     scene: new THREE.Scene(),
