@@ -99,7 +99,7 @@ var cameraType = 1; //tipo de câmera
 var circuito = false; //circuito desligado ou ligado
 var torusus = []; //arraylist para guardar os torus
 var contador = document.getElementById("contador");
-var posInicialCircuito = new THREE.Vector3(0,-3000,0); //marca a posição inicial do circuito
+var posInicialCircuito = new THREE.Vector3(0,-2800,0); //marca a posição inicial do circuito
 var caminho; //caminho do percurso
 var caminhoOn = false; //se o caminho está ativou ou não
 var timer = new THREE.Clock();
