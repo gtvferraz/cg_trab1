@@ -1,35 +1,15 @@
 import * as THREE from '../../../build/three.module.js';
-import Stats from '../../../build/jsm/libs/stats.module.js';
-import { TrackballControls } from '../../../build/jsm/controls/TrackballControls.js';
 import {
-    initRenderer,
-    degreesToRadians,
-    createLightSphere
+    degreesToRadians
 } from "../../../libs/util/util.js";
-import {
-    initLight
-} from '../utils.js';
+
+
 var x = new THREE.Vector3(1, 0, 0); // Set x axis
 var y = new THREE.Vector3(0, 1, 0); // Set y axis
 var z = new THREE.Vector3(0, 0, 1); // Set Z axis
-/*var stats = new Stats(); // To show FPS information
-var scene = new THREE.Scene(); // Create main scene
-var renderer = initRenderer(); // View function in util/utils
-var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000);
-camera.position.copy(new THREE.Vector3(0, -90, 60));
 
-var ambientLight = new THREE.AmbientLight("rgb(255, 255, 255)");
-scene.add(ambientLight);
-let sunLight = initLight(scene, new THREE.Vector3(-30,0,30)); 
 
-var trackballControls = new TrackballControls(camera, renderer.domElement);
-const textureLoader = new THREE.TextureLoader();
-
-predio(new THREE.Vector3(0,0,0), textureLoader, scene);
-
-render();*/
-
-export function createBuilding2(position, textureLoader) {
+export function createBuilding2(textureLoader) {
     var TamanhoPredio = 10;
     //vidro
     const windowBaseColor = textureLoader.load('/works/assets/predio_02/Window_001_basecolor.jpg');
@@ -303,26 +283,9 @@ export function createBuilding2(position, textureLoader) {
     parteCimaMaterial.castShadow = true;
     cylinder.castShadow = true;
 
-    predio.position.copy(position);
+    predio.castShadow = true;
+    predio.traverse(function (child){
+        child.receiveShadow = true;
+    });
     return predio;
 }
-/*
-function setSpotLight(position,spotLight)
-{
-spotLight.position.copy(position);
-spotLight.shadow.mapSize.width = 512;
-spotLight.shadow.mapSize.height = 512;
-spotLight.angle = degreesToRadians(40);    
-spotLight.castShadow = true;
-spotLight.decay = 2;
-spotLight.penumbra = 0.5;
-spotLight.name = "Spot Light"
-scene.add(spotLight);
-}
-
-function render() {
-    stats.update(); // Update FPS
-    trackballControls.update(); // Enable mouse movements
-    requestAnimationFrame(render);
-    renderer.render(scene, camera) // Render scene
-}*/

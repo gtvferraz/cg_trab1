@@ -1,48 +1,9 @@
 import * as THREE from '../../../build/three.module.js';
-import Stats from '../../../build/jsm/libs/stats.module.js';
-import { TrackballControls } from '../../../build/jsm/controls/TrackballControls.js';
 import {
-    initRenderer,
     degreesToRadians
 } from "../../../libs/util/util.js";
-import {
-    initLight
-}from '../utils.js';
- 
-/*var stats = new Stats(); // To show FPS information
-var scene = new THREE.Scene(); // Create main scene
-var renderer = initRenderer(); // View function in util/utils
-var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000);
-camera.position.copy(new THREE.Vector3(0, -50, 25));
 
-var ambientLight = new THREE.AmbientLight("rgb(255, 255, 255)");
-scene.add(ambientLight);
-let sunLight = initLight(scene, new THREE.Vector3(-30,0,30)); 
-
-const textureLoader = new THREE.TextureLoader();
-
-// Show axes (parameter is size of each axis)
-var axesHelper = new THREE.AxesHelper(12)
-scene.add(axesHelper);
-// Enable mouse rotation, pan, zoom etc.
-var trackballControls = new TrackballControls(camera, renderer.domElement);
-createBuilding1(new THREE.Vector3(0,0,0), textureLoader);
-render();
-
-function setSpotLight(position,spotLight)
-{
-  spotLight.position.copy(position);
-  spotLight.shadow.mapSize.width = 512;
-  spotLight.shadow.mapSize.height = 512;
-  spotLight.angle = degreesToRadians(40);    
-  spotLight.castShadow = true;
-  spotLight.decay = 2;
-  spotLight.penumbra = 0.5;
-  spotLight.name = "Spot Light"
-  scene.add(spotLight);
-}*/
-
-export function createBuilding1(position, textureLoader) {
+export function createBuilding1(textureLoader) {
     //tiles_stone_001
     const tilesBaseColor = textureLoader.load('/works/assets/predio_01/Tiles_Stone_001_basecolor.jpg');
     //brick_wall_015
@@ -113,11 +74,10 @@ export function createBuilding1(position, textureLoader) {
     });
 
     var predio = new THREE.Mesh(predioGeometry, predioMaterial);
-    predio.position.copy(position);
-    //scene.add(predio);
 
     var pilar = new THREE.Mesh(pilarGeometry, pilarMaterial);
     pilar.castShadow = true;
+    pilar.re
     predio.add(pilar);
     pilar.position.set(0,-4 -1.5,2);
 
@@ -157,8 +117,8 @@ export function createBuilding1(position, textureLoader) {
         predio.add(portaVarandaDir);
         portaVarandaEsq.rotateOnAxis(new THREE.Vector3(1,0,0), degreesToRadians(90));
         portaVarandaDir.rotateOnAxis(new THREE.Vector3(1,0,0), degreesToRadians(90));
-        portaVarandaEsq.position.set(-1.5, -4.5, -6 + 2.5/2 + i*3.2)
-        portaVarandaDir.position.set(1.5, -4.5, -6 + 2.5/2 + i*3.2)
+        portaVarandaEsq.position.set(-1.5, -4.1, -6 + 2.5/2 + i*3.2)
+        portaVarandaDir.position.set(1.5, -4.1, -6 + 2.5/2 + i*3.2)
         portaVarandaEsq.material.map.wrapS = THREE.RepeatWrapping;
         portaVarandaEsq.material.map.repeat.x = -1;
 
@@ -181,8 +141,8 @@ export function createBuilding1(position, textureLoader) {
         predio.add(janelaFrenteDir);
         janelaFrenteEsq.rotateOnAxis(new THREE.Vector3(1,0,0), degreesToRadians(90));
         janelaFrenteDir.rotateOnAxis(new THREE.Vector3(1,0,0), degreesToRadians(90));
-        janelaFrenteEsq.position.set(-6, -4.5, -4 + i*3.2)
-        janelaFrenteDir.position.set(6, -4.5, -4 + i*3.2)
+        janelaFrenteEsq.position.set(-6, -4.1, -4 + i*3.2)
+        janelaFrenteDir.position.set(6, -4.1, -4 + i*3.2)
     }
 
     var porta = new THREE.Mesh(portaFrenteGeometry,portaFrenteMaterial);
@@ -192,13 +152,8 @@ export function createBuilding1(position, textureLoader) {
     porta.position.set(0,-4.01,-8);
 
     predio.castShadow = true;
-
+    predio.traverse(function (child){
+        child.receiveShadow = true;
+    });
     return predio;
 }
-
-/*function render() {
-    stats.update(); // Update FPS
-    trackballControls.update(); // Enable mouse movements
-    requestAnimationFrame(render);
-    renderer.render(scene, camera) // Render scene
-}*/

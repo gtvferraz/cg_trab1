@@ -1,48 +1,10 @@
 import * as THREE from '../../../build/three.module.js';
-import Stats from '../../../build/jsm/libs/stats.module.js';
-import { TrackballControls } from '../../../build/jsm/controls/TrackballControls.js';
 import {
-    initRenderer,
     degreesToRadians
 } from "../../../libs/util/util.js";
-import {
-    initLight
-}from '../utils.js';
- 
-/*var stats = new Stats(); // To show FPS information
-var scene = new THREE.Scene(); // Create main scene
-var renderer = initRenderer(); // View function in util/utils
-var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000);
-camera.position.copy(new THREE.Vector3(0, -50, 25));
 
-var ambientLight = new THREE.AmbientLight("rgb(255, 255, 255)");
-scene.add(ambientLight);
-let sunLight = initLight(scene, new THREE.Vector3(-30,0,30)); 
 
-const textureLoader = new THREE.TextureLoader();
-
-// Show axes (parameter is size of each axis)
-var axesHelper = new THREE.AxesHelper(12)
-scene.add(axesHelper);
-// Enable mouse rotation, pan, zoom etc.
-var trackballControls = new TrackballControls(camera, renderer.domElement);
-predio03(new THREE.Vector3(0,0,0), textureLoader, scene);
-render();
-
-function setSpotLight(position,spotLight)
-{
-  spotLight.position.copy(position);
-  spotLight.shadow.mapSize.width = 512;
-  spotLight.shadow.mapSize.height = 512;
-  spotLight.angle = degreesToRadians(40);    
-  spotLight.castShadow = true;
-  spotLight.decay = 2;
-  spotLight.penumbra = 0.5;
-  spotLight.name = "Spot Light"
-  scene.add(spotLight);
-}*/
-
-export function createBuilding3(position, textureLoader) {
+export function createBuilding3(textureLoader) {
     const x = new THREE.Vector3(1,0,0);
     const y = new THREE.Vector3(0,1,0);
     const z = new THREE.Vector3(0,0,1);
@@ -162,8 +124,6 @@ export function createBuilding3(position, textureLoader) {
     //construção
     var predio = new THREE.Mesh(predioBaseGeometry,[predioMaterial,predioMaterial,predioMaterial,predioMaterial,predioMaterialTopo,predioMaterial]);
     predio.castShadow = true;
-    //scene.add(predio);
-    predio.position.copy(position);
 
     var topo1 = new THREE.Mesh(topoGeometry,topoMaterial);
     var topo2 = new THREE.Mesh(topoGeometry,topoMaterial);
@@ -251,13 +211,9 @@ export function createBuilding3(position, textureLoader) {
 
     predio.castShadow = true;
 
-    predio.position.copy(position);
+    predio.castShadow = true;
+    predio.traverse(function (child){
+        child.receiveShadow = true;
+    });
     return predio;
 }
-
-/*function render() {
-    stats.update(); // Update FPS
-    trackballControls.update(); // Enable mouse movements
-    requestAnimationFrame(render);
-    renderer.render(scene, camera) // Render scene
-}*/
