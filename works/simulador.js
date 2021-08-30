@@ -62,6 +62,8 @@ var camera2 = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHe
 camera2.position.copy(new THREE.Vector3(0, -50, 15));
 camera2.lookAt(0, 0, 0);
 camera2.up.set(0, 1.1, 0);
+var inspecionaLight = initLight(scene,new THREE.Vector3(0,-50,15));
+scene.remove(inspecionaLight);
 var axesHelper = new THREE.AxesHelper(20);
 //câmera 3
 var camera3 = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000);
@@ -326,7 +328,8 @@ function trocaCamera1() {
         virtualParent.position.copy(auxPosicao);
         trackballControls.enabled = false;
         virtualParent.remove(axesHelper);
-        virtualParent.rotation.z = auxRotz
+        virtualParent.rotation.z = auxRotz;
+        scene.remove(inspecionaLight); 
 
         if(!sound.isPlaying && speed > 0)
             sound.play();
@@ -349,6 +352,7 @@ function trocaCamera1() {
 function trocaCamera2() {
     //remove tudo da cena
     scene.remove(terrain);
+    scene.add(inspecionaLight);
     if(caminhoOn) {
         torusus.forEach(torus => {
             scene.remove(torus);
@@ -373,8 +377,6 @@ function trocaCamera2() {
     infoBox();
     timer.stop();
     tempoAtual = timer.getElapsedTime(); 
-    var inspecionaLight = initLight(camera2,new THREE.Vector3(0,-50,15));
-    camera2.add(inspecionaLight);
 }
 
 function criaCaminho() {
