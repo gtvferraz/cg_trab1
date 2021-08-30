@@ -160,7 +160,7 @@ window.addEventListener('resize', function() { onWindowResize(cameraGod, rendere
 
 render();
 
-//buildSunInterface(sunLight, scene);
+buildSunInterface(sunLight, scene);
 //buildAirpLightInterface(airplaneLight, scene);
 
 function addClouds() {

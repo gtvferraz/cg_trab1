@@ -94,6 +94,7 @@ export function createBuilding6(textureLoader) {
     //scene.add(parteFrontal);
     var parteTraseira = new THREE.Mesh(parteTraseiraGeometry, [parteTraseiraMaterial1,parteTraseiraMaterial1,parteTraseiraMaterial2,parteTraseiraMaterial2,parteTraseiraMaterial1]);
     parteTraseira.castShadow = true;
+    parteTraseira.receiveShadow = true;
     parteTraseira.translateOnAxis(y, 10);
     parteTraseira.translateOnAxis(x, -5);
     parteFrontal.add(parteTraseira);
@@ -103,36 +104,42 @@ export function createBuilding6(textureLoader) {
     for(var i = 0; i < 14; i++){
         var divisoria = new THREE.Mesh(divisoriaGeometry, divisoriaMaterial);    
         divisoria.castShadow = true;
+        divisoria.receiveShadow = true;
         divisoria.translateOnAxis(y,-5.01);
         divisoria.translateOnAxis(z,divisoriaInicial - i*6);
         parteFrontal.add(divisoria);
         var divisoria = new THREE.Mesh(divisoriaGeometry2, divisoriaMaterial);
-        divisoria.castShadow = true;  
+        divisoria.castShadow = true;
+        divisoria.receiveShadow = true;  
         divisoria.translateOnAxis(x,-35);
         divisoria.rotateOnAxis(z,degreesToRadians(90));
         divisoria.translateOnAxis(z,divisoriaInicial - i*6);
         parteFrontal.add(divisoria);
         var divisoria = new THREE.Mesh(divisoriaGeometry2, divisoriaMaterial); 
-        divisoria.castShadow = true; 
+        divisoria.castShadow = true;
+        divisoria.receiveShadow = true; 
         divisoria.translateOnAxis(x,-40);
         divisoria.translateOnAxis(y,4.95)
         divisoria.translateOnAxis(z,divisoriaInicial - i*6);
         parteFrontal.add(divisoria);
         var divisoria = new THREE.Mesh(divisoriaGeometry2, divisoriaMaterial);
-        divisoria.castShadow = true;  
+        divisoria.castShadow = true;
+        divisoria.receiveShadow = true;  
         divisoria.translateOnAxis(x,-45);
         divisoria.translateOnAxis(y,9.95)
         divisoria.rotateOnAxis(z,degreesToRadians(90));
         divisoria.translateOnAxis(z,divisoriaInicial - i*6);
         parteFrontal.add(divisoria);
         var divisoria = new THREE.Mesh(divisoriaGeometry2, divisoriaMaterial);
-        divisoria.castShadow = true;  
+        divisoria.castShadow = true;
+        divisoria.receiveShadow = true;  
         divisoria.translateOnAxis(x,35);
         divisoria.rotateOnAxis(z,degreesToRadians(90));
         divisoria.translateOnAxis(z,divisoriaInicial - i*6);
         parteFrontal.add(divisoria);
         var janela = new THREE.Mesh(janelaGeometry, janelaMaterial);
         janela.castShadow = true;
+        janela.receiveShadow = true;
         janela.translateOnAxis(y,-5.05);
         janela.translateOnAxis(z, janelaInicial - i*6);
         janela.translateOnAxis(x, 30);
@@ -140,6 +147,7 @@ export function createBuilding6(textureLoader) {
         parteFrontal.add(janela);
         var janela = new THREE.Mesh(janelaGeometry2, janelaMaterial);
         janela.castShadow = true;
+        janela.receiveShadow = true;
         janela.translateOnAxis(y,-5.05);
         janela.translateOnAxis(z, janelaInicial - i*6);
         janela.translateOnAxis(x, 23);
@@ -147,6 +155,7 @@ export function createBuilding6(textureLoader) {
         parteFrontal.add(janela);
         var janela = new THREE.Mesh(janelaGeometry3, janelaMaterial);
         janela.castShadow = true;
+        janela.receiveShadow = true;
         janela.translateOnAxis(y,-5.05);
         janela.translateOnAxis(z, janelaInicial - i*6);
         janela.translateOnAxis(x, 18);
@@ -154,6 +163,7 @@ export function createBuilding6(textureLoader) {
         parteFrontal.add(janela);
         var janela = new THREE.Mesh(janelaGeometry, janelaMaterial);
         janela.castShadow = true;
+        janela.receiveShadow = true;
         janela.translateOnAxis(y,-5.05);
         janela.translateOnAxis(z, janelaInicial - i*6);
         janela.translateOnAxis(x, 10);
@@ -161,6 +171,7 @@ export function createBuilding6(textureLoader) {
         parteFrontal.add(janela);
         var janela = new THREE.Mesh(janelaGeometry2, janelaMaterial);
         janela.castShadow = true;
+        janela.receiveShadow = true;
         janela.translateOnAxis(y,-5.05);
         janela.translateOnAxis(z, janelaInicial - i*6);
         janela.translateOnAxis(x, 0);
@@ -168,6 +179,7 @@ export function createBuilding6(textureLoader) {
         parteFrontal.add(janela);
         var janela = new THREE.Mesh(janelaGeometry, janelaMaterial);
         janela.castShadow = true;
+        janela.receiveShadow = true;
         janela.translateOnAxis(y,-5.05);
         janela.translateOnAxis(z, janelaInicial - i*6);
         janela.translateOnAxis(x, -7);
@@ -175,6 +187,7 @@ export function createBuilding6(textureLoader) {
         parteFrontal.add(janela);
         var janela = new THREE.Mesh(janelaGeometry, janelaMaterial);
         janela.castShadow = true;
+        janela.receiveShadow = true;
         janela.translateOnAxis(y,-5.05);
         janela.translateOnAxis(z, janelaInicial - i*6);
         janela.translateOnAxis(x, -12);
@@ -182,6 +195,7 @@ export function createBuilding6(textureLoader) {
         parteFrontal.add(janela);
         var janela = new THREE.Mesh(janelaGeometry2, janelaMaterial);
         janela.castShadow = true;
+        janela.receiveShadow = true;
         janela.translateOnAxis(y,-5.05);
         janela.translateOnAxis(z, janelaInicial - i*6);
         janela.translateOnAxis(x, -20);
@@ -189,6 +203,7 @@ export function createBuilding6(textureLoader) {
         parteFrontal.add(janela);
         var janela = new THREE.Mesh(janelaGeometry3, janelaMaterial);
         janela.castShadow = true;
+        janela.receiveShadow = true;
         janela.translateOnAxis(y,-5.05);
         janela.translateOnAxis(z, janelaInicial - i*6);
         janela.translateOnAxis(x, -27);
@@ -196,6 +211,7 @@ export function createBuilding6(textureLoader) {
         parteFrontal.add(janela);
         var janela = new THREE.Mesh(janelaGeometry3, janelaMaterial);
         janela.castShadow = true;
+        janela.receiveShadow = true;
         janela.translateOnAxis(y,+4.95);
         janela.translateOnAxis(z, janelaInicial - i*6);
         janela.translateOnAxis(x, -39);
@@ -203,6 +219,7 @@ export function createBuilding6(textureLoader) {
         parteFrontal.add(janela);
         var janela = new THREE.Mesh(janelaGeometry3, janelaMaterial);
         janela.castShadow = true;
+        janela.receiveShadow = true;
         janela.translateOnAxis(y,-2.05);
         janela.translateOnAxis(z, janelaInicial - i*6);
         janela.translateOnAxis(x, -35.05);
@@ -211,12 +228,14 @@ export function createBuilding6(textureLoader) {
         parteFrontal.add(janela);
         var sacada = new THREE.Mesh(sacadaGeometry, sacadaMaterial);
         sacada.castShadow = true;
+        sacada.receiveShadow = true;
         sacada.translateOnAxis(y, 10);
         sacada.translateOnAxis(z, 44- i*6);
         sacada.translateOnAxis(x, -47.5);
         parteFrontal.add(sacada);
         var sacadaLateral = new THREE.Mesh(sacadaLateralGeometry, sacadaLateralMaterial);
         sacadaLateral.castShadow = true;
+        sacadaLateral.receiveShadow = true;
         sacadaLateral.translateOnAxis(y, 5);
         sacadaLateral.translateOnAxis(z, 45.5- i*6);
         sacadaLateral.translateOnAxis(x, -47.5);
@@ -224,6 +243,7 @@ export function createBuilding6(textureLoader) {
         parteFrontal.add(sacadaLateral);
         var sacadaLateral = new THREE.Mesh(sacadaLateralGeometry, sacadaLateralMaterial);
         sacadaLateral.castShadow = true;
+        sacadaLateral.receiveShadow = true;
         sacadaLateral.translateOnAxis(y, 15);
         sacadaLateral.translateOnAxis(z, 45.5- i*6);
         sacadaLateral.translateOnAxis(x, -47.5);
@@ -231,6 +251,7 @@ export function createBuilding6(textureLoader) {
         parteFrontal.add(sacadaLateral);
         var sacadaFrontal = new THREE.Mesh(sacadaFrontalGeometry, sacadaFrontalMaterial);
         sacadaFrontal.castShadow = true;
+        sacadaFrontal.receiveShadow = true;
         sacadaFrontal.translateOnAxis(y, 10);
         sacadaFrontal.translateOnAxis(z, 45.5 - i*6);
         sacadaFrontal.translateOnAxis(x, -50);
@@ -238,6 +259,7 @@ export function createBuilding6(textureLoader) {
         parteFrontal.add(sacadaFrontal);
         var portaSacada = new THREE.Mesh(portaSacadaGeometry, portaSacadaMaterial);
         portaSacada.castShadow = true;
+        portaSacada.receiveShadow = true;
         portaSacada.translateOnAxis(y, 10);
         portaSacada.translateOnAxis(x, -45.05);
         portaSacada.translateOnAxis(z, 46 - i*6);
@@ -247,23 +269,27 @@ export function createBuilding6(textureLoader) {
     }
     var divisoria = new THREE.Mesh(divisoriaGeometry, divisoriaMaterial);
     divisoria.castShadow = true;
+    divisoria.receiveShadow = true;
     divisoria.translateOnAxis(y, -5.05);
     divisoria.translateOnAxis(z, -35);
     parteFrontal.add(divisoria);
     var divisoria = new THREE.Mesh(divisoriaGeometry2, divisoriaMaterial);
-    divisoria.castShadow = true;  
+    divisoria.castShadow = true;
+    divisoria.receiveShadow = true;  
     divisoria.translateOnAxis(x,35);
     divisoria.rotateOnAxis(z,degreesToRadians(90));
     divisoria.translateOnAxis(z,-35);
     parteFrontal.add(divisoria);
     var divisoria = new THREE.Mesh(divisoriaGeometry2, divisoriaMaterial); 
-    divisoria.castShadow = true; 
+    divisoria.castShadow = true;
+    divisoria.receiveShadow = true; 
     divisoria.translateOnAxis(x,-35);
     divisoria.rotateOnAxis(z,degreesToRadians(90));
     divisoria.translateOnAxis(z,-35);
     parteFrontal.add(divisoria);
     var divisoria = new THREE.Mesh(divisoriaGeometry2, divisoriaMaterial);
-    divisoria.castShadow = true;  
+    divisoria.castShadow = true;
+    divisoria.receiveShadow = true;  
     divisoria.translateOnAxis(x,-45);
     divisoria.translateOnAxis(y,10);
     divisoria.rotateOnAxis(z,degreesToRadians(90));
@@ -271,21 +297,21 @@ export function createBuilding6(textureLoader) {
     parteFrontal.add(divisoria);
     var divisoria = new THREE.Mesh(divisoriaGeometry2, divisoriaMaterial);
     divisoria.castShadow = true;
+    divisoria.receiveShadow = true;
     divisoria.translateOnAxis(x, -40);
     divisoria.translateOnAxis(y, 4.95);
     divisoria.translateOnAxis(z, -35);
     parteFrontal.add(divisoria);
     var portaPredio = new THREE.Mesh(portaPredioGeometry, portaPredioMaterial);
     portaPredio.castShadow = true;
+    portaPredio.receiveShadow = true;
     portaPredio.translateOnAxis(y, -5.1);
     portaPredio.translateOnAxis(z, -46);
     portaPredio.rotateOnAxis(x,degreesToRadians(90));
     parteFrontal.add(portaPredio);
 
     parteFrontal.castShadow = true;
-    parteFrontal.traverse(function (child){
-        child.receiveShadow = true;
-    });
+    parteFrontal.receiveShadow = true;
 
     return parteFrontal;
 }

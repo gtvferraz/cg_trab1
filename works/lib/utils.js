@@ -823,8 +823,8 @@ function createFirstBlock(
     buildingGap)
   );
 
-  buildings[4].rotateOnAxis(z, degreesToRadians(90));*/
-
+  buildings[4].rotateOnAxis(z, degreesToRadians(90));
+    */
   const planeWidth = 
     buildingsInfo[1].offsetDeph*buildingsInfo[1].scale + buildingsInfo[1].deph*buildingsInfo[1].scale +
     buildingsInfo[3].offsetDeph*buildingsInfo[3].scale + buildingsInfo[3].deph*buildingsInfo[3].scale +
