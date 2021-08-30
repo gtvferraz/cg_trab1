@@ -22,23 +22,13 @@ import {
     buildAirpLightInterface
 } from './lib/utils.js';
 
-import {OBJLoader} from '../build/jsm/loaders/OBJLoader.js'
-import {MTLLoader} from '../build/jsm/loaders/MTLLoader.js'
-
 var stats = new Stats(); // To show FPS information
 var scene = new THREE.Scene(); // Create main scene
 scene.background = new THREE.Color('rgb(150,150,200)');
 var renderer = initRenderer(); // View function in util/utils
 var keyboard = new KeyboardState();
 var controls = new InfoBox();
-controls.infoBox.innerHTML =
-    `Controles:<br/>
-    ↑↓→← => Move o Avião<br/>
-    QA => Velocidade do Avião<br/>
-    P => Iniciar o Percurso<br/>
-    ESPAÇO => Modo de Inspeção<br/>
-    C => Modo Cockpit`
-controls.show();
+
 var LoadingManager = new THREE.LoadingManager();
 var textureLoader = new THREE.TextureLoader(LoadingManager);
 
@@ -112,18 +102,12 @@ var tempoAtual = 0;
 var loadingScreen = {
     scene: new THREE.Scene(),
     camera: new THREE.PerspectiveCamera(90, 1280/720, 0.1, 100),
-    box: new THREE.Mesh(
-        new THREE.BoxGeometry(0.5, 0.5, 0.5),
-        new THREE.MeshBasicMaterial({color:0x4444ff})
-    )
 };
 var RESOURCES_LOADED = false;
-loadingScreen.box.position.set(0,0,5);
-loadingScreen.camera.lookAt(loadingScreen.box.position);
-loadingScreen.scene.add(loadingScreen.box);
+loadingScreen.camera.lookAt((0,0,5));
 
 //cria terreno
-const terrain = createTerrain(textureLoader, scene);
+const terrain = createTerrain(textureLoader, scene, LoadingManager);
 scene.add(terrain);
 //addClouds();
 
@@ -151,22 +135,7 @@ camera3.position.copy(cabin.position)
 camera3.position.z += 1
 camera3.position.y -= 1
 
-const mtlLoader = new MTLLoader(LoadingManager);
-mtlLoader.load('./assets/Cat/Cats_obj.mtl', function(materials){
-    materials.preload()
-    var objLloader = new OBJLoader(LoadingManager);
-    objLloader.setMaterials(materials);
-    objLloader.load('./assets/Cat/Cats_obj.obj',function(object) {
-        object.scale.set(0.1,0.1,0.1)
-        object.rotateOnAxis(x,degreesToRadians(90))
-        object.traverse( function ( child ) {
-            child.castShadow = true;
-            child.receiveShadow = true;
-        });
-        object.castShadow = true;
-        scene.add(object);
-    });
-});
+
 
 //trackballControls
 var trackballControls = new TrackballControls(camera2, renderer.domElement);
@@ -191,7 +160,7 @@ window.addEventListener('resize', function() { onWindowResize(cameraGod, rendere
 
 render();
 
-buildSunInterface(sunLight, scene);
+//buildSunInterface(sunLight, scene);
 //buildAirpLightInterface(airplaneLight, scene);
 
 function addClouds() {
@@ -711,14 +680,14 @@ function godView() {
     }
     
     if(keyboard.pressed('W'))
-        god.translateY(1);
+        god.translateY(maxSpeed);
     else if(keyboard.pressed('S'))
-        god.translateY(-1);
+        god.translateY(-maxSpeed);
     
     if(keyboard.pressed('A'))
-        god.translateX(-1);
+        god.translateX(-maxSpeed);
     else if(keyboard.pressed('D'))
-        god.translateX(1);
+        god.translateX(maxSpeed);
 
     if(keyboard.pressed('up'))
         god.translateZ(0.5);
@@ -732,12 +701,7 @@ function godView() {
 }
 
 function render() {
-    if(RESOURCES_LOADED == false) {
-
-        loadingScreen.box.position.x -= 0.05;
-        if(loadingScreen.box.position.x <  -10) loadingScreen.box.position.x = 10;
-        loadingScreen.box.position.y = Math.sin(loadingScreen.box.position.x);
-        
+    if(RESOURCES_LOADED == false) {      
         LoadingManager.onProgress = function(item, loaded, total) {
             loader.innerHTML = "Gerando Texturas: " + (parseInt(loaded)*100/total).toFixed(2) + "%";
         }
@@ -785,6 +749,8 @@ function render2() {
         RESOURCES_LOADED = true;
         loader.style.visibility = 'hidden';
         listenerAmbiente.sound.play();
+        controls.show();
+        infoBox();
         requestAnimationFrame(render)
         return;
     }

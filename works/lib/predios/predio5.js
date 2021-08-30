@@ -1,37 +1,15 @@
 import * as THREE from '../../../build/three.module.js';
-import Stats from '../../../build/jsm/libs/stats.module.js';
-import { TrackballControls } from '../../../build/jsm/controls/TrackballControls.js';
 import {
-    initRenderer,
     degreesToRadians
 } from "../../../libs/util/util.js";
-import {
-    initLight
-}from '../utils.js';
+
+
 var x = new THREE.Vector3(1, 0, 0); // Set x axis
 var y = new THREE.Vector3(0, 1, 0); // Set y axis
 var z = new THREE.Vector3(0, 0, 1); // Set Z axis 
-/*var stats = new Stats(); // To show FPS information
-var scene = new THREE.Scene(); // Create main scene
-var renderer = initRenderer(); // View function in util/utils
-var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000);
-camera.position.copy(new THREE.Vector3(0, -140, 44));
 
-var ambientLight = new THREE.AmbientLight("rgb(255, 255, 255)");
-scene.add(ambientLight);
-let sunLight = initLight(scene, new THREE.Vector3(-30,0,30)); 
 
-var textureLoader = new THREE.TextureLoader();
-
-// Show axes (parameter is size of each axis)
-var axesHelper = new THREE.AxesHelper(12)
-scene.add(axesHelper);
-// Enable mouse rotation, pan, zoom etc.
-var trackballControls = new TrackballControls(camera, renderer.domElement);
-
-createBuilding5(textureLoader)*/
-
-export function createBuilding5(position, textureLoader) {
+export function createBuilding5(textureLoader) {
     //predios
     const predioMap1 = textureLoader.load('/works/assets/predio_05/tijolo.png')
     predioMap1.wrapS = THREE.RepeatWrapping;
@@ -355,14 +333,10 @@ export function createBuilding5(position, textureLoader) {
         element.castShadow = true;
     });
     colunaHorizontal.castShadow = true;
+
+    colunaHorizontal.traverse(function (child){
+        child.receiveShadow = true;
+    });
+
     return colunaHorizontal;
 }
-/*
-render();
-
-function render() {
-    stats.update(); // Update FPS
-    trackballControls.update(); // Enable mouse movements
-    requestAnimationFrame(render);
-    renderer.render(scene, camera) // Render scene
-}*/

@@ -2,6 +2,8 @@ import * as THREE from  '../../../build/three.module.js';
 import {GUI} from       '../../build/jsm/libs/dat.gui.module.js';
 import { degreesToRadians, createGroundPlane, radiansToDegrees} from "../../../libs/util/util.js";
 import { ConvexGeometry } from '../../../build/jsm/geometries/ConvexGeometry.js';
+import {OBJLoader} from '../../../build/jsm/loaders/OBJLoader.js'
+import {MTLLoader} from '../../../build/jsm/loaders/MTLLoader.js'
 
 import { createBuilding1 } from '/works/lib/predios/predio1.js'
 import { createBuilding2 } from '/works/lib/predios/predio2.js'
@@ -268,9 +270,7 @@ function createStabilizer() {
   return stabilizer;
 }
 
-export function createTerrain(textureLoader, scene) {
-  //plane.add(createMountain());
-
+export function createTerrain(textureLoader, scene, LoadingManager) {
   const planSize = 6000;
   const stepHeight = 3;
 
@@ -345,6 +345,24 @@ export function createTerrain(textureLoader, scene) {
   plane.translateZ(-5*stepHeight);
   
   mainPlane.add(plane);
+  const mtlLoader = new MTLLoader(LoadingManager);
+  mtlLoader.load('./assets/Cat/Cats_obj.mtl', function(materials){
+      materials.preload()
+      var objLloader = new OBJLoader(LoadingManager);
+      objLloader.setMaterials(materials);
+      objLloader.load('./assets/Cat/Cats_obj.obj',function(object) {
+          object.scale.set(1,1,1)
+          object.position.set(0,1300,0)
+          object.rotateOnAxis(x,degreesToRadians(90))
+          object.rotateOnAxis(y,degreesToRadians(180))
+          object.traverse( function ( child ) {
+              child.castShadow = true;
+              child.receiveShadow = true;
+          });
+          object.castShadow = true;
+          mainPlane.add(object);
+      });
+  });
 
   const skyboxMaterials = [];
   const skyboxTextureFt = new textureLoader.load('assets/meadow_ft.jpg');
@@ -725,7 +743,7 @@ function createFirstBlock(
   var scaledDeph = buildingsInfo[0].deph*buildingsInfo[0].scale;
   var scaledHeight = buildingsInfo[0].height*buildingsInfo[0].scale;
 
-  buildings.push(buildingsInfo[0].create(new THREE.Vector3(0,0,0), textureLoader));
+  buildings.push(buildingsInfo[0].create( textureLoader));
   buildings[0].scale.set(buildingsInfo[0].scale,buildingsInfo[0].scale,buildingsInfo[0].scale);
   buildings[0].translateZ(scaledHeight/2);
   buildings[0].translateX(
@@ -744,7 +762,7 @@ function createFirstBlock(
     scaledDeph = buildingsInfo[i].deph*buildingsInfo[i].scale;
     scaledHeight = buildingsInfo[i].height*buildingsInfo[i].scale;
 
-    buildings.push(buildingsInfo[i].create(new THREE.Vector3(0,0,0), textureLoader));
+    buildings.push(buildingsInfo[i].create( textureLoader));
     buildings[i].scale.set(buildingsInfo[i].scale,buildingsInfo[i].scale,buildingsInfo[i].scale);
     buildings[i].translateZ(scaledHeight/2);
     buildings[i].translateX(streetWidth/2 + sidewalkWidth + scaledOffsetDeph + scaledDeph/2);
@@ -767,7 +785,7 @@ function createFirstBlock(
   scaledDeph = buildingsInfo[3].deph*buildingsInfo[3].scale;
   scaledHeight = buildingsInfo[3].height*buildingsInfo[3].scale;
 
-  buildings.push(buildingsInfo[3].create(new THREE.Vector3(0,0,0), textureLoader));
+  buildings.push(buildingsInfo[3].create( textureLoader));
   buildings[3].scale.set(buildingsInfo[3].scale,buildingsInfo[3].scale,buildingsInfo[3].scale);
   buildings[3].translateZ(scaledHeight/2);
   buildings[3].translateX(
@@ -786,7 +804,7 @@ function createFirstBlock(
   scaledDeph = buildingsInfo[2].deph*buildingsInfo[2].scale;
   scaledHeight = buildingsInfo[2].height*buildingsInfo[2].scale;
 
-  buildings.push(buildingsInfo[2].create(new THREE.Vector3(0,0,0), textureLoader));
+  buildings.push(buildingsInfo[2].create( textureLoader));
   buildings[4].scale.set(buildingsInfo[2].scale,buildingsInfo[2].scale,buildingsInfo[2].scale);
   buildings[4].translateZ(scaledHeight/2);
   buildings[4].translateX(
@@ -1010,7 +1028,7 @@ function createSecondBlock(
   var scaledDeph = buildingsInfo[0].deph*buildingsInfo[0].scale;
   var scaledHeight = buildingsInfo[0].height*buildingsInfo[0].scale;
 
-  buildings.push(buildingsInfo[0].create(new THREE.Vector3(0,0,0), textureLoader));
+  buildings.push(buildingsInfo[0].create( textureLoader));
   buildings[0].scale.set(buildingsInfo[0].scale,buildingsInfo[0].scale,buildingsInfo[0].scale);
   buildings[0].translateZ(scaledHeight/2);
   buildings[0].translateX(
@@ -1026,7 +1044,7 @@ function createSecondBlock(
     scaledDeph = buildingsInfo[i].deph*buildingsInfo[i].scale;
     scaledHeight = buildingsInfo[i].height*buildingsInfo[i].scale;
 
-    buildings.push(buildingsInfo[i].create(new THREE.Vector3(0,0,0), textureLoader));
+    buildings.push(buildingsInfo[i].create( textureLoader));
     buildings[i].scale.set(buildingsInfo[i].scale,buildingsInfo[i].scale,buildingsInfo[i].scale);
     buildings[i].translateZ(scaledHeight/2);
     buildings[i].translateX(streetWidth/2 + sidewalkWidth + scaledOffsetDeph + scaledDeph/2);
@@ -1049,7 +1067,7 @@ function createSecondBlock(
   scaledDeph = buildingsInfo[3].deph*buildingsInfo[3].scale;
   scaledHeight = buildingsInfo[3].height*buildingsInfo[3].scale;
 
-  buildings.push(buildingsInfo[3].create(new THREE.Vector3(0,0,0), textureLoader));
+  buildings.push(buildingsInfo[3].create( textureLoader));
   buildings[3].scale.set(buildingsInfo[3].scale,buildingsInfo[3].scale,buildingsInfo[3].scale);
   buildings[3].translateZ(scaledHeight/2);
   buildings[3].translateX(
@@ -1067,7 +1085,7 @@ function createSecondBlock(
   scaledDeph = buildingsInfo[4].deph*buildingsInfo[4].scale;
   scaledHeight = buildingsInfo[4].height*buildingsInfo[4].scale;
 
-  buildings.push(buildingsInfo[4].create(new THREE.Vector3(0,0,0), textureLoader));
+  buildings.push(buildingsInfo[4].create( textureLoader));
   buildings[4].scale.set(buildingsInfo[4].scale,buildingsInfo[4].scale,buildingsInfo[4].scale);
   buildings[4].translateZ(scaledHeight/2);
   buildings[4].translateX(
@@ -1618,7 +1636,7 @@ function createTrees(planSize, plansInfo, scene) {
     tree.add(leaf1);
     tree.add(leaf2);
     
-    let randomScale = Math.random() * (0.5 - 0.1) + 0.1;
+    let randomScale = Math.random() * (2 - 1) + 1;
     let randomDegree = Math.random() * 360.0;
     
     tree.scale.set(randomScale,randomScale,randomScale);
