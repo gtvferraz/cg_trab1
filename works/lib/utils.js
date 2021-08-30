@@ -1646,8 +1646,8 @@ function createTrees(planSize, plansInfo, scene) {
     var mark = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color: region.color}));
     mark.position.copy(new THREE.Vector3(region.x, region.y, 0));
     mark.rotateOnAxis(x, degreesToRadians(90));
-    scene.add(mark)*/
-  });
+    scene.add(mark)
+  });*/
 
   return trees;
 }
