@@ -62,6 +62,8 @@ var camera2 = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHe
 camera2.position.copy(new THREE.Vector3(0, -50, 15));
 camera2.lookAt(0, 0, 0);
 camera2.up.set(0, 1.1, 0);
+var inspecionaLight = initLight(scene,new THREE.Vector3(0,-50,15));
+scene.remove(inspecionaLight);
 var axesHelper = new THREE.AxesHelper(20);
 //câmera 3
 var camera3 = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000);
@@ -222,7 +224,6 @@ function generateTorus(){
 
     torusus[12].translateOnAxis(y,10)
     torusus[12].translateOnAxis(z,distance*2)
-    torusus[12].translateOnAxis(x,-65)
 
     torusus[11].translateOnAxis(y,90)
     torusus[11].translateOnAxis(z,distance*3)
@@ -230,11 +231,9 @@ function generateTorus(){
 
     torusus[10].translateOnAxis(y,150)
     torusus[10].translateOnAxis(z,distance*4)
-    torusus[10].translateOnAxis(x,-100)
 
     torusus[9].translateOnAxis(y,10)
     torusus[9].translateOnAxis(z,distance*5)
-    torusus[9].translateOnAxis(x,-70)
 
     torusus[8].translateOnAxis(y,70)
     torusus[8].translateOnAxis(z,distance*6)
@@ -251,34 +250,34 @@ function generateTorus(){
     torusus[6].rotateOnAxis(y,degreesToRadians(120))
 
     torusus[5].translateOnAxis(y,200)
-    torusus[5].translateOnAxis(z,(distance*9))
-    torusus[5].translateOnAxis(x,1200)
-    torusus[5].rotateOnAxis(y,degreesToRadians(120))
+    torusus[5].translateOnAxis(z,(distance*8))
+    torusus[5].translateOnAxis(x,1900)
+    torusus[5].rotateOnAxis(y,degreesToRadians(90))
 
-    torusus[4].translateOnAxis(y,400)
-    torusus[4].translateOnAxis(z,(distance*10))
-    torusus[4].translateOnAxis(x,1400)
+    torusus[4].translateOnAxis(y,20)
+    torusus[4].translateOnAxis(z,(distance*7))
+    torusus[4].translateOnAxis(x,2700)
     torusus[4].rotateOnAxis(y,degreesToRadians(0))
 
     torusus[3].translateOnAxis(y,100)
-    torusus[3].translateOnAxis(z,(distance*12))
-    torusus[3].translateOnAxis(x,1300)
+    torusus[3].translateOnAxis(z,(distance*5))
+    torusus[3].translateOnAxis(x,3000)
     torusus[3].rotateOnAxis(y,degreesToRadians(0))
 
-    torusus[2].translateOnAxis(y,10)
-    torusus[2].translateOnAxis(z,(distance*14)+400)
-    torusus[2].translateOnAxis(x,800)
-    torusus[2].rotateOnAxis(y,degreesToRadians(90))
+    torusus[2].translateOnAxis(y,200)
+    torusus[2].translateOnAxis(z,(distance*3))
+    torusus[2].translateOnAxis(x,2700)
+    torusus[2].rotateOnAxis(y,degreesToRadians(0))
 
     torusus[1].translateOnAxis(y,200)
-    torusus[1].translateOnAxis(z,(distance*14)+200)
-    torusus[1].translateOnAxis(x,0)
-    torusus[1].rotateOnAxis(y,degreesToRadians(90))
+    torusus[1].translateOnAxis(z,(distance*2))
+    torusus[1].translateOnAxis(x,2600)
+    torusus[1].rotateOnAxis(y,degreesToRadians(0))
 
     torusus[0].translateOnAxis(y,10)
-    torusus[0].translateOnAxis(z,(distance*14)+200)
-    torusus[0].translateOnAxis(x,-500)
-    torusus[0].rotateOnAxis(y,degreesToRadians(60))
+    torusus[0].translateOnAxis(z,(distance))
+    torusus[0].translateOnAxis(x,2500)
+    torusus[0].rotateOnAxis(y,degreesToRadians(0))
 }
 
 function destroyTorus(){
@@ -326,7 +325,8 @@ function trocaCamera1() {
         virtualParent.position.copy(auxPosicao);
         trackballControls.enabled = false;
         virtualParent.remove(axesHelper);
-        virtualParent.rotation.z = auxRotz
+        virtualParent.rotation.z = auxRotz;
+        scene.remove(inspecionaLight); 
 
         if(!sound.isPlaying && speed > 0)
             sound.play();
@@ -342,13 +342,16 @@ function trocaCamera1() {
         }
         infoBox();
     }
-    timer.start();
-    timer.elapsedTime = tempoAtual;
+    if(timer.isPlaying){
+        timer.start();
+        timer.elapsedTime = tempoAtual;
+    }
 }
 
 function trocaCamera2() {
     //remove tudo da cena
     scene.remove(terrain);
+    scene.add(inspecionaLight);
     if(caminhoOn) {
         torusus.forEach(torus => {
             scene.remove(torus);
@@ -373,8 +376,6 @@ function trocaCamera2() {
     infoBox();
     timer.stop();
     tempoAtual = timer.getElapsedTime(); 
-    var inspecionaLight = initLight(camera2,new THREE.Vector3(0,-50,15));
-    camera2.add(inspecionaLight);
 }
 
 function criaCaminho() {
