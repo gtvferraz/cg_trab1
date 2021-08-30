@@ -147,6 +147,22 @@ let sunLight = initLight(scene, new THREE.Vector3(-200,1450,1900));
 let airplaneLight = initAirplaneLight(scene, new THREE.Vector3(-2.0,-2948,20), airplane);
 scene.add(airplaneLight);
 
+const mtlLoader = new MTLLoader(LoadingManager);
+mtlLoader.load('./assets/Cat/Cats_obj.mtl', function(materials){
+    var objLloader = new OBJLoader(LoadingManager);
+    objLloader.setMaterials(materials);
+    objLloader.load('./assets/Cat/Cats_obj.obj',function(object) {
+        object.scale.set(0.1,0.1,0.1)
+        object.rotateOnAxis(x,degreesToRadians(90))
+        object.traverse( function ( child ) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+        });
+        object.castShadow = true;
+        scene.add(object);
+    });
+});
+
 //trackballControls
 var trackballControls = new TrackballControls(camera2, renderer.domElement);
 
@@ -168,21 +184,11 @@ var loader = document.getElementById("loader");
 var infoBoxShow = true;
 window.addEventListener('resize', function() { onWindowResize(cameraGod, renderer) }, false);
 
-const mtlLoader = new MTLLoader(LoadingManager);
-
-mtlLoader.load('./assets/Cat/Cats_obj.mtl', function(materials){
-    var objLloader = new OBJLoader(LoadingManager);
-    objLloader.setMaterials(materials);
-    objLloader.load('./assets/Cat/Cats_obj.obj',function(object) {
-        object.scale.set(0.1,0.1,0.1)
-        object.rotateOnAxis(x,degreesToRadians(90))
-        object.castShadow = true;
-        scene.add(object);
-    });
-});
+sunLight.shadow.autoUpdate = true;
+sunLight.shadow.autoUpdate = false;
 render();
 
-//buildSunInterface(sunLight, scene);
+buildSunInterface(sunLight, scene);
 //buildAirpLightInterface(airplaneLight, scene);
 
 function addClouds() {
