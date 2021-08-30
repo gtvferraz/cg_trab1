@@ -6,6 +6,8 @@ import { ConvexGeometry } from '../../../build/jsm/geometries/ConvexGeometry.js'
 import { createBuilding1 } from '/works/lib/predios/predio1.js'
 import { createBuilding2 } from '/works/lib/predios/predio2.js'
 import { createBuilding3 } from '/works/lib/predios/predio3.js'
+import { createBuilding4 } from '/works/lib/predios/predio4.js'
+import { createBuilding5 } from '/works/lib/predios/predio5.js'
 import { createBuilding6 } from '/works/lib/predios/predio6.js'
 
 export function addSound(som, loop) {
@@ -401,7 +403,37 @@ function createCity(textureLoader) {
     }
   });
 
-  const block2 = createFirstBlock(streetWidth, sidewalkWidth, buildingGap, textureLoader, {rightStreet: false}, {
+  const block2 = createSecondBlock(streetWidth, sidewalkWidth, buildingGap, textureLoader,
+    firstBlockWidth-2*streetWidth-4*sidewalkWidth,
+    firstBlockHeight-2*streetWidth-4*sidewalkWidth,
+    {backStreet: false},
+    {
+      frontRight: {
+        right: true
+      }
+    }
+  );
+  block2.translateY(-firstBlockHeight + streetWidth + 2*sidewalkWidth);
+
+  const block3 = createFirstBlock(streetWidth, sidewalkWidth, buildingGap, textureLoader, 
+    {backStreet: false},
+    {
+      frontLeft: {
+        front: true
+      },
+      frontRight: {
+        right: true,
+        front: true
+      }
+    }
+  );
+  block3.translateY(2*(-firstBlockHeight + streetWidth + 2*sidewalkWidth));
+
+  const block4 = createSecondBlock(streetWidth, sidewalkWidth, buildingGap, textureLoader,
+    firstBlockWidth-2*streetWidth-4*sidewalkWidth,
+    firstBlockHeight-2*streetWidth-4*sidewalkWidth,
+    {rightStreet: false},
+    {
     backLeft: {
       left: true,
       back: true
@@ -413,10 +445,47 @@ function createCity(textureLoader) {
       left: true
     }
   });
-  block2.translateX(-firstBlockWidth + streetWidth + 2*sidewalkWidth);
+  block4.translateX(-firstBlockWidth + streetWidth + 2*sidewalkWidth);
+
+  const block5 = createFirstBlock(streetWidth, sidewalkWidth, buildingGap, textureLoader, 
+    {
+      backStreet: false,
+      rightStreet: false
+    },
+    {
+      frontLeft: {
+        left: true
+      }
+    }
+  );
+  block5.translateX(-firstBlockWidth + streetWidth + 2*sidewalkWidth);
+  block5.translateY(-firstBlockHeight + streetWidth + 2*sidewalkWidth);
+
+  const block6 = createSecondBlock(streetWidth, sidewalkWidth, buildingGap, textureLoader,
+    firstBlockWidth-2*streetWidth-4*sidewalkWidth,
+    firstBlockHeight-2*streetWidth-4*sidewalkWidth,
+    {
+      backStreet: false,
+      rightStreet: false
+    },
+    {
+    backLeft: {
+      left: true
+    },
+    frontLeft: {
+      left: true,
+      front: true
+    }
+  });
+  block6.translateX(-firstBlockWidth + streetWidth + 2*sidewalkWidth);
+  block6.translateY(2*(-firstBlockHeight + streetWidth + 2*sidewalkWidth));
 
   city.add(block1);
   city.add(block2);
+  city.add(block3);
+  city.add(block4);
+  city.add(block5);
+  city.add(block6);
 
   return city;
 }
@@ -617,8 +686,6 @@ function createFirstBlock(
     if(intersectionOption.back === undefined) intersectionOption.back = true; 
   })
 
-  console.log(intersectionOptions);
-
   var block = new THREE.Object3D();
   block.translateZ(1);
 
@@ -800,39 +867,297 @@ function createFirstBlock(
     block.add(backStreet);
   }
 
-  const backLeftInter = createIntersection(streetWidth, sidewalkWidth, textureLoader, intersectionOptions.backLeft);
-  backLeftInter.translateY(
-    buildingsInfo[0].offsetWidth*buildingsInfo[0].scale + buildingsInfo[0].width*buildingsInfo[0].scale/2 +
-    streetWidth/2 + 5.5 + sidewalkWidth/2
-  );
-  backLeftInter.translateY(sidewalkWidth/2);
-  block.add(backLeftInter);
+  if(streetOptions.backStreet) {
+    const backLeftInter = createIntersection(streetWidth, sidewalkWidth, textureLoader, intersectionOptions.backLeft);
+    backLeftInter.translateY(
+      buildingsInfo[0].offsetWidth*buildingsInfo[0].scale + buildingsInfo[0].width*buildingsInfo[0].scale/2 +
+      streetWidth/2 + 5.5 + sidewalkWidth/2
+    );
+    backLeftInter.translateY(sidewalkWidth/2);
+    block.add(backLeftInter);
 
-  const backrightInter = createIntersection(streetWidth, sidewalkWidth, textureLoader, intersectionOptions.backRight);
-  backrightInter.translateY(
-    buildingsInfo[0].offsetWidth*buildingsInfo[0].scale + buildingsInfo[0].width*buildingsInfo[0].scale/2 +
-    streetWidth/2 + 5.5 + sidewalkWidth/2
-  );
-  backrightInter.translateY(sidewalkWidth/2);
-  backrightInter.translateX(planeWidth + streetWidth + 2*sidewalkWidth);
-  block.add(backrightInter);
+    const backRightInter = createIntersection(streetWidth, sidewalkWidth, textureLoader, intersectionOptions.backRight);
+    backRightInter.translateY(
+      buildingsInfo[0].offsetWidth*buildingsInfo[0].scale + buildingsInfo[0].width*buildingsInfo[0].scale/2 +
+      streetWidth/2 + 5.5 + sidewalkWidth/2
+    );
+    backRightInter.translateY(sidewalkWidth/2);
+    backRightInter.translateX(planeWidth + streetWidth + 2*sidewalkWidth);
+    block.add(backRightInter);
+  }
 
-  const frontLeftInter = createIntersection(streetWidth, sidewalkWidth, textureLoader, intersectionOptions.frontLeft);
-  frontLeftInter.translateY(
-    buildingsInfo[0].offsetWidth*buildingsInfo[0].scale + buildingsInfo[0].width*buildingsInfo[0].scale/2 +
-    streetWidth/2 + 5.5 + sidewalkWidth/2
-  );
-  frontLeftInter.translateY(-planeHeight - streetWidth - 2*sidewalkWidth + sidewalkWidth/2 + 0.1);
-  block.add(frontLeftInter);
+  if(streetOptions.frontStreet) {
+    const frontLeftInter = createIntersection(streetWidth, sidewalkWidth, textureLoader, intersectionOptions.frontLeft);
+    frontLeftInter.translateY(
+      buildingsInfo[0].offsetWidth*buildingsInfo[0].scale + buildingsInfo[0].width*buildingsInfo[0].scale/2 +
+      streetWidth/2 + 5.5 + sidewalkWidth/2
+    );
+    frontLeftInter.translateY(-planeHeight - streetWidth - 2*sidewalkWidth + sidewalkWidth/2 + 0.1);
+    block.add(frontLeftInter);
+  
+    const frontRightInter = createIntersection(streetWidth, sidewalkWidth, textureLoader, intersectionOptions.frontRight);
+    frontRightInter.translateY(
+      buildingsInfo[0].offsetWidth*buildingsInfo[0].scale + buildingsInfo[0].width*buildingsInfo[0].scale/2 +
+      streetWidth/2 + 5.5 + sidewalkWidth/2
+    );
+    frontRightInter.translateY(-planeHeight - streetWidth - 2*sidewalkWidth + sidewalkWidth/2 + 0.1);
+    frontRightInter.translateX(planeWidth + streetWidth + 2*sidewalkWidth);
+    block.add(frontRightInter);
+  }
 
-  const frontRightInter = createIntersection(streetWidth, sidewalkWidth, textureLoader, intersectionOptions.frontRight);
-  frontRightInter.translateY(
-    buildingsInfo[0].offsetWidth*buildingsInfo[0].scale + buildingsInfo[0].width*buildingsInfo[0].scale/2 +
-    streetWidth/2 + 5.5 + sidewalkWidth/2
+  block.add(plane);
+  buildings.forEach(building => block.add(building));
+  return block;
+}
+
+function createSecondBlock(
+  streetWidth,
+  sidewalkWidth,
+  buildingGap,
+  textureLoader, 
+  blockWidth,
+  blockHeight,
+  streetOptions = {
+    leftStreet: true,
+    rightStreet: true,
+    frontStreet: true,
+    backStreet: true
+  },
+  intersectionOptions = {
+    backLeft: {
+      left: false,
+      right: false,
+      front: false,
+      back: false
+    },
+    backRight: {
+      left: false,
+      right: false,
+      front: false,
+      back: false
+    },
+    frontLeft: {
+      left: false,
+      right: false,
+      front: false,
+      back: false
+    },
+    frontRight: {
+      left: false,
+      right: false,
+      front: false,
+      back: false
+    }
+  }
+) {
+  if(streetOptions.leftStreet === undefined) streetOptions.leftStreet = true; 
+  if(streetOptions.rightStreet === undefined) streetOptions.rightStreet = true; 
+  if(streetOptions.frontStreet === undefined) streetOptions.frontStreet = true; 
+  if(streetOptions.backStreet === undefined) streetOptions.backStreet = true; 
+
+  Object.entries(intersectionOptions).map(intersectionOption => {
+    if(intersectionOption.left === undefined) intersectionOption.left = true; 
+    if(intersectionOption.right === undefined) intersectionOption.right = true; 
+    if(intersectionOption.front === undefined) intersectionOption.front = true; 
+    if(intersectionOption.back === undefined) intersectionOption.back = true; 
+  })
+
+  var block = new THREE.Object3D();
+  block.translateZ(1);
+
+  const buildingsInfo = [
+    {
+      offsetWidth: 40,
+      offsetDeph: 0,
+      width: 110,
+      deph: 10,
+      height: 100,
+      scale: 0.7,
+      create: createBuilding4
+    },
+    { 
+      offsetWidth: 0,
+      offsetDeph: 0,
+      width: 60,
+      deph: 60,
+      height: 60,
+      scale: 0.7,
+      create: createBuilding5
+    },
+    { 
+      offsetWidth: 0,
+      offsetDeph: 0,
+      width: 50,
+      deph: 40,
+      height: 100,
+      scale: 0.8,
+      create: createBuilding3
+    },
+    { 
+      offsetWidth: 5,
+      offsetDeph: 5,
+      width: 80,
+      deph: 40,
+      height: 100,
+      scale: 0.8,
+      create: createBuilding6
+    },
+    { 
+      offsetWidth: 0,
+      offsetDeph: 0,
+      width: 20,
+      deph: 8,
+      height: 20,
+      scale: 2,
+      create: createBuilding1
+    }
+  ];
+
+  const buildings = [];
+
+  /*var scaledOffsetWidth = buildingsInfo[0].offsetWidth*buildingsInfo[0].scale;
+  var scaledOffsetDeph = buildingsInfo[0].offsetDeph*buildingsInfo[0].scale;
+  var scaledWidth = buildingsInfo[0].width*buildingsInfo[0].scale;
+  var scaledDeph = buildingsInfo[0].deph*buildingsInfo[0].scale;
+  var scaledHeight = buildingsInfo[0].height*buildingsInfo[0].scale;
+
+  buildings.push(buildingsInfo[0].create(new THREE.Vector3(0,0,0), textureLoader));
+  buildings[0].scale.set(buildingsInfo[0].scale,buildingsInfo[0].scale,buildingsInfo[0].scale);
+  buildings[0].translateZ(scaledHeight/2);
+  buildings[0].translateX(
+    streetWidth/2 + sidewalkWidth + 
+    scaledOffsetWidth + blockWidth/2
   );
-  frontRightInter.translateY(-planeHeight - streetWidth - 2*sidewalkWidth + sidewalkWidth/2 + 0.1);
-  frontRightInter.translateX(planeWidth + streetWidth + 2*sidewalkWidth);
-  block.add(frontRightInter);
+  buildings[0].translateY(-blockHeight/2 - streetWidth);
+
+  for(let i=1; i<3; i++) {
+    scaledOffsetWidth = buildingsInfo[i].offsetWidth*buildingsInfo[i].scale;
+    scaledOffsetDeph = buildingsInfo[i].offsetDeph*buildingsInfo[i].scale;
+    scaledWidth = buildingsInfo[i].width*buildingsInfo[i].scale;
+    scaledDeph = buildingsInfo[i].deph*buildingsInfo[i].scale;
+    scaledHeight = buildingsInfo[i].height*buildingsInfo[i].scale;
+
+    buildings.push(buildingsInfo[i].create(new THREE.Vector3(0,0,0), textureLoader));
+    buildings[i].scale.set(buildingsInfo[i].scale,buildingsInfo[i].scale,buildingsInfo[i].scale);
+    buildings[i].translateZ(scaledHeight/2);
+    buildings[i].translateX(streetWidth/2 + sidewalkWidth + scaledOffsetDeph + scaledDeph/2);
+
+    if(i > 1)
+      buildings[i].translateY(-1*(
+        scaledOffsetWidth + 
+        scaledWidth/2 - 
+        buildingsInfo[i-1].offsetWidth*buildingsInfo[i-1].scale +
+        buildingsInfo[i-1].width*buildingsInfo[i-1].scale/2 + 
+        buildingGap)
+      );
+    
+    buildings[i].rotateOnAxis(z, degreesToRadians(-90));
+  }
+
+  scaledOffsetWidth = buildingsInfo[3].offsetWidth*buildingsInfo[3].scale;
+  scaledOffsetDeph = buildingsInfo[3].offsetDeph*buildingsInfo[3].scale;
+  scaledWidth = buildingsInfo[3].width*buildingsInfo[3].scale;
+  scaledDeph = buildingsInfo[3].deph*buildingsInfo[3].scale;
+  scaledHeight = buildingsInfo[3].height*buildingsInfo[3].scale;
+
+  buildings.push(buildingsInfo[3].create(new THREE.Vector3(0,0,0), textureLoader));
+  buildings[3].scale.set(buildingsInfo[3].scale,buildingsInfo[3].scale,buildingsInfo[3].scale);
+  buildings[3].translateZ(scaledHeight/2);
+  buildings[3].translateX(
+    streetWidth/2 +
+    sidewalkWidth +
+    blockWidth -
+    scaledOffsetDeph
+  );
+
+  buildings[3].rotateOnAxis(z, degreesToRadians(90));
+
+  scaledOffsetWidth = buildingsInfo[4].offsetWidth*buildingsInfo[4].scale;
+  scaledOffsetDeph = buildingsInfo[4].offsetDeph*buildingsInfo[4].scale;
+  scaledWidth = buildingsInfo[4].width*buildingsInfo[4].scale;
+  scaledDeph = buildingsInfo[4].deph*buildingsInfo[4].scale;
+  scaledHeight = buildingsInfo[4].height*buildingsInfo[4].scale;
+
+  buildings.push(buildingsInfo[4].create(new THREE.Vector3(0,0,0), textureLoader));
+  buildings[4].scale.set(buildingsInfo[4].scale,buildingsInfo[4].scale,buildingsInfo[4].scale);
+  buildings[4].translateZ(scaledHeight/2);
+  buildings[4].translateX(
+    streetWidth/2 +
+    sidewalkWidth +
+    blockWidth -
+    scaledDeph/2
+  );
+
+  buildings[4].translateY(-1*(
+    scaledOffsetWidth + 
+    scaledWidth/2 - 
+    buildingsInfo[3].offsetWidth*buildingsInfo[3].scale +
+    buildingsInfo[3].width*buildingsInfo[3].scale/2 + 
+    buildingGap)
+  );
+
+  buildings[4].rotateOnAxis(z, degreesToRadians(90));*/
+
+  const planeWidth = blockWidth;
+  const planeHeight = blockHeight;
+  const plane = createGroundPlane(
+    planeWidth, 
+    planeHeight, 
+    10, 10);
+
+  plane.translateX(planeWidth/2 + streetWidth/2 + sidewalkWidth);
+  plane.translateY(-planeHeight/4 + 5);
+
+  if(streetOptions.leftStreet) {
+    const leftStreet = createStreet(streetWidth, planeHeight, sidewalkWidth, textureLoader);
+    leftStreet.translateY(-planeHeight/4 + 5);
+    block.add(leftStreet);
+  }
+
+  if(streetOptions.rightStreet) {
+    const rightStreet = createStreet(streetWidth, planeHeight, sidewalkWidth, textureLoader);
+    rightStreet.translateY(-planeHeight/4 + 5);
+    rightStreet.translateX(planeWidth + 2*(streetWidth/2 + sidewalkWidth));
+    block.add(rightStreet);
+  }
+
+  if(streetOptions.frontStreet) {
+    const frontStreet = createStreet(streetWidth, planeWidth, sidewalkWidth, textureLoader);
+    frontStreet.translateY(-planeHeight/4 - planeHeight/2 - streetWidth/2 - sidewalkWidth + 5);
+    frontStreet.translateX(streetWidth/2 + sidewalkWidth + planeWidth/2);
+    frontStreet.rotateOnAxis(z, degreesToRadians(90));
+    block.add(frontStreet);
+  }
+
+  if(streetOptions.backStreet) {
+    const backStreet = createStreet(streetWidth, planeWidth, sidewalkWidth, textureLoader);
+    backStreet.translateY(blockWidth/2 - 3.4 + streetWidth/2 + sidewalkWidth);
+    backStreet.translateX(streetWidth/2 + sidewalkWidth + planeWidth/2);
+    backStreet.rotateOnAxis(z, degreesToRadians(90));
+    block.add(backStreet);
+  }
+
+  if(streetOptions.backStreet) {
+    const backLeftInter = createIntersection(streetWidth, sidewalkWidth, textureLoader, intersectionOptions.backLeft);
+    backLeftInter.translateY(blockWidth/2 - 3.4 + streetWidth/2 + sidewalkWidth);
+    block.add(backLeftInter);
+
+    const backRightInter = createIntersection(streetWidth, sidewalkWidth, textureLoader, intersectionOptions.backRight);
+    backRightInter.translateY(blockWidth/2 - 3.4 + streetWidth/2 + sidewalkWidth);
+    backRightInter.translateX(planeWidth + streetWidth + 2*sidewalkWidth);
+    block.add(backRightInter);
+  }
+
+  if(streetOptions.frontStreet) {
+    const frontLeftInter = createIntersection(streetWidth, sidewalkWidth, textureLoader, intersectionOptions.frontLeft);
+    frontLeftInter.translateY(-planeHeight/4 - planeHeight/2 - streetWidth/2 - sidewalkWidth + 5);
+    block.add(frontLeftInter);
+
+    const frontRightInter = createIntersection(streetWidth, sidewalkWidth, textureLoader, intersectionOptions.frontRight);
+    frontRightInter.translateY(-planeHeight/4 - planeHeight/2 - streetWidth/2 - sidewalkWidth + 5);
+    frontRightInter.translateX(planeWidth + streetWidth + 2*sidewalkWidth);
+    block.add(frontRightInter);
+  }
 
   block.add(plane);
   buildings.forEach(building => block.add(building));
@@ -1218,7 +1543,15 @@ export function createTrees(planSize, plansInfo, scene) {
     color: 'rgb(50,0,0)'
   }
 
-  const avoidRegions = [trackRegion, soilRegion];
+  const cityRegion = {
+    x: 0,
+    y: -200,
+    width: 300,
+    height: 550,
+    color: 'rgb(0,50,0)'
+  }
+
+  const avoidRegions = [trackRegion, soilRegion, cityRegion];
 
   let randomX;
   let randomY;
