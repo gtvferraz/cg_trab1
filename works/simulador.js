@@ -42,6 +42,7 @@ controls.show();
 var LoadingManager = new THREE.LoadingManager();
 var textureLoader = new THREE.TextureLoader(LoadingManager);
 
+
 //câmeras
 //câmera padrão
 var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000);
@@ -62,8 +63,6 @@ var camera2 = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHe
 camera2.position.copy(new THREE.Vector3(0, -50, 15));
 camera2.lookAt(0, 0, 0);
 camera2.up.set(0, 1.1, 0);
-var inspecionaLight = initLight(scene,new THREE.Vector3(0,-50,15));
-scene.remove(inspecionaLight);
 var axesHelper = new THREE.AxesHelper(20);
 //câmera 3
 var camera3 = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000);
@@ -118,14 +117,12 @@ var loadingScreen = {
         new THREE.MeshBasicMaterial({color:0x4444ff})
     )
 };
-var RESOURCES_LOADED = true;
+var RESOURCES_LOADED = false;
 loadingScreen.box.position.set(0,0,5);
 loadingScreen.camera.lookAt(loadingScreen.box.position);
 loadingScreen.scene.add(loadingScreen.box);
 
-//cria cenário
-var textureLoader = new THREE.TextureLoader(LoadingManager);
-
+//cria terreno
 const terrain = createTerrain(textureLoader, scene);
 scene.add(terrain);
 //addClouds();
@@ -138,6 +135,14 @@ airplane.position.z += 1;
 virtualParent.translateY(-1900);
 scene.add(virtualParent);
 
+//adiciona luz
+let sunLight = initLight(scene, new THREE.Vector3(-200,1450,1900));
+sunLight.shadow.autoUpdate = true;//=false quando termina de colocar os objetos na cena 
+let airplaneLight = initAirplaneLight(scene, new THREE.Vector3(-2.0,-2948,20), airplane);
+scene.add(airplaneLight);
+var inspecionaLight = initLight(scene,new THREE.Vector3(0,-50,15));
+scene.remove(inspecionaLight);
+
 //adiciona as câmeras
 virtualParent.add(camera);
 virtualParent.add(camera2);
@@ -146,13 +151,9 @@ camera3.position.copy(cabin.position)
 camera3.position.z += 1
 camera3.position.y -= 1
 
-//adiciona luz
-let sunLight = initLight(scene, new THREE.Vector3(-200,1450,1900));      
-let airplaneLight = initAirplaneLight(scene, new THREE.Vector3(-2.0,-2948,20), airplane);
-scene.add(airplaneLight);
-
 const mtlLoader = new MTLLoader(LoadingManager);
 mtlLoader.load('./assets/Cat/Cats_obj.mtl', function(materials){
+    materials.preload()
     var objLloader = new OBJLoader(LoadingManager);
     objLloader.setMaterials(materials);
     objLloader.load('./assets/Cat/Cats_obj.obj',function(object) {
@@ -188,8 +189,6 @@ var loader = document.getElementById("loader");
 var infoBoxShow = true;
 window.addEventListener('resize', function() { onWindowResize(cameraGod, renderer) }, false);
 
-sunLight.shadow.autoUpdate = true;
-sunLight.shadow.autoUpdate = false;
 render();
 
 buildSunInterface(sunLight, scene);
@@ -733,11 +732,6 @@ function godView() {
 }
 
 function render() {
-    airplaneLight.position.set(
-        virtualParent.position.x-2.0,
-        virtualParent.position.y+(sunLight.position.y/sunLight.position.z)*20,
-        virtualParent.position.z+20
-    );  
     if(RESOURCES_LOADED == false) {
 
         loadingScreen.box.position.x -= 0.05;
@@ -759,7 +753,12 @@ function render() {
         renderer.render(loadingScreen.scene, loadingScreen.camera);
         return;
     }
-
+    airplaneLight.position.set(
+        virtualParent.position.x-2.0,
+        virtualParent.position.y+(sunLight.position.y/sunLight.position.z)*20,
+        virtualParent.position.z+20
+    );  
+    sunLight.shadow.autoUpdate = false;
     stats.update(); // Update FPS
     trackballControls.update(); // Enable mouse movements
     requestAnimationFrame(render);
