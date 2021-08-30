@@ -32,10 +32,7 @@ var x = new THREE.Vector3(1, 0, 0); // Set x axis
 var y = new THREE.Vector3(0, 1, 0); // Set y axis
 var z = new THREE.Vector3(0, 0, 1); // Set Z axis
 
-//Materiais
-const blackMaterial = new THREE.MeshPhongMaterial({color: 'rgb(0,0,0)'});
-const redMaterial = new THREE.MeshPhongMaterial({color: 'rgb(110,0,0)'});
-const grayMaterial = new THREE.MeshPhongMaterial({color: 'rgb(40,40,50)'});
+const blockScale = 4;
 
 export function createAirplane(LoadingManager) {
   var airplane = new THREE.Object3D();
@@ -384,8 +381,6 @@ function createCity(textureLoader) {
   const streetWidth = 20;
   const sidewalkWidth = 2;
   const buildingGap = 10;
-
-  const blockScale = 4;
 
   const ScaledfirstBlockWidth = 138*blockScale;
   const ScaledfirstBlockHeight = 194.4*blockScale;
@@ -1539,9 +1534,9 @@ function createTrees(planSize, plansInfo, scene) {
 
   const cityRegion = {
     x: 0,
-    y: -200,
-    width: 300,
-    height: 550,
+    y: 25*blockScale,
+    width: 260*blockScale,
+    height: 540*blockScale,
     color: 'rgb(0,50,0)'
   }
 
@@ -1651,8 +1646,8 @@ function createTrees(planSize, plansInfo, scene) {
     var mark = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color: region.color}));
     mark.position.copy(new THREE.Vector3(region.x, region.y, 0));
     mark.rotateOnAxis(x, degreesToRadians(90));
-    scene.add(mark)
-  });*/
+    scene.add(mark)*/
+  });
 
   return trees;
 }
