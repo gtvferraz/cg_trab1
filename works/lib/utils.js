@@ -274,7 +274,7 @@ function createStabilizer() {
 export function createTerrain(textureLoader, scene) {
   //plane.add(createMountain());
 
-  const planSize = 4000;
+  const planSize = 6000;
   const stepHeight = 3;
 
   var sandTexture = textureLoader.load('assets/sand.jpg', function (texture) {
@@ -385,6 +385,10 @@ function createCity(textureLoader) {
   const sidewalkWidth = 2;
   const buildingGap = 10;
 
+  const blockScale = 4;
+
+  const ScaledfirstBlockWidth = 138*blockScale;
+  const ScaledfirstBlockHeight = 194.4*blockScale;
   const firstBlockWidth = 138;
   const firstBlockHeight = 194.4;
 
@@ -413,7 +417,7 @@ function createCity(textureLoader) {
       }
     }
   );
-  block2.translateY(-firstBlockHeight + streetWidth + 2*sidewalkWidth);
+  block2.translateY(-ScaledfirstBlockHeight + streetWidth*blockScale + 2*sidewalkWidth*blockScale);
 
   const block3 = createFirstBlock(streetWidth, sidewalkWidth, buildingGap, textureLoader, 
     {backStreet: false},
@@ -427,7 +431,7 @@ function createCity(textureLoader) {
       }
     }
   );
-  block3.translateY(2*(-firstBlockHeight + streetWidth + 2*sidewalkWidth));
+  block3.translateY(2*(-ScaledfirstBlockHeight + streetWidth*blockScale + 2*sidewalkWidth*blockScale));
 
   const block4 = createSecondBlock(streetWidth, sidewalkWidth, buildingGap, textureLoader,
     firstBlockWidth-2*streetWidth-4*sidewalkWidth,
@@ -445,7 +449,7 @@ function createCity(textureLoader) {
       left: true
     }
   });
-  block4.translateX(-firstBlockWidth + streetWidth + 2*sidewalkWidth);
+  block4.translateX(-ScaledfirstBlockWidth + streetWidth*blockScale + 2*sidewalkWidth*blockScale);
 
   const block5 = createFirstBlock(streetWidth, sidewalkWidth, buildingGap, textureLoader, 
     {
@@ -458,8 +462,8 @@ function createCity(textureLoader) {
       }
     }
   );
-  block5.translateX(-firstBlockWidth + streetWidth + 2*sidewalkWidth);
-  block5.translateY(-firstBlockHeight + streetWidth + 2*sidewalkWidth);
+  block5.translateX(-ScaledfirstBlockWidth + streetWidth*blockScale + 2*sidewalkWidth*blockScale);
+  block5.translateY(-ScaledfirstBlockHeight + streetWidth*blockScale + 2*sidewalkWidth*blockScale);
 
   const block6 = createSecondBlock(streetWidth, sidewalkWidth, buildingGap, textureLoader,
     firstBlockWidth-2*streetWidth-4*sidewalkWidth,
@@ -477,8 +481,15 @@ function createCity(textureLoader) {
       front: true
     }
   });
-  block6.translateX(-firstBlockWidth + streetWidth + 2*sidewalkWidth);
-  block6.translateY(2*(-firstBlockHeight + streetWidth + 2*sidewalkWidth));
+  block6.translateX(-ScaledfirstBlockWidth + streetWidth*blockScale + 2*sidewalkWidth*blockScale);
+  block6.translateY(2*(-ScaledfirstBlockHeight + streetWidth*blockScale + 2*sidewalkWidth*blockScale));
+
+  block1.scale.set(blockScale,blockScale,blockScale);
+  block2.scale.set(blockScale,blockScale,blockScale);
+  block3.scale.set(blockScale,blockScale,blockScale);
+  block4.scale.set(blockScale,blockScale,blockScale);
+  block5.scale.set(blockScale,blockScale,blockScale);
+  block6.scale.set(blockScale,blockScale,blockScale);
 
   city.add(block1);
   city.add(block2);
@@ -486,6 +497,8 @@ function createCity(textureLoader) {
   city.add(block4);
   city.add(block5);
   city.add(block6);
+
+  city.translateY(900);
 
   return city;
 }
@@ -711,13 +724,13 @@ function createFirstBlock(
 
   const buildings = [];
 
-  var scaledOffsetWidth = buildingsInfo[0].offsetWidth*buildingsInfo[0].scale;
+  /*var scaledOffsetWidth = buildingsInfo[0].offsetWidth*buildingsInfo[0].scale;
   var scaledOffsetDeph = buildingsInfo[0].offsetDeph*buildingsInfo[0].scale;
   var scaledWidth = buildingsInfo[0].width*buildingsInfo[0].scale;
   var scaledDeph = buildingsInfo[0].deph*buildingsInfo[0].scale;
   var scaledHeight = buildingsInfo[0].height*buildingsInfo[0].scale;
 
-  /*buildings.push(buildingsInfo[0].create(new THREE.Vector3(0,0,0), textureLoader));
+  buildings.push(buildingsInfo[0].create(new THREE.Vector3(0,0,0), textureLoader));
   buildings[0].scale.set(buildingsInfo[0].scale,buildingsInfo[0].scale,buildingsInfo[0].scale);
   buildings[0].translateZ(scaledHeight/2);
   buildings[0].translateX(
