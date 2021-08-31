@@ -119,7 +119,7 @@ export function createBuilding3(textureLoader) {
     janelaMaterial.alphaTest = 0.001;
     janelaGeometry.attributes.uv2 = janelaGeometry.attributes.uv;
     
-    var varandaMaterial = new THREE.MeshBasicMaterial({color:'rgb(250,250,250',map: varandaMap, side: THREE.DoubleSide})
+    var varandaMaterial = new THREE.MeshBasicMaterial({map: varandaMap, side: THREE.DoubleSide})
 
     //construção
     var predio = new THREE.Mesh(predioBaseGeometry,[predioMaterial,predioMaterial,predioMaterial,predioMaterial,predioMaterialTopo,predioMaterial]);

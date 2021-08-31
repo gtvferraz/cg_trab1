@@ -101,10 +101,10 @@ var tempoAtual = 0;
 //teste loading screen
 var loadingScreen = {
     scene: new THREE.Scene(),
-    camera: new THREE.PerspectiveCamera(90, 1280/720, 0.1, 100),
+    camera: new THREE.PerspectiveCamera(90, 1280/720, 0.1, 100)
 };
 var RESOURCES_LOADED = false;
-loadingScreen.camera.lookAt((0,0,5));
+loadingScreen.camera.lookAt(0,0,5);
 
 //cria terreno
 const terrain = createTerrain(textureLoader, scene, LoadingManager);
@@ -160,7 +160,7 @@ window.addEventListener('resize', function() { onWindowResize(cameraGod, rendere
 
 render();
 
-buildSunInterface(sunLight, scene);
+//buildSunInterface(sunLight, scene);
 //buildAirpLightInterface(airplaneLight, scene);
 
 function addClouds() {
