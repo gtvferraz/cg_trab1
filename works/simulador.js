@@ -88,7 +88,7 @@ var cameraType = 1; //tipo de câmera
 var circuito = false; //circuito desligado ou ligado
 var torusus = []; //arraylist para guardar os torus
 var contador = document.getElementById("contador");
-var posInicialCircuito = new THREE.Vector3(0,-3000,0); //marca a posição inicial do circuito
+var posInicialCircuito = new THREE.Vector3(0,-2800,0); //marca a posição inicial do circuito
 var caminho; //caminho do percurso
 var caminhoOn = false; //se o caminho está ativou ou não
 var timer = new THREE.Clock();
@@ -96,7 +96,6 @@ timer.autoStart = false;
 var timerDiv = document.getElementById("timer")
 var contadorAneisPassados = 0;
 
-var tempoAtual = 0;
 
 //teste loading screen
 var loadingScreen = {
@@ -157,7 +156,7 @@ var godOn = false;
 var loader = document.getElementById("loader");
 var infoBoxShow = true;
 window.addEventListener('resize', function() { onWindowResize(cameraGod, renderer) }, false);
-
+var tempoAtual = 0;
 render();
 
 //buildSunInterface(sunLight, scene);
@@ -260,8 +259,6 @@ function destroyTorus(){
             if(!timer.running && estaDentro(virtualParent, torusus[14], 35))
                 timer.start();
 
-            if(estaDentro(virtualParent, torusus[0], 35))
-                listenerEnd.sound.play();
 
             //destroi torus passado
             torusus[i].geometry.dispose();
@@ -274,8 +271,10 @@ function destroyTorus(){
             //atualiza o contador
             contadorAneisPassados++;
             contador.innerText = contadorAneisPassados+"/15"; 
+            console.log(torusus.length);
         }
         if(torusus.length == 0) {
+            listenerEnd.sound.play();
             destroiPercurso(true);
             timer.stop();
         }
@@ -315,10 +314,10 @@ function trocaCamera1() {
             scene.add(caminho);
         }
         infoBox();
-    }
-    if(timer.isPlaying){
-        timer.start();
-        timer.elapsedTime = tempoAtual;
+        if(!timer.isPlaying){
+            timer.start();
+            timer.elapsedTime = tempoAtual;
+        }
     }
 }
 
@@ -347,9 +346,9 @@ function trocaCamera2() {
     trackballControls.enabled = true;
     trackballControls.reset();
     virtualParent.add(axesHelper);
-    infoBox();
     timer.stop();
     tempoAtual = timer.getElapsedTime(); 
+    infoBox();
 }
 
 function criaCaminho() {
