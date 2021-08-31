@@ -700,6 +700,7 @@ function createFirstBlock(
     { 
       offsetWidth: 5,
       offsetDeph: 0,
+      offsetHeight: 0,
       width: 80,
       deph: 40,
       height: 100,
@@ -709,6 +710,7 @@ function createFirstBlock(
     {
       offsetWidth: 5,
       offsetDeph: 5,
+      offsetHeight: 5,
       width: 35,
       deph: 10,
       height: 20,
@@ -718,6 +720,7 @@ function createFirstBlock(
     { 
       offsetWidth: 0,
       offsetDeph: 0,
+      offsetHeight: 0,
       width: 20,
       deph: 8,
       height: 20,
@@ -727,6 +730,7 @@ function createFirstBlock(
     { 
       offsetWidth: 0,
       offsetDeph: 0,
+      offsetHeight: 0,
       width: 50,
       deph: 40,
       height: 100,
@@ -739,6 +743,7 @@ function createFirstBlock(
 
   /*var scaledOffsetWidth = buildingsInfo[0].offsetWidth*buildingsInfo[0].scale;
   var scaledOffsetDeph = buildingsInfo[0].offsetDeph*buildingsInfo[0].scale;
+  var scaledOffsetHeight = buildingsInfo[0].offsetHeight*buildingsInfo[0].scale;
   var scaledWidth = buildingsInfo[0].width*buildingsInfo[0].scale;
   var scaledDeph = buildingsInfo[0].deph*buildingsInfo[0].scale;
   var scaledHeight = buildingsInfo[0].height*buildingsInfo[0].scale;
@@ -758,13 +763,14 @@ function createFirstBlock(
   for(let i=1; i<3; i++) {
     scaledOffsetWidth = buildingsInfo[i].offsetWidth*buildingsInfo[i].scale;
     scaledOffsetDeph = buildingsInfo[i].offsetDeph*buildingsInfo[i].scale;
+    scaledOffsetHeight = buildingsInfo[i].offsetHeight*buildingsInfo[i].scale;
     scaledWidth = buildingsInfo[i].width*buildingsInfo[i].scale;
     scaledDeph = buildingsInfo[i].deph*buildingsInfo[i].scale;
     scaledHeight = buildingsInfo[i].height*buildingsInfo[i].scale;
 
     buildings.push(buildingsInfo[i].create( textureLoader));
     buildings[i].scale.set(buildingsInfo[i].scale,buildingsInfo[i].scale,buildingsInfo[i].scale);
-    buildings[i].translateZ(scaledHeight/2);
+    buildings[i].translateZ(scaledHeight/2 - scaledOffsetHeight);
     buildings[i].translateX(streetWidth/2 + sidewalkWidth + scaledOffsetDeph + scaledDeph/2);
 
     if(i > 1)

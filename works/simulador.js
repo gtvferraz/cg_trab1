@@ -690,9 +690,9 @@ function godView() {
         god.translateX(maxSpeed);
 
     if(keyboard.pressed('up'))
-        god.translateZ(0.5);
+        god.translateZ(1);
     else if(keyboard.pressed('down'))
-        god.translateZ(-0.5);
+        god.translateZ(-1);
     
     if(keyboard.pressed('left'))
         god.rotateOnAxis(new THREE.Vector3(0,0,1),angle);
