@@ -354,6 +354,7 @@ export function createTerrain(textureLoader, scene, LoadingManager) {
           object.scale.set(1,1,1)
           object.position.set(0,1300,0)
           object.rotateOnAxis(x,degreesToRadians(90))
+          object.translateOnAxis(x, 500);
           object.rotateOnAxis(y,degreesToRadians(180))
           object.traverse( function ( child ) {
               child.castShadow = true;
@@ -741,7 +742,7 @@ function createFirstBlock(
 
   const buildings = [];
 
-  /*var scaledOffsetWidth = buildingsInfo[0].offsetWidth*buildingsInfo[0].scale;
+  var scaledOffsetWidth = buildingsInfo[0].offsetWidth*buildingsInfo[0].scale;
   var scaledOffsetDeph = buildingsInfo[0].offsetDeph*buildingsInfo[0].scale;
   var scaledOffsetHeight = buildingsInfo[0].offsetHeight*buildingsInfo[0].scale;
   var scaledWidth = buildingsInfo[0].width*buildingsInfo[0].scale;
@@ -829,7 +830,7 @@ function createFirstBlock(
     buildingGap)
   );
 
-  buildings[4].rotateOnAxis(z, degreesToRadians(90));*/
+  buildings[4].rotateOnAxis(z, degreesToRadians(90));
 
   const planeWidth = 
     buildingsInfo[1].offsetDeph*buildingsInfo[1].scale + buildingsInfo[1].deph*buildingsInfo[1].scale +
@@ -1028,7 +1029,7 @@ function createSecondBlock(
 
   const buildings = [];
 
-  /*var scaledOffsetWidth = buildingsInfo[0].offsetWidth*buildingsInfo[0].scale;
+  var scaledOffsetWidth = buildingsInfo[0].offsetWidth*buildingsInfo[0].scale;
   var scaledOffsetDeph = buildingsInfo[0].offsetDeph*buildingsInfo[0].scale;
   var scaledWidth = buildingsInfo[0].width*buildingsInfo[0].scale;
   var scaledDeph = buildingsInfo[0].deph*buildingsInfo[0].scale;
@@ -1109,7 +1110,7 @@ function createSecondBlock(
     buildingGap)
   );
 
-  buildings[4].rotateOnAxis(z, degreesToRadians(90));*/
+  buildings[4].rotateOnAxis(z, degreesToRadians(90));
 
   const planeWidth = blockWidth;
   const planeHeight = blockHeight;
