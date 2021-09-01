@@ -31,10 +31,10 @@ export function createBuilding1(textureLoader) {
     var gradeLateralGeometry = new THREE.BoxGeometry(0.1, 3, 0.1);
     var pisoGeometry = new THREE.BoxGeometry(9, 3, 0.2);
     var portaVarandaGeometry = new THREE.PlaneGeometry(1, 2.5);
-    var predioGeometry = new THREE.BoxGeometry(20, 8, 20, 512, 512);
-    var pilarGeometry = new THREE.BoxGeometry(2, 3, 16, 512, 512);
-    var janelaGeometry = new THREE.PlaneGeometry(1, 1, 512, 512);
-    var janelaFrenteGeometry = new THREE.PlaneGeometry(4, 1.5, 512, 512)
+    var predioGeometry = new THREE.BoxGeometry(20, 8, 20);
+    var pilarGeometry = new THREE.BoxGeometry(2, 3, 16);
+    var janelaGeometry = new THREE.PlaneGeometry(1, 1);
+    var janelaFrenteGeometry = new THREE.PlaneGeometry(4, 1.5)
     var portaFrenteGeometry = new THREE.PlaneGeometry(5,4);
 
     //material

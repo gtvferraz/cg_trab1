@@ -51,12 +51,12 @@ export function createBuilding3(textureLoader) {
     const portaFrenteMap = textureLoader.load('/works/assets/predio_03/portaFrente.png');
 
     //geometry
-    var predioBaseGeometry = new THREE.BoxGeometry(50,40,100,512,512);
+    var predioBaseGeometry = new THREE.BoxGeometry(50,40,100);
     var topoGeometry = new THREE.PlaneGeometry(30,5);
-    var tetoPredioGeometry = new THREE.PlaneGeometry(50,40,512,512);
+    var tetoPredioGeometry = new THREE.PlaneGeometry(50,40);
     var pilarGeometry = new THREE.CylinderGeometry(1,1,5,32);
     var varandaGeometry = new THREE.BoxGeometry(20,4,5)
-    var janelaGeometry = new THREE.PlaneGeometry(5,5,512,512);
+    var janelaGeometry = new THREE.PlaneGeometry(5,5);
     var portaFrenteGeometry = new THREE.PlaneGeometry(4,5)
 
     //material
