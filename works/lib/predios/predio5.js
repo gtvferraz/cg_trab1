@@ -331,11 +331,7 @@ export function createBuilding5(textureLoader) {
 
     colunaHorizontal.children.forEach(element => {
         element.castShadow = true;
-    });
-    colunaHorizontal.castShadow = true;
-
-    colunaHorizontal.traverse(function (child){
-        child.receiveShadow = true;
+        element.receiveShadow = true;
     });
 
     return colunaHorizontal;
