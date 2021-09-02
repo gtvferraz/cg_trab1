@@ -9,27 +9,27 @@ var z = new THREE.Vector3(0, 0, 1); // Set Z axis
 
 export function createBuilding6(textureLoader) {
     //wall_tiles_stone_001
-    const stylizedBlocksBaseColor = textureLoader.load('/works/assets/predio_06/Stylized_blocks_001_basecolor.jpg');
-    const stylizedBlocksBaseColor2 = textureLoader.load('/works/assets/predio_06/Stylized_blocks_001_basecolor.jpg');
+    const stylizedBlocksBaseColor = textureLoader.load('assets/predio_06/Stylized_blocks_001_basecolor.jpg');
+    const stylizedBlocksBaseColor2 = textureLoader.load('assets/predio_06/Stylized_blocks_001_basecolor.jpg');
     //porta
-    const portaFrenteMap = textureLoader.load('/works/assets/predio_06/portaFrente.png');
-    const portaMap = textureLoader.load('/works/assets/predio_06/porta.png');
+    const portaFrenteMap = textureLoader.load('assets/predio_06/portaFrente.png');
+    const portaMap = textureLoader.load('assets/predio_06/porta.png');
     //parte traseira
-    const brickWallMap1 = textureLoader.load('/works/assets/predio_06/Brick_Wall_017_basecolor - Copia.jpg');
-    const brickWallMap2 = textureLoader.load('/works/assets/predio_06/Brick_Wall_017_basecolor.jpg');
+    const brickWallMap1 = textureLoader.load('assets/predio_06/Brick_Wall_017_basecolor - Copia.jpg');
+    const brickWallMap2 = textureLoader.load('assets/predio_06/Brick_Wall_017_basecolor.jpg');
     //sacada
-    var sacadaMap = textureLoader.load('/works/assets/predio_06/Metal_Pattern_005_basecolor.jpg')
+    var sacadaMap = textureLoader.load('assets/predio_06/Metal_Pattern_005_basecolor.jpg')
     sacadaMap.wrapS = THREE.RepeatWrapping;
     sacadaMap.wrapT = THREE.RepeatWrapping;
     sacadaMap.repeat.set( 2, 3 );
     //vidro
-    const windowBaseColor = textureLoader.load('/works/assets/predio_06/Glass_Window_002_basecolor.jpg');
-    const windowNormalMap = textureLoader.load('/works/assets/predio_06/Glass_Window_002_normal.jpg');
-    const windowHeightMap = textureLoader.load('/works/assets/predio_06/Glass_Window_002_height.png');
-    const windowRoughnessMap = textureLoader.load('/works/assets/predio_06/Glass_Window_002_roughness.jpg');
-    const windowAmbientOcclusionMap = textureLoader.load('/works/assets/predio_06/Glass_Window_002_ambientOcclusion.jpg');
-    const windowMetallicMap = textureLoader.load('/works/assets/predio_06/Glass_Window_002_metallic.jpg');
-    const windowOpacityMap = textureLoader.load('/works/assets/predio_06/Glass_Window_002_opacity.jpg');
+    const windowBaseColor = textureLoader.load('assets/predio_06/Glass_Window_002_basecolor.jpg');
+    const windowNormalMap = textureLoader.load('assets/predio_06/Glass_Window_002_normal.jpg');
+    const windowHeightMap = textureLoader.load('assets/predio_06/Glass_Window_002_height.png');
+    const windowRoughnessMap = textureLoader.load('assets/predio_06/Glass_Window_002_roughness.jpg');
+    const windowAmbientOcclusionMap = textureLoader.load('assets/predio_06/Glass_Window_002_ambientOcclusion.jpg');
+    const windowMetallicMap = textureLoader.load('assets/predio_06/Glass_Window_002_metallic.jpg');
+    const windowOpacityMap = textureLoader.load('assets/predio_06/Glass_Window_002_opacity.jpg');
 
     //Geometrias
     var parteFrontalGeometry = new THREE.BoxGeometry(70, 10, 100, 255, 255);

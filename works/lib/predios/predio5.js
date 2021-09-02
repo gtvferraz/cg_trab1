@@ -11,37 +11,37 @@ var z = new THREE.Vector3(0, 0, 1); // Set Z axis
 
 export function createBuilding5(textureLoader) {
     //predios
-    const predioMap1 = textureLoader.load('/works/assets/predio_05/tijolo.png')
+    const predioMap1 = textureLoader.load('assets/predio_05/tijolo.png')
     predioMap1.wrapS = THREE.RepeatWrapping;
     predioMap1.wrapT = THREE.RepeatWrapping;
     predioMap1.repeat.set( 6, 1 );
-    const predioMap11 = textureLoader.load('/works/assets/predio_05/tijolo1.png')
+    const predioMap11 = textureLoader.load('assets/predio_05/tijolo1.png')
     predioMap11.wrapS = THREE.RepeatWrapping;
     predioMap11.wrapT = THREE.RepeatWrapping;
     predioMap11.repeat.set( 6, 6 );
-    const predioMap2 = textureLoader.load('/works/assets/predio_05/tijolo2.png')
+    const predioMap2 = textureLoader.load('assets/predio_05/tijolo2.png')
     predioMap2.wrapS = THREE.RepeatWrapping;
     predioMap2.wrapT = THREE.RepeatWrapping;
     predioMap2.repeat.set( 6, 1 );
-    const predioMap22 = textureLoader.load('/works/assets/predio_05/tijolo22.png')
+    const predioMap22 = textureLoader.load('assets/predio_05/tijolo22.png')
     predioMap22.wrapS = THREE.RepeatWrapping;
     predioMap22.wrapT = THREE.RepeatWrapping;
     predioMap22.repeat.set( 1, 6 );
     //varanda
-    const varandaMap = textureLoader.load('/works/assets/predio_05/Marble_Red_004_basecolor.jpg')
+    const varandaMap = textureLoader.load('assets/predio_05/Marble_Red_004_basecolor.jpg')
     varandaMap.wrapS = THREE.RepeatWrapping;
     varandaMap.wrapT = THREE.RepeatWrapping;
     varandaMap.repeat.set( 4, 4 );
     //divisor
-    const divisorMap = textureLoader.load('/works/assets/predio_05/Wood_Wall_003_basecolor.jpg')
+    const divisorMap = textureLoader.load('assets/predio_05/Wood_Wall_003_basecolor.jpg')
     divisorMap.wrapS = THREE.RepeatWrapping;
     divisorMap.wrapT = THREE.RepeatWrapping;
     divisorMap.repeat.set( 8, 1 );
     //portas
-    const doorMap = textureLoader.load('/works/assets/predio_05/door.png')
-    const doubleDoorMap = textureLoader.load('/works/assets/predio_05/doubleDoor.png')
+    const doorMap = textureLoader.load('assets/predio_05/door.png')
+    const doubleDoorMap = textureLoader.load('assets/predio_05/doubleDoor.png')
     //janela
-    const janelaMap = textureLoader.load('/works/assets/predio_05/window.png')
+    const janelaMap = textureLoader.load('assets/predio_05/window.png')
 
     //Geometrias
     var colunaHorizontalGeometry = new THREE.BoxGeometry(60,15,60);

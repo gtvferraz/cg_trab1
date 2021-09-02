@@ -5,26 +5,26 @@ import {
 
 export function createBuilding1(textureLoader) {
     //tiles_stone_001
-    const tilesBaseColor = textureLoader.load('/works/assets/predio_01/Tiles_Stone_001_basecolor.jpg');
+    const tilesBaseColor = textureLoader.load('assets/predio_01/Tiles_Stone_001_basecolor.jpg');
     //brick_wall_015
-    const brickWallBaseColor = textureLoader.load('/works/assets/predio_01/Brick_Wall_015_COLOR.jpg')
+    const brickWallBaseColor = textureLoader.load('assets/predio_01/Brick_Wall_015_COLOR.jpg')
     //window_001
-    const WindowBaseColor = textureLoader.load('/works/assets/predio_01/Window_001_basecolor.jpg');
-    const WindowNormalMap = textureLoader.load('/works/assets/predio_01/Window_001_normal.jpg');
-    const WindowHeightMap = textureLoader.load('/works/assets/predio_01/Window_001_height.png');
-    const WindowRoughnessMap = textureLoader.load('/works/assets/predio_01/Window_001_roughness.jpg');
-    const WindowAmbientOcclusionMap = textureLoader.load('/works/assets/predio_01/Window_001_ambientOcclusion.jpg');
-    const WindowMetallicMap = textureLoader.load('/works/assets/predio_01/Window_001_metallic.jpg');
-    const WindowOpacityMap = textureLoader.load('/works/assets/predio_01/Window_001_opacity.jpg');
+    const WindowBaseColor = textureLoader.load('assets/predio_01/Window_001_basecolor.jpg');
+    const WindowNormalMap = textureLoader.load('assets/predio_01/Window_001_normal.jpg');
+    const WindowHeightMap = textureLoader.load('assets/predio_01/Window_001_height.png');
+    const WindowRoughnessMap = textureLoader.load('assets/predio_01/Window_001_roughness.jpg');
+    const WindowAmbientOcclusionMap = textureLoader.load('assets/predio_01/Window_001_ambientOcclusion.jpg');
+    const WindowMetallicMap = textureLoader.load('assets/predio_01/Window_001_metallic.jpg');
+    const WindowOpacityMap = textureLoader.load('assets/predio_01/Window_001_opacity.jpg');
     //porta varanda
-    const portaMap = textureLoader.load('/works/assets/predio_01/porta.png');
-    const portaMap2 = textureLoader.load('/works/assets/predio_01/porta.png');
+    const portaMap = textureLoader.load('assets/predio_01/porta.png');
+    const portaMap2 = textureLoader.load('assets/predio_01/porta.png');
     //chão varanda
-    const varandaMap = textureLoader.load('/works/assets/predio_01/Marble_Carrara_003_COLOR.jpg');
+    const varandaMap = textureLoader.load('assets/predio_01/Marble_Carrara_003_COLOR.jpg');
     //grade
-    const gradeMap = textureLoader.load('/works/assets/predio_01/Wood_Herringbone_Tiles_002_basecolor.jpg');
+    const gradeMap = textureLoader.load('assets/predio_01/Wood_Herringbone_Tiles_002_basecolor.jpg');
     //porta entrada
-    const portaEntradaMap = textureLoader.load('/works/assets/predio_01/porta2.jpg');
+    const portaEntradaMap = textureLoader.load('assets/predio_01/porta2.jpg');
 
     //geometry
     var gradeFrenteGeometry = new THREE.BoxGeometry(9, 0.1, 0.1);

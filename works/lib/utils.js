@@ -5,12 +5,12 @@ import { ConvexGeometry } from '../../../build/jsm/geometries/ConvexGeometry.js'
 import {OBJLoader} from '../../../build/jsm/loaders/OBJLoader.js'
 import {MTLLoader} from '../../../build/jsm/loaders/MTLLoader.js'
 
-import { createBuilding1 } from '/works/lib/predios/predio1.js'
-import { createBuilding2 } from '/works/lib/predios/predio2.js'
-import { createBuilding3 } from '/works/lib/predios/predio3.js'
-import { createBuilding4 } from '/works/lib/predios/predio4.js'
-import { createBuilding5 } from '/works/lib/predios/predio5.js'
-import { createBuilding6 } from '/works/lib/predios/predio6.js'
+import { createBuilding1 } from './predios/predio1.js'
+import { createBuilding2 } from './predios/predio2.js'
+import { createBuilding3 } from './predios/predio3.js'
+import { createBuilding4 } from './predios/predio4.js'
+import { createBuilding5 } from './predios/predio5.js'
+import { createBuilding6 } from './predios/predio6.js'
 
 export function addSound(som, loop) {
   // create an AudioListener and add it to the camera
@@ -40,17 +40,17 @@ export function createAirplane(LoadingManager) {
   var airplane = new THREE.Object3D();
 
   var textureLoader = new THREE.TextureLoader(LoadingManager);
-  const aviaoPrincipal = textureLoader.load('/works/assets/Metal_Panels_009_basecolor.jpg');
-  var heliceMap =  textureLoader.load('/works/assets/Wood_Panel_003_basecolor.jpg')
+  const aviaoPrincipal = textureLoader.load('assets/Metal_Panels_009_basecolor.jpg');
+  var heliceMap =  textureLoader.load('assets/Wood_Panel_003_basecolor.jpg')
   heliceMap.wrapS = THREE.RepeatWrapping;
   heliceMap.wrapT = THREE.RepeatWrapping;
   heliceMap.repeat.set( 1, 2 );
   //cabine material
-  const windowBaseColor = textureLoader.load('/works/assets/Glass_Frosted_001_basecolor.jpg');
-  const windowNormalMap = textureLoader.load('/works/assets/Glass_Frosted_001_normal.jpg');
-  const windowHeightMap = textureLoader.load('/works/assets/Glass_Frosted_001_height.png');
-  const windowRoughnessMap = textureLoader.load('/works/assets/Glass_Frosted_001_roughness.jpg');
-  const windowAmbientOcclusionMap = textureLoader.load('/works/assets/Glass_Frosted_001_ambientOcclusion.jpg');
+  const windowBaseColor = textureLoader.load('assets/Glass_Frosted_001_basecolor.jpg');
+  const windowNormalMap = textureLoader.load('assets/Glass_Frosted_001_normal.jpg');
+  const windowHeightMap = textureLoader.load('assets/Glass_Frosted_001_height.png');
+  const windowRoughnessMap = textureLoader.load('assets/Glass_Frosted_001_roughness.jpg');
+  const windowAmbientOcclusionMap = textureLoader.load('assets/Glass_Frosted_001_ambientOcclusion.jpg');
   
 
   var geometry = new THREE.CylinderGeometry(1, 1, 9, 50);
@@ -218,7 +218,7 @@ export function initAirplaneLight(scene, position = new THREE.Vector3(1, 1, 1), 
 
 function createWing(LoadingManager) {
   var textureLoader = new THREE.TextureLoader(LoadingManager);
-  const asa = textureLoader.load('/works/assets/Wood_Floor_010_basecolor.jpg');
+  const asa = textureLoader.load('assets/Wood_Floor_010_basecolor.jpg');
   asa.wrapS = THREE.RepeatWrapping;
   asa.wrapT = THREE.RepeatWrapping;
   asa.repeat.set( 2, 1 );
@@ -241,7 +241,7 @@ function createStabilizer() {
   var geometry = new THREE.BoxGeometry(4, 2, 0.2);
 
   var textureLoader = new THREE.TextureLoader();
-  var asa = textureLoader.load('/works/assets/Wood_Floor_010_basecolor.jpg');
+  var asa = textureLoader.load('assets/Wood_Floor_010_basecolor.jpg');
   asa.wrapS = THREE.RepeatWrapping;
   asa.wrapT = THREE.RepeatWrapping;
   asa.repeat.set( 1, 0.5 );

@@ -9,8 +9,8 @@ var z = new THREE.Vector3(0, 0, 1); // Set Z axis
 
 export function createBuilding4(textureLoader) {
     //predio maps
-    var hospitalMap = textureLoader.load('/works/assets/predio_04/Stylized_Stone_Wall_001_basecolor.jpg')
-    var hospitalMap2 = textureLoader.load('/works/assets/predio_04/Stylized_Stone_Wall_001_basecolor - Copia.jpg')
+    var hospitalMap = textureLoader.load('assets/predio_04/Stylized_Stone_Wall_001_basecolor.jpg')
+    var hospitalMap2 = textureLoader.load('assets/predio_04/Stylized_Stone_Wall_001_basecolor - Copia.jpg')
     hospitalMap.wrapS = THREE.RepeatWrapping;
     hospitalMap.wrapT = THREE.RepeatWrapping;
     hospitalMap.repeat.set( 1, 6 );
@@ -18,39 +18,39 @@ export function createBuilding4(textureLoader) {
     hospitalMap2.wrapT = THREE.RepeatWrapping;
     hospitalMap2.repeat.set( 6, 1 );
     //iron bars
-    const ironBaseColor = textureLoader.load('/works/assets/predio_04/Iron_Bars_001_basecolor.jpg');
+    const ironBaseColor = textureLoader.load('assets/predio_04/Iron_Bars_001_basecolor.jpg');
     ironBaseColor.wrapS = THREE.RepeatWrapping;
     ironBaseColor.wrapT = THREE.RepeatWrapping;
     ironBaseColor.repeat.set( 6, 4);
-    const ironNormalMap = textureLoader.load('/works/assets/predio_04/Iron_Bars_001_normal.jpg');
+    const ironNormalMap = textureLoader.load('assets/predio_04/Iron_Bars_001_normal.jpg');
     ironNormalMap.wrapS = THREE.RepeatWrapping;
     ironNormalMap.wrapT = THREE.RepeatWrapping;
     ironNormalMap.repeat.set( 6, 4);
-    const ironHeightMap = textureLoader.load('/works/assets/predio_04/Iron_Bars_001_height.png');
+    const ironHeightMap = textureLoader.load('assets/predio_04/Iron_Bars_001_height.png');
     ironHeightMap.wrapS = THREE.RepeatWrapping;
     ironHeightMap.wrapT = THREE.RepeatWrapping;
     ironHeightMap.repeat.set( 6, 4);
-    const ironRoughnessMap = textureLoader.load('/works/assets/predio_04/Iron_Bars_001_roughness.jpg');
+    const ironRoughnessMap = textureLoader.load('assets/predio_04/Iron_Bars_001_roughness.jpg');
     ironRoughnessMap.wrapS = THREE.RepeatWrapping;
     ironRoughnessMap.wrapT = THREE.RepeatWrapping;
     ironRoughnessMap.repeat.set( 6, 4);
-    const ironAmbientOcclusionMap = textureLoader.load('/works/assets/predio_04/Iron_Bars_001_ambientOcclusion.jpg');
+    const ironAmbientOcclusionMap = textureLoader.load('assets/predio_04/Iron_Bars_001_ambientOcclusion.jpg');
     ironAmbientOcclusionMap.wrapS = THREE.RepeatWrapping;
     ironAmbientOcclusionMap.wrapT = THREE.RepeatWrapping;
     ironAmbientOcclusionMap.repeat.set( 6, 4);
-    const ironOpacityMap = textureLoader.load('/works/assets/predio_04/Iron_Bars_001_Opacity.jpg');
+    const ironOpacityMap = textureLoader.load('assets/predio_04/Iron_Bars_001_Opacity.jpg');
     ironOpacityMap.wrapS = THREE.RepeatWrapping;
     ironOpacityMap.wrapT = THREE.RepeatWrapping;
     ironOpacityMap.repeat.set( 6, 4);
     //window
-    const windowBaseColor = textureLoader.load('/works/assets/predio_04/Glass_Window_002_basecolor.jpg');
-    const windowNormalMap = textureLoader.load('/works/assets/predio_04/Glass_Window_002_normal.jpg');
-    const windowHeightMap = textureLoader.load('/works/assets/predio_04/Glass_Window_002_height.png');
-    const windowRoughnessMap = textureLoader.load('/works/assets/predio_04/Glass_Window_002_roughness.jpg');
-    const windowAmbientOcclusionMap = textureLoader.load('/works/assets/predio_04/Glass_Window_002_ambientOcclusion.jpg');
-    const windowOpacityMap = textureLoader.load('/works/assets/predio_04/Glass_Window_002_Opacity.jpg');
+    const windowBaseColor = textureLoader.load('assets/predio_04/Glass_Window_002_basecolor.jpg');
+    const windowNormalMap = textureLoader.load('assets/predio_04/Glass_Window_002_normal.jpg');
+    const windowHeightMap = textureLoader.load('assets/predio_04/Glass_Window_002_height.png');
+    const windowRoughnessMap = textureLoader.load('assets/predio_04/Glass_Window_002_roughness.jpg');
+    const windowAmbientOcclusionMap = textureLoader.load('assets/predio_04/Glass_Window_002_ambientOcclusion.jpg');
+    const windowOpacityMap = textureLoader.load('assets/predio_04/Glass_Window_002_Opacity.jpg');
     //porta
-    const portaMap = textureLoader.load('/works/assets/predio_04/doubleDoor.png')
+    const portaMap = textureLoader.load('assets/predio_04/doubleDoor.png')
 
     //Geometrias
     var hospitalGeometry = new THREE.BoxGeometry(30, 10, 100);

@@ -12,31 +12,31 @@ var z = new THREE.Vector3(0, 0, 1); // Set Z axis
 export function createBuilding2(textureLoader) {
     var TamanhoPredio = 10;
     //vidro
-    const windowBaseColor = textureLoader.load('/works/assets/predio_02/Window_001_basecolor.jpg');
-    const windowNormalMap = textureLoader.load('/works/assets/predio_02/Window_001_normal.jpg');
-    const windowHeightMap = textureLoader.load('/works/assets/predio_02/Window_001_height.png');
-    const windowRoughnessMap = textureLoader.load('/works/assets/predio_02/Window_001_roughness.jpg');
-    const windowAmbientOcclusionMap = textureLoader.load('/works/assets/predio_02/Window_001_ambientOcclusion.jpg');
-    const windowMetallicMap = textureLoader.load('/works/assets/predio_02/Window_001_metallic.jpg');
-    const windowOpacityMap = textureLoader.load('/works/assets/predio_02/Window_001_opacity.jpg');
+    const windowBaseColor = textureLoader.load('assets/predio_02/Window_001_basecolor.jpg');
+    const windowNormalMap = textureLoader.load('assets/predio_02/Window_001_normal.jpg');
+    const windowHeightMap = textureLoader.load('assets/predio_02/Window_001_height.png');
+    const windowRoughnessMap = textureLoader.load('assets/predio_02/Window_001_roughness.jpg');
+    const windowAmbientOcclusionMap = textureLoader.load('assets/predio_02/Window_001_ambientOcclusion.jpg');
+    const windowMetallicMap = textureLoader.load('assets/predio_02/Window_001_metallic.jpg');
+    const windowOpacityMap = textureLoader.load('assets/predio_02/Window_001_opacity.jpg');
     //porta
-    var portaMap = textureLoader.load('/works/assets/predio_02/porta.png')
+    var portaMap = textureLoader.load('assets/predio_02/porta.png')
     //predio
-    var lateralMap = textureLoader.load('/works/assets/predio_02/Wood_Panel_001_basecolor - Copia.jpg')
+    var lateralMap = textureLoader.load('assets/predio_02/Wood_Panel_001_basecolor - Copia.jpg')
     lateralMap.wrapS = THREE.RepeatWrapping;
     lateralMap.wrapT = THREE.RepeatWrapping;
     lateralMap.repeat.set( 2, 3 );
-    var lateralMap2 = textureLoader.load('/works/assets/predio_02/Wood_Panel_001_basecolor.jpg')
+    var lateralMap2 = textureLoader.load('assets/predio_02/Wood_Panel_001_basecolor.jpg')
     lateralMap2.wrapS = THREE.RepeatWrapping;
     lateralMap2.wrapT = THREE.RepeatWrapping;
     lateralMap2.repeat.set( 3, 3 );
-    const frenteMap = textureLoader.load('/works/assets/predio_02/Wall_Stone_010_basecolor.jpg')
-    var cimaMap = textureLoader.load('/works/assets/predio_02/Terracotta_Tiles_002_Base_Color.jpg')
+    const frenteMap = textureLoader.load('assets/predio_02/Wall_Stone_010_basecolor.jpg')
+    var cimaMap = textureLoader.load('assets/predio_02/Terracotta_Tiles_002_Base_Color.jpg')
     cimaMap.wrapS = THREE.RepeatWrapping;
     cimaMap.wrapT = THREE.RepeatWrapping;
     cimaMap.repeat.set( 8, 8 );
     //pilar
-    var pilarMap = textureLoader.load('/works/assets/predio_02/Concrete_Wall_001_Base_Color.jpg')
+    var pilarMap = textureLoader.load('assets/predio_02/Concrete_Wall_001_Base_Color.jpg')
 
     //Geometry
     var predioPrincipal = new THREE.BoxGeometry(TamanhoPredio+5, TamanhoPredio, TamanhoPredio+10);
