@@ -22,7 +22,6 @@ import {
     buildAirpLightInterface
 } from './lib/utils.js';
 
-var stats = new Stats(); // To show FPS information
 var scene = new THREE.Scene(); // Create main scene
 scene.background = new THREE.Color('rgb(150,150,200)');
 var renderer = initRenderer(); // View function in util/utils
@@ -32,6 +31,17 @@ var controls = new InfoBox();
 var LoadingManager = new THREE.LoadingManager();
 var textureLoader = new THREE.TextureLoader(LoadingManager);
 
+function createStats() {
+    var stats = new Stats();
+    stats.setMode(0);
+
+    stats.domElement.style.position = 'absolute';
+    stats.domElement.style.left = '0';
+    stats.domElement.style.top = '0';
+    return stats;
+  }
+var stats = createStats();
+document.body.appendChild( stats.domElement );
 
 //câmeras
 //câmera padrão

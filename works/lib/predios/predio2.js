@@ -54,7 +54,7 @@ export function createBuilding2(textureLoader) {
     var janelaGeometry4 = new THREE.PlaneGeometry(3,2);
     var janelaGeometry5 = new THREE.PlaneGeometry(6,2);
     var parteCimaGeometry = new THREE.BoxGeometry(35, 10, 20);
-    var pilarGeometry = new THREE.CylinderGeometry(1, 1, 20, 32);
+    var pilarGeometry = new THREE.CylinderGeometry(1, 1, 20);
 
     //Material
     var predioMaterial = new THREE.MeshBasicMaterial({map: frenteMap});
